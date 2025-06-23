@@ -67,6 +67,15 @@ class ResearchOption(Base):
     risk_score = Column(Float, default=0.5)  # 0.0 to 1.0
     recommended = Column(Boolean, default=False)
     option_metadata = Column(JSON)  # Additional structured data
+    
+    # SWOT Analysis fields
+    swot_strengths = Column(JSON)  # Array of strengths
+    swot_weaknesses = Column(JSON)  # Array of weaknesses
+    swot_opportunities = Column(JSON)  # Array of opportunities
+    swot_threats = Column(JSON)  # Array of threats
+    swot_generated_at = Column(DateTime(timezone=True))
+    swot_confidence = Column(Float, default=0.7)  # 0.0 to 1.0
+    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     

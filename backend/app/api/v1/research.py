@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, Session
 from sqlalchemy import select
 from typing import List, Dict, Any
 import json
-from weasyprint import HTML
 import io
 from fastapi.responses import StreamingResponse
 
-from app.core.database import get_db
+from app.core.database import get_db, get_sync_db
 from app.models.research import (
     ResearchSession, ResearchConversation, ResearchInsight, 
     ResearchOption, ResearchReport, ResearchFactCheck
@@ -20,7 +19,8 @@ from app.schemas.research import (
     ResearchInsightCreate, ResearchOptionCreate, ResearchAnalysis,
     ResearchConversation as ResearchConversationSchema, 
     ResearchInsight as ResearchInsightSchema, 
-    ResearchOption as ResearchOptionSchema
+    ResearchOption as ResearchOptionSchema,
+    SwotAnalysisRequest, SwotAnalysisResponse, SwotPdfRequest
 )
 from app.services.ai_orchestration_simple import ai_orchestrator
 from app.services.research_service import ResearchService
@@ -469,3 +469,71 @@ async def get_next_steps(
     recommendations = await ai_orchestrator.recommend_next_steps(session_data)
     
     return {"recommendations": recommendations}
+
+# SWOT Analysis Endpoints
+@router.post("/options/{option_id}/swot", response_model=SwotAnalysisResponse)
+def generate_swot_analysis(
+    option_id: int,
+    request: SwotAnalysisRequest,
+    db: Session = Depends(get_sync_db)
+):
+    """Generate or regenerate SWOT analysis for a specific option"""
+    from app.services.swot_service import SwotAnalysisService
+    from app.schemas.research import SwotAnalysisResponse
+    
+    # Initialize SWOT service
+    swot_service = SwotAnalysisService(ai_orchestrator)
+    
+    # Generate SWOT analysis
+    swot = swot_service.generate_swot_analysis(
+        db=db,
+        option_id=option_id,
+        regenerate=request.regenerate
+    )
+    
+    return SwotAnalysisResponse(option_id=option_id, swot=swot)
+
+@router.get("/options/{option_id}/swot/pdf")
+def generate_swot_pdf(
+    option_id: int,
+    include_metadata: bool = True,
+    db: Session = Depends(get_sync_db)
+):
+    """Generate a PDF report for SWOT analysis"""
+    from app.services.pdf_service import PdfService
+    from app.services.swot_service import SwotAnalysisService
+    
+    # Get the option with its session
+    option = db.query(ResearchOption).filter(
+        ResearchOption.id == option_id
+    ).first()
+    
+    if not option:
+        raise HTTPException(status_code=404, detail="Option not found")
+    
+    # Get the session
+    session = db.query(ResearchSession).filter(
+        ResearchSession.id == option.session_id
+    ).first()
+    
+    # Get or generate SWOT analysis
+    swot_service = SwotAnalysisService(ai_orchestrator)
+    swot = swot_service.generate_swot_analysis(db=db, option_id=option_id)
+    
+    # Generate PDF
+    pdf_service = PdfService()
+    pdf_bytes = pdf_service.generate_swot_pdf(
+        option=option,
+        session=session,
+        swot=swot,
+        include_metadata=include_metadata
+    )
+    
+    # Return PDF as streaming response
+    return StreamingResponse(
+        io.BytesIO(pdf_bytes),
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"attachment; filename=swot_analysis_{option_id}.pdf"
+        }
+    )

@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 import ResearchReports from '../components/ResearchReports'
+import SwotAnalysis from '../components/SwotAnalysis'
 
 interface Message {
   id: number
@@ -81,6 +82,8 @@ const ResearchPage: React.FC = () => {
   const [downloading, setDownloading] = useState(false)
   const downloadLinkRef = useRef<HTMLAnchorElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const [selectedSwotOption, setSelectedSwotOption] = useState<{ id: number; title: string } | null>(null)
+  const [showSwotModal, setShowSwotModal] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -545,7 +548,7 @@ const ResearchPage: React.FC = () => {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-2 gap-4 mb-4">
                             <div>
                               <h4 className="text-sm font-medium text-green-700 mb-2">Pros</h4>
                               <ul className="text-sm text-gray-600 space-y-1">
@@ -562,6 +565,21 @@ const ResearchPage: React.FC = () => {
                                 ))}
                               </ul>
                             </div>
+                          </div>
+                          
+                          <div className="flex justify-end">
+                            <button
+                              onClick={() => {
+                                setSelectedSwotOption({ id: option.id, title: option.title });
+                                setShowSwotModal(true);
+                              }}
+                              className="px-4 py-2 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex items-center space-x-2"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                              </svg>
+                              <span>View SWOT Analysis</span>
+                            </button>
                           </div>
                         </div>
                       ))}
@@ -658,6 +676,22 @@ const ResearchPage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* SWOT Analysis Modal */}
+      {showSwotModal && selectedSwotOption && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <SwotAnalysis
+              optionId={selectedSwotOption.id}
+              optionTitle={selectedSwotOption.title}
+              onClose={() => {
+                setShowSwotModal(false);
+                setSelectedSwotOption(null);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -60,6 +60,7 @@ pytz==2023.3
 boto3==1.34.13
 pillow==10.2.0
 python-magic==0.4.27
+reportlab==4.0.7
 
 # Email
 emails==0.6

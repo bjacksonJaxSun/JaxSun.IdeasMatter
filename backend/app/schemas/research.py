@@ -73,6 +73,15 @@ class ResearchInsight(ResearchInsightBase):
     class Config:
         from_attributes = True
 
+# SWOT schemas
+class SwotAnalysis(BaseModel):
+    strengths: List[str] = Field(default_factory=list)
+    weaknesses: List[str] = Field(default_factory=list)
+    opportunities: List[str] = Field(default_factory=list)
+    threats: List[str] = Field(default_factory=list)
+    confidence: float = Field(default=0.7, ge=0.0, le=1.0)
+    generated_at: Optional[datetime] = None
+
 # Option schemas
 class ResearchOptionBase(BaseModel):
     category: str = Field(..., min_length=1, max_length=50)
@@ -104,6 +113,12 @@ class ResearchOption(ResearchOptionBase):
     id: int
     session_id: int
     recommended: bool
+    swot_strengths: Optional[List[str]] = None
+    swot_weaknesses: Optional[List[str]] = None
+    swot_opportunities: Optional[List[str]] = None
+    swot_threats: Optional[List[str]] = None
+    swot_generated_at: Optional[datetime] = None
+    swot_confidence: Optional[float] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
     
@@ -184,3 +199,16 @@ class ReportRequest(BaseModel):
     report_type: str
     include_charts: Optional[bool] = True
     format: Optional[str] = "json"
+
+# SWOT analysis request
+class SwotAnalysisRequest(BaseModel):
+    option_id: int
+    regenerate: Optional[bool] = False
+
+class SwotAnalysisResponse(BaseModel):
+    option_id: int
+    swot: SwotAnalysis
+    
+class SwotPdfRequest(BaseModel):
+    option_id: int
+    include_metadata: Optional[bool] = True

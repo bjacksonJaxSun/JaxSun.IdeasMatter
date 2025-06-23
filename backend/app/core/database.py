@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
-from sqlalchemy.orm import declarative_base
-from typing import AsyncGenerator
+from sqlalchemy.orm import declarative_base, sessionmaker, Session
+from sqlalchemy import create_engine
+from typing import AsyncGenerator, Generator
 
 from app.core.config import get_settings
 
@@ -14,10 +15,26 @@ if settings.QUICK_LAUNCH:
         echo=settings.DEBUG,
         connect_args={"check_same_thread": False},
     )
+    # Sync engine for SWOT operations
+    sync_database_url = settings.DATABASE_URL.replace("sqlite+aiosqlite", "sqlite")
+    sync_engine = create_engine(
+        sync_database_url,
+        echo=settings.DEBUG,
+        connect_args={"check_same_thread": False},
+    )
 else:
     # MySQL settings for production
     engine = create_async_engine(
         settings.DATABASE_URL,
+        echo=settings.DEBUG,
+        pool_size=10,
+        max_overflow=20,
+        pool_pre_ping=True,
+    )
+    # Sync engine for SWOT operations
+    sync_database_url = settings.DATABASE_URL.replace("mysql+aiomysql", "mysql+pymysql")
+    sync_engine = create_engine(
+        sync_database_url,
         echo=settings.DEBUG,
         pool_size=10,
         max_overflow=20,
@@ -28,6 +45,15 @@ else:
 AsyncSessionLocal = async_sessionmaker(
     engine,
     class_=AsyncSession,
+    expire_on_commit=False,
+    autoflush=False,
+    autocommit=False,
+)
+
+# Create sync session factory
+SyncSessionLocal = sessionmaker(
+    sync_engine,
+    class_=Session,
     expire_on_commit=False,
     autoflush=False,
     autocommit=False,
@@ -47,3 +73,15 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             raise
         finally:
             await session.close()
+
+# Dependency to get sync database session (for SWOT operations)
+def get_sync_db() -> Generator[Session, None, None]:
+    session = SyncSessionLocal()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()

@@ -113,7 +113,7 @@ class ResearchService:
                 impact_score=impact,
                 risk_score=risk,
                 recommended=recommended,
-                metadata=option_data
+                option_metadata=option_data
             )
             
             self.db.add(option)

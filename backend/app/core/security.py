@@ -124,43 +124,69 @@ def get_default_permissions(role: str) -> list[str]:
 
 async def verify_google_token(credential: str) -> Optional[dict]:
     """Verify Google OAuth token and extract user info"""
-    # In production, you would verify the token with Google's API
-    # For now, we'll implement the verification logic
     try:
-        # This should use google-auth library to verify the token
-        # from google.oauth2 import id_token
-        # from google.auth.transport import requests
-        # 
-        # request = requests.Request()
-        # idinfo = id_token.verify_oauth2_token(
-        #     credential, request, settings.GOOGLE_CLIENT_ID
-        # )
+        # Use google-auth library to properly verify the token
+        from google.oauth2 import id_token
+        from google.auth.transport import requests
         
-        # For production readiness, we need proper Google token verification
-        # This is a placeholder that extracts the payload
-        import base64
-        import json
+        # Create a request object
+        request = requests.Request()
         
-        # Split the JWT token
-        parts = credential.split('.')
-        if len(parts) != 3:
+        # Verify the token with Google
+        if not settings.GOOGLE_CLIENT_ID:
+            print("Warning: GOOGLE_CLIENT_ID not configured")
             return None
             
-        # Decode the payload (middle part)
-        payload = parts[1]
-        # Add padding if needed
-        payload += '=' * (4 - len(payload) % 4)
+        idinfo = id_token.verify_oauth2_token(
+            credential, request, settings.GOOGLE_CLIENT_ID
+        )
         
-        decoded = base64.urlsafe_b64decode(payload)
-        user_info = json.loads(decoded)
+        # Verify the issuer
+        if idinfo.get('iss') not in ['accounts.google.com', 'https://accounts.google.com']:
+            print("Wrong issuer in Google token")
+            return None
         
-        # In production, verify the token signature and claims
+        # Extract user information
         return {
-            'email': user_info.get('email'),
-            'name': user_info.get('name'),
-            'picture': user_info.get('picture'),
-            'email_verified': user_info.get('email_verified', False)
+            'sub': idinfo.get('sub'),  # Google user ID
+            'email': idinfo.get('email'),
+            'name': idinfo.get('name'),
+            'picture': idinfo.get('picture'),
+            'email_verified': idinfo.get('email_verified', False),
+            'given_name': idinfo.get('given_name'),
+            'family_name': idinfo.get('family_name')
         }
+        
     except Exception as e:
         print(f"Error verifying Google token: {e}")
+        # Fallback to basic decoding for development (NOT secure for production)
+        if settings.DEBUG:
+            print("Falling back to basic token decoding (development only)")
+            try:
+                import base64
+                import json
+                
+                # Split the JWT token
+                parts = credential.split('.')
+                if len(parts) != 3:
+                    return None
+                    
+                # Decode the payload (middle part)
+                payload = parts[1]
+                # Add padding if needed
+                payload += '=' * (4 - len(payload) % 4)
+                
+                decoded = base64.urlsafe_b64decode(payload)
+                user_info = json.loads(decoded)
+                
+                return {
+                    'sub': user_info.get('sub'),
+                    'email': user_info.get('email'),
+                    'name': user_info.get('name'),
+                    'picture': user_info.get('picture'),
+                    'email_verified': user_info.get('email_verified', False)
+                }
+            except Exception as fallback_error:
+                print(f"Fallback token decoding also failed: {fallback_error}")
+        
         return None
