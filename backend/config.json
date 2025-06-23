@@ -1,0 +1,167 @@
+{
+  "app": {
+    "name": "AI-First Payroll & HR",
+    "version": "1.0.0",
+    "environment": "development",
+    "debug": true,
+    "host": "0.0.0.0",
+    "port": 8000,
+    "cors_origins": ["http://localhost:3000"],
+    "api_prefix": "/api/v1"
+  },
+  "database": {
+    "provider": "mysql",
+    "host": "localhost",
+    "port": 3306,
+    "database": "payroll_hr_db",
+    "username": "${DB_USERNAME}",
+    "password": "${DB_PASSWORD}",
+    "pool_size": 10,
+    "max_overflow": 20,
+    "echo": false
+  },
+  "redis": {
+    "host": "localhost",
+    "port": 6379,
+    "password": "${REDIS_PASSWORD}",
+    "db": 0,
+    "decode_responses": true
+  },
+  "authentication": {
+    "secret_key": "${JWT_SECRET_KEY}",
+    "algorithm": "HS256",
+    "access_token_expire_minutes": 30,
+    "refresh_token_expire_days": 7,
+    "oauth": {
+      "google": {
+        "enabled": true,
+        "client_id": "${GOOGLE_CLIENT_ID}",
+        "client_secret": "${GOOGLE_CLIENT_SECRET}",
+        "redirect_uri": "http://localhost:8000/api/v1/auth/google/callback"
+      },
+      "facebook": {
+        "enabled": true,
+        "client_id": "${FACEBOOK_CLIENT_ID}",
+        "client_secret": "${FACEBOOK_CLIENT_SECRET}",
+        "redirect_uri": "http://localhost:8000/api/v1/auth/facebook/callback"
+      }
+    }
+  },
+  "ai_providers": {
+    "default": "openai",
+    "providers": {
+      "openai": {
+        "enabled": true,
+        "api_key": "${OPENAI_API_KEY}",
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "max_tokens": 2000,
+        "embedding_model": "text-embedding-ada-002"
+      },
+      "azure_openai": {
+        "enabled": false,
+        "api_key": "${AZURE_OPENAI_API_KEY}",
+        "endpoint": "${AZURE_OPENAI_ENDPOINT}",
+        "deployment_name": "${AZURE_OPENAI_DEPLOYMENT}",
+        "api_version": "2023-05-15",
+        "temperature": 0.7,
+        "max_tokens": 2000
+      },
+      "claude": {
+        "enabled": false,
+        "api_key": "${CLAUDE_API_KEY}",
+        "model": "claude-3-opus-20240229",
+        "temperature": 0.7,
+        "max_tokens": 2000
+      },
+      "langchain": {
+        "enabled": false,
+        "chain_type": "conversation",
+        "memory_type": "buffer",
+        "vector_store": {
+          "type": "faiss",
+          "dimension": 1536,
+          "index_path": "./vector_store/index"
+        }
+      }
+    }
+  },
+  "features": {
+    "ai_features": {
+      "product_research": true,
+      "requirement_gathering": true,
+      "feature_suggestion": true,
+      "story_writing": true,
+      "code_generation": true,
+      "natural_language_queries": true,
+      "predictive_analytics": false
+    },
+    "modules": {
+      "employee_management": true,
+      "payroll": true,
+      "time_attendance": true,
+      "leave_management": true,
+      "reports": true,
+      "integrations": true
+    }
+  },
+  "storage": {
+    "provider": "local",
+    "local": {
+      "upload_path": "./uploads",
+      "max_file_size_mb": 10
+    },
+    "s3": {
+      "enabled": false,
+      "bucket": "${S3_BUCKET}",
+      "region": "${S3_REGION}",
+      "access_key": "${S3_ACCESS_KEY}",
+      "secret_key": "${S3_SECRET_KEY}"
+    }
+  },
+  "email": {
+    "provider": "smtp",
+    "smtp": {
+      "host": "${SMTP_HOST}",
+      "port": 587,
+      "username": "${SMTP_USERNAME}",
+      "password": "${SMTP_PASSWORD}",
+      "use_tls": true,
+      "from_email": "noreply@payrollhr.ai"
+    }
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file": {
+      "enabled": true,
+      "path": "./logs/app.log",
+      "rotation": "daily",
+      "retention_days": 30
+    }
+  },
+  "security": {
+    "rate_limiting": {
+      "enabled": true,
+      "requests_per_minute": 60,
+      "requests_per_hour": 1000
+    },
+    "encryption": {
+      "algorithm": "AES256",
+      "key": "${ENCRYPTION_KEY}"
+    },
+    "allowed_hosts": ["localhost", "127.0.0.1"],
+    "csrf_protection": true
+  },
+  "monitoring": {
+    "health_check_path": "/health",
+    "metrics_enabled": false,
+    "apm": {
+      "provider": "none",
+      "datadog": {
+        "api_key": "${DATADOG_API_KEY}",
+        "app_key": "${DATADOG_APP_KEY}"
+      }
+    }
+  }
+}

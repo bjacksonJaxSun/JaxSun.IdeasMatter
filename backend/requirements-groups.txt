@@ -1,0 +1,54 @@
+# Group 1: Core Framework (no compilation needed)
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+python-multipart==0.0.6
+
+# Group 2: Database (minimal compilation)
+sqlalchemy==2.0.25
+aiosqlite==0.19.0
+alembic==1.13.1
+
+# Group 3: Auth & Security (needs crypto compilation)
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+cryptography==41.0.7
+bcrypt==4.0.1
+
+# Group 4: Pydantic v2 (needs Rust compilation)
+# If this fails, use: pip install pydantic==1.10.13
+pydantic==2.5.3
+pydantic-settings==2.1.0
+email-validator==2.1.0
+
+# Group 5: AI Providers (mostly pure Python)
+openai==1.9.0
+anthropic==0.12.0
+google-generativeai==0.3.2
+tiktoken==0.5.2
+
+# Group 6: LangChain (pure Python)
+langchain==0.1.1
+langchain-openai==0.0.3
+langchain-community==0.0.10
+
+# Group 7: HTTP & Async
+httpx==0.26.0
+aiohttp==3.9.3
+requests==2.31.0
+
+# Group 8: Redis & Caching
+redis==5.0.1
+aioredis==2.0.1
+
+# Group 9: Utils
+python-dotenv==1.0.0
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Group 10: Optional - Image Processing
+# If fails, skip - not critical
+Pillow==10.2.0
+
+# Group 11: Optional - Production features
+gunicorn==21.2.0
+prometheus-client==0.19.0
