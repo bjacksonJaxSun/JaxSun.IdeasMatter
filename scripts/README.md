@@ -10,19 +10,29 @@ root/
 ├── start_dev.ps1      # Main development startup (PowerShell)
 ├── stop_dev.bat       # Main development shutdown (Windows)
 ├── stop_dev.ps1       # Main development shutdown (PowerShell)
-└── scripts/
-    ├── test/          # Test scripts and utilities
-    │   ├── run_tests.py   # Unified test runner
-    │   ├── test_auth.py   # Comprehensive auth testing
-    │   ├── html/          # HTML test files
-    │   └── python/        # Python test scripts
-    │
-    ├── setup/         # Setup and installation scripts
-    │   ├── quick_setup.py # One-command setup script
-    │   └── install_deps.bat # Dependency installation
-    │
-    └── utils/         # Utility scripts
-        └── check_services.bat # Service status checker
+├── scripts/           # Development and utility scripts
+│   ├── dev/          # Development scripts
+│   │   ├── start_dev.bat      # Main startup script
+│   │   ├── start_dev.ps1      # PowerShell startup
+│   │   ├── start_dev_fixed.bat # Version with WSL path fixes
+│   │   ├── stop_dev.bat       # Main shutdown script
+│   │   └── stop_dev.ps1       # PowerShell shutdown
+│   ├── setup/        # Setup and installation scripts
+│   │   ├── quick_setup.py     # One-command setup script
+│   │   └── install_deps.bat   # Dependency installation
+│   ├── test/         # Test scripts and utilities
+│   │   ├── run_tests.py       # Unified test runner
+│   │   ├── test_auth.py       # Comprehensive auth testing
+│   │   ├── html/              # HTML test files
+│   │   └── python/            # Python test scripts
+│   └── utils/        # Utility scripts
+│       ├── check_services.bat # Service status checker
+│       └── fix_explorer.bat   # Windows Explorer fix
+└── backend/scripts/   # Backend-specific scripts
+    ├── auth/         # Authentication server variants
+    ├── db/           # Database management scripts
+    ├── test/         # Backend test scripts
+    └── setup/        # Alternative server setups
 ```
 
 ## Quick Start

@@ -128,22 +128,27 @@ Key environment variables for backend:
 
 ## Scripts Organization
 
-Development scripts in `scripts/dev/` directory:
-- `scripts/dev/start_dev.bat` / `start_dev.ps1` - Main development startup scripts
+Development scripts organized in structured directories:
+
+**Main Scripts:**
+- `start_dev.bat` / `start_dev.ps1` - Root directory shortcuts
+- `scripts/dev/start_dev.bat` / `.ps1` - Main development startup scripts
 - `scripts/dev/start_dev_fixed.bat` - Version that fixes WSL/Windows path issues
-- `scripts/dev/stop_dev.bat` / `stop_dev.ps1` - Development shutdown scripts
+- `scripts/dev/stop_dev.bat` / `.ps1` - Development shutdown scripts
 
-Root directory shortcuts:
-- `start_dev.bat` / `start_dev.ps1` - Convenience shortcuts to scripts/dev versions
-- `stop_dev.bat` / `stop_dev.ps1` - Convenience shortcuts to scripts/dev versions
-
-Additional scripts organized in `scripts/` directory:
-- `scripts/test/` - Test runners and test utilities
+**Additional Scripts:**
 - `scripts/setup/` - Installation and setup scripts
+- `scripts/test/` - Test runners and utilities (HTML and Python tests)
 - `scripts/utils/` - Various utility scripts
 - `backend/scripts/auth/` - Authentication server variants
 - `backend/scripts/db/` - Database management scripts
 - `backend/scripts/test/` - Backend-specific test scripts
+- `backend/scripts/setup/` - Alternative server configurations
+
+**Documentation:**
+- `docs/` - Organized documentation (architecture, troubleshooting, setup, fixes)
+- `scripts/README.md` - Script usage instructions
+- `docs/README.md` - Documentation index
 
 ## Authentication Setup
 

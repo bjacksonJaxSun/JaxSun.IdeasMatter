@@ -81,7 +81,12 @@ def main():
     
     # Start the server
     try:
-        subprocess.run([python_cmd, "main.py"], check=True)
+        # Use production server if available
+        production_server = Path("scripts/auth/production_server.py")
+        if production_server.exists():
+            subprocess.run([python_cmd, str(production_server)], check=True)
+        else:
+            subprocess.run([python_cmd, "main.py"], check=True)
     except KeyboardInterrupt:
         print("\n\n👋 Server stopped. Goodbye!")
     except subprocess.CalledProcessError as e:

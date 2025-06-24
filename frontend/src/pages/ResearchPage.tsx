@@ -13,6 +13,7 @@ import {
 import toast from 'react-hot-toast'
 import ResearchReports from '../components/ResearchReports'
 import SwotAnalysis from '../components/SwotAnalysis'
+import MarketAnalysis from '../components/MarketAnalysis'
 
 interface Message {
   id: number
@@ -84,6 +85,7 @@ const ResearchPage: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [selectedSwotOption, setSelectedSwotOption] = useState<{ id: number; title: string } | null>(null)
   const [showSwotModal, setShowSwotModal] = useState(false)
+  const [showMarketAnalysis, setShowMarketAnalysis] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -388,6 +390,17 @@ const ResearchPage: React.FC = () => {
                   Options ({session.options.length})
                 </button>
                 <button
+                  onClick={() => setActiveTab('market')}
+                  className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 ${
+                    activeTab === 'market' 
+                      ? 'border-primary-500 text-primary-600' 
+                      : 'border-transparent text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <ChartBarIcon className="w-4 h-4 mr-2" />
+                  Market Analysis
+                </button>
+                <button
                   onClick={() => setActiveTab('reports')}
                   className={`flex items-center px-4 py-3 text-sm font-medium border-b-2 ${
                     activeTab === 'reports' 
@@ -587,6 +600,15 @@ const ResearchPage: React.FC = () => {
                   </div>
                 )}
 
+                {activeTab === 'market' && (
+                  <div className="p-4 h-full overflow-y-auto">
+                    <MarketAnalysis 
+                      sessionId={parseInt(sessionId || '1')}
+                      ideaTitle={session.title}
+                    />
+                  </div>
+                )}
+
                 {activeTab === 'reports' && (
                   <div className="p-4 h-full overflow-y-auto">
                     <ResearchReports sessionId={sessionId || '1'} />
@@ -652,9 +674,12 @@ const ResearchPage: React.FC = () => {
                   )}
                   <a ref={downloadLinkRef} style={{ display: 'none' }}>Download</a>
                 </div>
-                <button className="w-full btn-secondary text-left flex items-center">
+                <button 
+                  onClick={() => setActiveTab('market')}
+                  className="w-full btn-secondary text-left flex items-center"
+                >
                   <ChartBarIcon className="w-4 h-4 mr-2" />
-                  View Analytics
+                  Market Analysis
                 </button>
                 <button className="w-full btn-secondary text-left flex items-center">
                   <CheckBadgeIcon className="w-4 h-4 mr-2" />

@@ -5,6 +5,7 @@ import LandingPage from './pages/LandingPage'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
 import ResearchPage from './pages/ResearchPage'
+import GoogleOAuthTest from './pages/GoogleOAuthTest'
 import { AuthProvider } from './contexts/AuthContext'
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
@@ -53,19 +54,14 @@ const router = createBrowserRouter([
       {
         path: "admin/*",
         element: <AdminDashboard />
+      },
+      {
+        path: "test-google-oauth",
+        element: <GoogleOAuthTest />
       }
     ]
   }
-], {
-  future: {
-    v7_startTransition: true,
-    v7_relativeSplatPath: true,
-    v7_fetcherPersist: true,
-    v7_normalizeFormMethod: true,
-    v7_partialHydration: true,
-    v7_skipActionErrorRevalidation: true
-  }
-})
+])
 
 function App() {
   console.log('Google Client ID:', googleClientId ? 'Set' : 'Not set')

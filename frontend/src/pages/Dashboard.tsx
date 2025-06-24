@@ -54,29 +54,42 @@ const Dashboard = () => {
 
   const fetchIdeas = async () => {
     try {
+      console.log('🔄 Fetching ideas...');
       setIsLoading(true)
       const sessions = await ideasService.listResearchSessions()
       
-      // Map research sessions to idea format
-      const mappedIdeas = sessions.map((session: any) => ({
-        id: session.id,
-        title: session.title,
-        description: session.description,
-        status: session.status,
-        createdAt: new Date(session.created_at).toLocaleDateString(),
-        progress: {
-          research: session.status === 'completed' || session.status === 'planning' || session.status === 'developing',
-          businessPlan: session.status === 'planning' || session.status === 'developing' || session.status === 'completed',
-          architecture: session.status === 'developing' || session.status === 'completed',
-          code: session.status === 'completed',
-          deployment: false
-        }
-      }))
+      console.log('✅ Research sessions received:', sessions);
       
-      setIdeas(mappedIdeas)
-    } catch (error) {
-      console.error('Error fetching ideas:', error)
-      toast.error('Failed to load ideas')
+      if (sessions && sessions.length > 0) {
+        // Map research sessions to idea format
+        const mappedIdeas = sessions.map((session: any) => ({
+          id: session.id,
+          title: session.title,
+          description: session.description,
+          status: session.status,
+          createdAt: new Date(session.created_at).toLocaleDateString(),
+          progress: {
+            research: session.status === 'completed' || session.status === 'planning' || session.status === 'developing',
+            businessPlan: session.status === 'planning' || session.status === 'developing' || session.status === 'completed',
+            architecture: session.status === 'developing' || session.status === 'completed',
+            code: session.status === 'completed',
+            deployment: false
+          }
+        }))
+        
+        console.log('📊 Mapped ideas:', mappedIdeas);
+        setIdeas(mappedIdeas)
+      } else {
+        console.log('📝 No research sessions found, using mock data');
+        setIdeas(mockIdeas)
+      }
+    } catch (error: any) {
+      console.error('🚨 Error fetching ideas:', error)
+      console.error('🚨 Error details:', error.response?.data || error.message)
+      toast.error('Failed to load ideas, showing demo data')
+      // Use mock data as fallback
+      console.log('🔄 Using mock data as fallback');
+      setIdeas(mockIdeas)
     } finally {
       setIsLoading(false)
     }

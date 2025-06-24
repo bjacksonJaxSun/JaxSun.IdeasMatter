@@ -6,7 +6,7 @@
     "debug": true,
     "host": "0.0.0.0",
     "port": 8000,
-    "cors_origins": ["http://localhost:3000"],
+    "cors_origins": ["http://localhost:3000", "http://localhost:4000"],
     "api_prefix": "/api/v1"
   },
   "database": {

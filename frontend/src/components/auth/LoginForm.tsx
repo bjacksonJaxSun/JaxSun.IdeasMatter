@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { GoogleLogin } from '@react-oauth/google'
 import toast from 'react-hot-toast'
+import GoogleLoginBypass from './GoogleLoginBypass'
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -93,6 +94,11 @@ const LoginForm: React.FC = () => {
           locale="en"
         />
       </div>
+      
+      {/* Development bypass login */}
+      {import.meta.env.DEV && (
+        <GoogleLoginBypass />
+      )}
     </div>
   )
 }

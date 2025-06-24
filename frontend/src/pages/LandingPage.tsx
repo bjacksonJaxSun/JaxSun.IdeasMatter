@@ -70,6 +70,14 @@ const LandingPage = () => {
               <h1 className="text-2xl font-bold text-primary-600">Ideas Matter</h1>
             </div>
             <div className="flex items-center space-x-4">
+              {import.meta.env.DEV && (
+                <a
+                  href="/test-google-oauth"
+                  className="text-sm text-gray-500 hover:text-gray-700 font-medium transition-colors"
+                >
+                  Test OAuth
+                </a>
+              )}
               <button
                 onClick={() => {
                   setAuthMode('login')

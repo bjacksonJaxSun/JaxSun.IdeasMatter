@@ -31,7 +31,7 @@ export const ideasService = {
   async submitIdea(data: IdeaSubmissionData): Promise<IdeaSubmissionResponse> {
     try {
       const response = await axios.post<IdeaSubmissionResponse>(
-        '/api/v1/research/ideas/submit',
+        '/research/ideas/submit',
         data
       )
       return response.data
@@ -46,7 +46,7 @@ export const ideasService = {
    */
   async getResearchSession(sessionId: number) {
     try {
-      const response = await axios.get(`/api/v1/research/sessions/${sessionId}`)
+      const response = await axios.get(`/research/sessions/${sessionId}`)
       return response.data
     } catch (error: any) {
       console.error('Error fetching research session:', error)
@@ -59,7 +59,7 @@ export const ideasService = {
    */
   async listResearchSessions() {
     try {
-      const response = await axios.get('/api/v1/research/sessions')
+      const response = await axios.get('/research/sessions')
       return response.data
     } catch (error: any) {
       console.error('Error listing research sessions:', error)
@@ -72,7 +72,7 @@ export const ideasService = {
    */
   async deleteIdea(sessionId: number) {
     try {
-      await axios.delete(`/api/v1/research/sessions/${sessionId}`)
+      await axios.delete(`/research/sessions/${sessionId}`)
     } catch (error: any) {
       console.error('Error deleting idea:', error)
       throw new Error(error.response?.data?.detail || 'Failed to delete idea')
