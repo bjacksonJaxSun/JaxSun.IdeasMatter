@@ -1,0 +1,58 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mock Login Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <h1>Mock Login Test</h1>
+    <button id="testBypass">Test Bypass Login</button>
+    <button id="testMock">Test Mock Auth</button>
+    <div id="results"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000';
+        const results = document.getElementById('results');
+        
+        // Test bypass login
+        document.getElementById('testBypass').onclick = async () => {
+            try {
+                const response = await axios.post(API_URL + '/api/v1/auth/bypass', {
+                    role: 'user'
+                });
+                results.innerHTML = '<h3>Bypass Login Success!</h3><pre>' + JSON.stringify(response.data, null, 2) + '</pre>';
+            } catch (error) {
+                console.error('Bypass login failed:', error);
+                // Try mock auth
+                testMockAuth();
+            }
+        };
+        
+        // Test mock authentication
+        function testMockAuth() {
+            const mockUser = {
+                id: 2,
+                email: 'user@example.com',
+                name: 'Test User',
+                role: 'user',
+                permissions: ['read', 'write']
+            };
+            
+            const mockToken = 'mock_user_token_' + Date.now();
+            
+            localStorage.setItem('access_token', mockToken);
+            localStorage.setItem('mock_auth', 'true');
+            
+            results.innerHTML = '<h3>Mock Auth Success!</h3><pre>' + JSON.stringify(mockUser, null, 2) + '</pre>';
+            
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 2000);
+        }
+        
+        document.getElementById('testMock').onclick = testMockAuth;
+    </script>
+</body>
+</html>
+        

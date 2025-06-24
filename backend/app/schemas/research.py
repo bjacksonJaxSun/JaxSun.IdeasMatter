@@ -28,7 +28,7 @@ class ResearchSession(ResearchSessionBase):
 
 # Conversation schemas
 class ConversationMessage(BaseModel):
-    message_type: str = Field(..., regex="^(user|assistant|system)$")
+    message_type: str = Field(..., pattern="^(user|assistant|system)$")
     content: str = Field(..., min_length=1)
     metadata: Optional[Dict[str, Any]] = None
 
@@ -42,7 +42,7 @@ class ResearchConversation(ConversationMessage):
 
 # Insight schemas
 class ResearchInsightBase(BaseModel):
-    category: str = Field(..., regex="^(target_market|customer_profile|problem_solution|growth_targets|cost_model|revenue_model)$")
+    category: str = Field(..., pattern="^(target_market|customer_profile|problem_solution|growth_targets|cost_model|revenue_model)$")
     subcategory: Optional[str] = None
     title: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
@@ -127,7 +127,7 @@ class ResearchOption(ResearchOptionBase):
 
 # Report schemas
 class ResearchReportBase(BaseModel):
-    report_type: str = Field(..., regex="^(summary|detailed|competitive_analysis|financial_projection)$")
+    report_type: str = Field(..., pattern="^(summary|detailed|competitive_analysis|financial_projection)$")
     title: str = Field(..., min_length=1, max_length=255)
     content: Optional[str] = None
     data: Optional[Dict[str, Any]] = None
@@ -192,7 +192,7 @@ class BrainstormResponse(BaseModel):
 
 class AnalysisRequest(BaseModel):
     session_id: int
-    analysis_type: str = Field(..., regex="^(market_analysis|competitive_analysis|financial_modeling|risk_assessment)$")
+    analysis_type: str = Field(..., pattern="^(market_analysis|competitive_analysis|financial_modeling|risk_assessment)$")
     parameters: Optional[Dict[str, Any]] = None
 
 class ReportRequest(BaseModel):
