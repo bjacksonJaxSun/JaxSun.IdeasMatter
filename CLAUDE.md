@@ -40,14 +40,8 @@ npm run dev
 ```
 
 ### Development Scripts
-Main scripts in `scripts/dev/` directory:
-- `scripts/dev/start_dev.bat` / `start_dev.ps1` - Start both frontend and backend
-- `scripts/dev/start_dev_fixed.bat` - Fixed version addressing WSL/Windows path issues
-- `scripts/dev/stop_dev.bat` / `stop_dev.ps1` - Stop all development services safely
-
-Root shortcuts for convenience:
-- `start_dev.bat` / `start_dev.ps1` - Shortcuts to scripts/dev versions
-- `stop_dev.bat` / `stop_dev.ps1` - Shortcuts to scripts/dev versions
+- `start_dev.bat` / `start_dev.ps1` - Intelligent scripts that stop existing services, start fresh, and open browser
+- These scripts handle all setup automatically including dependency installation
 
 Additional scripts:
 - `scripts/test/run_tests.py` - Unified test runner
@@ -131,10 +125,7 @@ Key environment variables for backend:
 Development scripts organized in structured directories:
 
 **Main Scripts:**
-- `start_dev.bat` / `start_dev.ps1` - Root directory shortcuts
-- `scripts/dev/start_dev.bat` / `.ps1` - Main development startup scripts
-- `scripts/dev/start_dev_fixed.bat` - Version that fixes WSL/Windows path issues
-- `scripts/dev/stop_dev.bat` / `.ps1` - Development shutdown scripts
+- `start_dev.bat` / `start_dev.ps1` - Single intelligent scripts that handle everything: stop existing services, install dependencies, start servers, open browser
 
 **Additional Scripts:**
 - `scripts/setup/` - Installation and setup scripts

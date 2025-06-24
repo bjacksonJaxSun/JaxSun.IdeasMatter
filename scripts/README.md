@@ -6,17 +6,9 @@ This directory contains all development, test, and utility scripts for the Ideas
 
 ```
 root/
-├── start_dev.bat      # Main development startup (Windows)
-├── start_dev.ps1      # Main development startup (PowerShell)
-├── stop_dev.bat       # Main development shutdown (Windows)
-├── stop_dev.ps1       # Main development shutdown (PowerShell)
+├── start_dev.bat      # Single intelligent startup script (Windows)
+├── start_dev.ps1      # Single intelligent startup script (PowerShell)
 ├── scripts/           # Development and utility scripts
-│   ├── dev/          # Development scripts
-│   │   ├── start_dev.bat      # Main startup script
-│   │   ├── start_dev.ps1      # PowerShell startup
-│   │   ├── start_dev_fixed.bat # Version with WSL path fixes
-│   │   ├── stop_dev.bat       # Main shutdown script
-│   │   └── stop_dev.ps1       # PowerShell shutdown
 │   ├── setup/        # Setup and installation scripts
 │   │   ├── quick_setup.py     # One-command setup script
 │   │   └── install_deps.bat   # Dependency installation
@@ -55,14 +47,13 @@ start_dev.bat
 start_dev.ps1
 ```
 
-### Stop Development
-```bash
-# Windows Command Prompt
-stop_dev.bat
+These scripts automatically:
+- Stop any existing services
+- Install/update dependencies as needed
+- Start backend and frontend servers
+- Open browser to the application
 
-# PowerShell
-stop_dev.ps1
-```
+To stop services, just run the same script again or close the server windows.
 
 ### Run Tests
 ```bash
