@@ -50,102 +50,18 @@ const ResearchStrategySelector: React.FC<ResearchStrategySelectorProps> = ({
 
   const fetchApproaches = async () => {
     try {
-      // Demo mode - use mock data for now
-      const mockApproaches: ResearchApproach[] = [
-        {
-          approach: 'quick_validation',
-          title: 'Quick Validation',
-          description: 'Rapid validation of core business assumptions',
-          duration_minutes: 15,
-          complexity: 'beginner',
-          best_for: [
-            'Early-stage ideas needing validation',
-            'Quick go/no-go decisions',
-            'Limited time or resources'
-          ],
-          includes: [
-            'Market opportunity assessment',
-            'Basic competitive analysis',
-            'Strategic recommendation',
-            'Go/no-go decision framework'
-          ],
-          deliverables: [
-            'Market context overview',
-            'Competitive landscape summary',
-            '2 strategic options',
-            'Recommendation with reasoning'
-          ]
-        },
-        {
-          approach: 'market_deep_dive',
-          title: 'Market Deep-Dive',
-          description: 'Comprehensive market analysis with strategic recommendations',
-          duration_minutes: 45,
-          complexity: 'intermediate',
-          best_for: [
-            'Well-defined business ideas',
-            'Strategic planning and positioning',
-            'Investor presentations'
-          ],
-          includes: [
-            'Detailed market analysis',
-            'Comprehensive competitive intelligence',
-            'Customer segment analysis',
-            'SWOT analysis',
-            'Strategic options evaluation'
-          ],
-          deliverables: [
-            'Market sizing and growth analysis',
-            'Competitive positioning map',
-            'Customer segment priorities',
-            '3 strategic options with SWOT',
-            'Implementation recommendations'
-          ]
-        },
-        {
-          approach: 'launch_strategy',
-          title: 'Launch Strategy',
-          description: 'Complete launch strategy with implementation roadmap',
-          duration_minutes: 90,
-          complexity: 'advanced',
-          best_for: [
-            'Pre-launch businesses',
-            'Detailed business planning',
-            'Funding and investment decisions'
-          ],
-          includes: [
-            'Everything in Market Deep-Dive plus:',
-            'Go-to-market strategy',
-            'Revenue model analysis',
-            'Risk assessment & mitigation',
-            'Resource planning',
-            'Success metrics definition'
-          ],
-          deliverables: [
-            'Complete market research report',
-            '5 strategic options with detailed analysis',
-            'Go-to-market roadmap',
-            'Financial projections',
-            'Risk mitigation strategies',
-            'Implementation timeline'
-          ]
-        }
-      ];
+      const response = await fetch('/api/v1/research-strategy/approaches');
       
-      setApproaches(mockApproaches);
-      
-      // Try real API, fall back to mock data
-      try {
-        const response = await fetch('/api/v1/research-strategy/approaches');
-        if (response.ok) {
-          const data = await response.json();
-          setApproaches(data);
-        }
-      } catch (error) {
-        console.log('Using demo data for research approaches');
+      if (!response.ok) {
+        throw new Error(`Failed to fetch research approaches: ${response.status}`);
       }
+      
+      const data = await response.json();
+      setApproaches(data);
     } catch (error) {
-      console.error('Failed to load approaches:', error);
+      console.error('Failed to fetch research approaches:', error);
+      // Show error to user instead of silently falling back
+      throw error;
     } finally {
       setLoadingApproaches(false);
     }
@@ -192,48 +108,31 @@ const ResearchStrategySelector: React.FC<ResearchStrategySelectorProps> = ({
 
     setIsInitiating(true);
     try {
-      // Demo mode - simulate strategy initiation
-      console.log('Demo mode: Initiating research strategy', selectedApproach);
-      
-      // Simulate a delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create a mock strategy ID
-      const mockStrategyId = Math.floor(Math.random() * 10000) + 1000;
-      
-      // Show demo notification
-      alert(`Demo Mode: ${selectedApproach.title} strategy selected!\n\nIn the full version, this would start the AI-powered analysis process.`);
-      
-      // Call the callback with mock data
-      onStrategySelected(selectedApproach, mockStrategyId);
-      
-      // Try real API if available
-      try {
-        const response = await fetch('/api/v1/research-strategy/initiate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            session_id: sessionId,
-            approach: selectedApproach.approach,
-            custom_parameters: {
-              idea_title: ideaTitle,
-              idea_description: ideaDescription
-            }
-          }),
-        });
+      const response = await fetch('/api/v1/research-strategy/initiate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          approach: selectedApproach.approach,
+          custom_parameters: {
+            idea_title: ideaTitle,
+            idea_description: ideaDescription
+          }
+        }),
+      });
 
-        if (response.ok) {
-          const result = await response.json();
-          onStrategySelected(selectedApproach, result.strategy.id);
-        }
-      } catch (error) {
-        console.log('Using demo mode for strategy initiation');
+      if (!response.ok) {
+        throw new Error(`Failed to initiate research strategy: ${response.status}`);
       }
+
+      const result = await response.json();
+      onStrategySelected(selectedApproach, result.strategy.id);
     } catch (error) {
       console.error('Failed to initiate research:', error);
-      alert('Demo error: Could not initiate research strategy');
+      // Handle error appropriately - could show toast notification
+      alert(`Error: ${error instanceof Error ? error.message : 'Could not initiate research strategy'}`);
     } finally {
       setIsInitiating(false);
     }

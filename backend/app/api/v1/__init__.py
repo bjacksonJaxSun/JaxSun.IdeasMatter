@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1.endpoints import auth, admin
-from app.api.v1 import research, market_analysis
+from app.api.v1 import research, market_analysis, research_strategy
 
 api_router = APIRouter()
 
@@ -10,3 +10,4 @@ api_router.include_router(auth.router, prefix="/auth", tags=["authentication"])
 api_router.include_router(admin.router, prefix="/admin", tags=["administration"])
 api_router.include_router(research.router, prefix="/research", tags=["research"])
 api_router.include_router(market_analysis.router, prefix="/market-analysis", tags=["market-analysis"])
+api_router.include_router(research_strategy.router, tags=["research-strategy"])

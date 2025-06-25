@@ -4,7 +4,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google'
 import LandingPage from './pages/LandingPage'
 import Dashboard from './pages/Dashboard'
 import AdminDashboard from './pages/AdminDashboard'
-import ResearchPage from './pages/ResearchPage'
+import NewResearchPage from './pages/NewResearchPage'
 import GoogleOAuthTest from './pages/GoogleOAuthTest'
 import { AuthProvider } from './contexts/AuthContext'
 
@@ -45,7 +45,7 @@ const router = createBrowserRouter([
       },
       {
         path: "research/:sessionId",
-        element: <ResearchPage />
+        element: <NewResearchPage />
       },
       {
         path: "admin",
