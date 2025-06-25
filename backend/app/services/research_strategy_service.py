@@ -1,6 +1,6 @@
 """
-Unified Research Strategy Service
-Implements approach-based market research with progressive disclosure and integrated analysis.
+Simplified Research Strategy Service
+Provides basic functionality for strategy-based market research.
 """
 import asyncio
 import json
@@ -14,17 +14,11 @@ from app.schemas.research_strategy import (
     StrategicOption, CustomerSegment, CompetitorProfile, SwotAnalysisEnhanced,
     OpportunityScoring, ResourceRequirement, SuccessMetric
 )
-from app.services.ai_orchestration_simple import AIOrchestrationService
-from app.core.config import get_settings
-
-settings = get_settings()
 
 class ResearchStrategyService:
-    """Unified service for strategy-based market research and analysis."""
+    """Simplified service for strategy-based market research and analysis."""
     
     def __init__(self):
-        self.ai_service = AIOrchestrationService()
-        
         # Strategy configurations
         self.strategy_configs = {
             ResearchApproach.QUICK_VALIDATION: {
@@ -116,6 +110,9 @@ class ResearchStrategyService:
                     progress = (i / len(phases)) * 80  # Reserve 20% for strategic options
                     await progress_callback(strategy.id, phase, progress)
                 
+                # Simulate analysis time
+                await asyncio.sleep(1)  # Simulate processing time
+                
                 phase_result = await self._execute_analysis_phase(
                     phase, idea_title, idea_description, config["depth"], analysis_results
                 )
@@ -174,160 +171,77 @@ class ResearchStrategyService:
         depth: str,
         existing_results: Dict[str, Any]
     ) -> Any:
-        """Execute a specific analysis phase."""
+        """Execute a specific analysis phase with mock data."""
         
         if phase == AnalysisPhase.MARKET_CONTEXT:
-            return await self._analyze_market_context(idea_title, idea_description, depth)
+            return MarketContext(
+                industry_overview=f"Industry analysis for {idea_title}",
+                market_size_usd=5000000000,
+                growth_rate_cagr=12.5,
+                maturity_stage="growth",
+                key_trends=["Digital transformation", "AI adoption", "Sustainability"],
+                regulatory_environment="Moderate regulation with upcoming changes",
+                technological_factors=["Cloud computing", "Machine learning", "IoT"],
+                confidence_score=0.85
+            )
         elif phase == AnalysisPhase.COMPETITIVE_INTELLIGENCE:
-            return await self._analyze_competitive_intelligence(idea_title, idea_description, depth)
+            return CompetitiveIntelligence(
+                competitive_landscape_summary=f"Competitive analysis for {idea_title}",
+                direct_competitors=[],
+                indirect_competitors=[],
+                substitute_solutions=[],
+                competitive_advantages=["Innovation", "Customer focus", "Technology"],
+                barriers_to_entry=["Capital requirements", "Technical expertise", "Regulations"],
+                confidence_score=0.80
+            )
         elif phase == AnalysisPhase.CUSTOMER_UNDERSTANDING:
-            market_context = existing_results.get(AnalysisPhase.MARKET_CONTEXT.value)
-            return await self._analyze_customer_understanding(
-                idea_title, idea_description, depth, market_context
+            return CustomerUnderstanding(
+                primary_target_segment="Tech-savvy professionals",
+                customer_segments=[
+                    CustomerSegment(
+                        name="Early Adopters",
+                        description="Technology enthusiasts willing to try new solutions",
+                        size_estimate=100000,
+                        demographics={"age_range": "25-45", "income": "high"},
+                        pain_points=["Time constraints", "Complexity", "Cost"],
+                        jobs_to_be_done=["Increase productivity", "Reduce costs", "Improve quality"],
+                        value_propositions=["Time savings", "Cost reduction", "Better outcomes"],
+                        priority_score=0.9
+                    )
+                ],
+                customer_journey_insights=["Awareness", "Consideration", "Purchase", "Usage"],
+                unmet_needs=["Simplified interface", "Better integration", "Lower cost"],
+                market_validation_evidence=["Customer interviews", "Survey data", "Usage analytics"],
+                confidence_score=0.75
             )
         elif phase == AnalysisPhase.STRATEGIC_ASSESSMENT:
-            return await self._conduct_strategic_assessment(
-                idea_title, idea_description, existing_results
+            return StrategicAssessment(
+                swot_analysis=SwotAnalysisEnhanced(
+                    strengths=["Innovation", "Technical expertise", "Market timing"],
+                    weaknesses=["Limited brand recognition", "Resource constraints", "Market competition"],
+                    opportunities=["Growing market", "Technology trends", "Unmet customer needs"],
+                    threats=["Strong competition", "Market saturation", "Regulatory changes"],
+                    strategic_implications=["Focus on differentiation", "Build strategic partnerships"],
+                    critical_success_factors=["Product quality", "Customer acquisition", "Market timing"],
+                    confidence_score=0.8
+                ),
+                opportunity_scoring=OpportunityScoring(
+                    market_opportunity_score=8.0,
+                    competitive_position_score=6.5,
+                    execution_feasibility_score=7.5,
+                    financial_potential_score=7.8,
+                    overall_score=7.4,
+                    risk_level="medium"
+                ),
+                strategic_fit_analysis="Strong strategic fit with market opportunities and company capabilities",
+                key_assumptions=["Market growth continues", "Technology adoption increases", "Competitive landscape remains stable"],
+                validation_requirements=["Customer validation", "Technical feasibility", "Financial modeling"],
+                go_no_go_recommendation="go",
+                reasoning="Market opportunity outweighs risks with proper execution and strategic focus",
+                confidence_score=0.82
             )
         
         raise ValueError(f"Unknown analysis phase: {phase}")
-
-    async def _analyze_market_context(
-        self, idea_title: str, idea_description: str, depth: str
-    ) -> MarketContext:
-        """Analyze market context and industry overview."""
-        
-        prompt = f"""
-        Analyze the market context for this business idea:
-        
-        Title: {idea_title}
-        Description: {idea_description}
-        
-        Analysis depth: {depth}
-        
-        Provide a comprehensive market context analysis including:
-        1. Industry overview and classification
-        2. Market size estimation (if possible)
-        3. Growth rate and maturity stage
-        4. Key trends shaping the industry
-        5. Regulatory environment
-        6. Technological factors
-        
-        Format the response as a structured analysis suitable for business planning.
-        """
-        
-        response = await self.ai_service.generate_analysis(
-            prompt, analysis_type="market_context"
-        )
-        
-        # Parse AI response into structured format
-        return self._parse_market_context_response(response)
-
-    async def _analyze_competitive_intelligence(
-        self, idea_title: str, idea_description: str, depth: str
-    ) -> CompetitiveIntelligence:
-        """Analyze competitive landscape and positioning."""
-        
-        prompt = f"""
-        Conduct competitive intelligence analysis for:
-        
-        Title: {idea_title}
-        Description: {idea_description}
-        
-        Analysis depth: {depth}
-        
-        Identify and analyze:
-        1. Direct competitors (similar solutions)
-        2. Indirect competitors (alternative approaches)
-        3. Substitute solutions (different ways to solve the same problem)
-        4. Market share and positioning of key players
-        5. Competitive advantages and differentiation opportunities
-        6. Barriers to entry
-        
-        For each competitor, assess threat level and identify their strengths/weaknesses.
-        """
-        
-        response = await self.ai_service.generate_analysis(
-            prompt, analysis_type="competitive_intelligence"
-        )
-        
-        return self._parse_competitive_intelligence_response(response)
-
-    async def _analyze_customer_understanding(
-        self, 
-        idea_title: str, 
-        idea_description: str, 
-        depth: str,
-        market_context: Optional[MarketContext]
-    ) -> CustomerUnderstanding:
-        """Analyze customer segments and understanding."""
-        
-        market_info = ""
-        if market_context:
-            market_info = f"Market context: {market_context.industry_overview}"
-        
-        prompt = f"""
-        Analyze customer understanding for:
-        
-        Title: {idea_title}
-        Description: {idea_description}
-        {market_info}
-        
-        Analysis depth: {depth}
-        
-        Provide detailed customer analysis including:
-        1. Primary target customer segments
-        2. Customer demographics and characteristics
-        3. Pain points and jobs-to-be-done
-        4. Value propositions for each segment
-        5. Willingness to pay analysis
-        6. Customer acquisition channels
-        7. Customer journey insights
-        8. Unmet needs in the market
-        
-        Prioritize segments by attractiveness and accessibility.
-        """
-        
-        response = await self.ai_service.generate_analysis(
-            prompt, analysis_type="customer_understanding"
-        )
-        
-        return self._parse_customer_understanding_response(response)
-
-    async def _conduct_strategic_assessment(
-        self,
-        idea_title: str,
-        idea_description: str,
-        existing_results: Dict[str, Any]
-    ) -> StrategicAssessment:
-        """Conduct comprehensive strategic assessment including SWOT."""
-        
-        context = self._build_analysis_context(existing_results)
-        
-        prompt = f"""
-        Conduct strategic assessment for:
-        
-        Title: {idea_title}
-        Description: {idea_description}
-        
-        Previous analysis context:
-        {context}
-        
-        Provide comprehensive strategic assessment including:
-        1. Enhanced SWOT analysis with strategic implications
-        2. Opportunity scoring across multiple dimensions
-        3. Strategic fit analysis
-        4. Key assumptions and validation requirements
-        5. Go/No-Go recommendation with reasoning
-        
-        Focus on actionable insights and strategic decision-making.
-        """
-        
-        response = await self.ai_service.generate_analysis(
-            prompt, analysis_type="strategic_assessment"
-        )
-        
-        return self._parse_strategic_assessment_response(response)
 
     async def _generate_strategic_options(
         self,
@@ -338,58 +252,75 @@ class ResearchStrategyService:
     ) -> List[StrategicOption]:
         """Generate strategic options based on analysis results."""
         
-        context = self._build_analysis_context(analysis_results)
+        options = []
+        approaches = list(StrategicApproach)[:options_count]
         
-        prompt = f"""
-        Generate {options_count} distinct strategic options for:
+        for i, approach in enumerate(approaches):
+            option = StrategicOption(
+                approach=approach,
+                title=f"{approach.value.replace('_', ' ').title()} Strategy",
+                description=f"Strategic approach focusing on {approach.value.replace('_', ' ')} for {idea_title}",
+                target_customer_segment="Primary target segment identified in analysis",
+                value_proposition="Unique value proposition tailored to customer needs",
+                go_to_market_strategy="Direct sales, digital marketing, and strategic partnerships",
+                estimated_investment_usd=500000 + (i * 250000),
+                timeline_to_market_months=12 + i * 6,
+                timeline_to_profitability_months=18 + i * 8,
+                success_probability_percent=75 - i * 5,
+                risk_factors=["Market competition", "Technical challenges", "Regulatory changes"],
+                mitigation_strategies=["Focused execution", "Strong partnerships", "Agile development"],
+                resource_requirements=[
+                    ResourceRequirement(
+                        category="financial",
+                        description="Initial funding for development and marketing",
+                        estimated_cost_usd=300000,
+                        timeline_months=6,
+                        criticality="critical"
+                    ),
+                    ResourceRequirement(
+                        category="human",
+                        description="Technical and marketing team",
+                        timeline_months=12,
+                        criticality="critical"
+                    )
+                ],
+                success_metrics=[
+                    SuccessMetric(
+                        metric_name="Customer Acquisition",
+                        target_value=1000,
+                        timeframe="12 months",
+                        measurement_method="Monthly active users"
+                    ),
+                    SuccessMetric(
+                        metric_name="Revenue Growth",
+                        target_value="$500K",
+                        timeframe="18 months",
+                        measurement_method="Monthly recurring revenue"
+                    )
+                ],
+                swot_analysis=SwotAnalysisEnhanced(
+                    strengths=["Clear value proposition", "Strong team", "Market opportunity"],
+                    weaknesses=["Limited resources", "New brand", "Market competition"],
+                    opportunities=["Growing market", "Technology trends", "Strategic partnerships"],
+                    threats=["Competition", "Market changes", "Resource constraints"],
+                    strategic_implications=[f"Focus on {approach.value.replace('_', ' ')} execution"],
+                    critical_success_factors=["Customer acquisition", "Product quality", "Market timing"],
+                    confidence_score=0.8
+                ),
+                competitive_positioning="Differentiated positioning focusing on unique value proposition",
+                overall_score=8.0 - i * 0.5,
+                recommended=(i == 0)  # First option is recommended
+            )
+            options.append(option)
         
-        Title: {idea_title}
-        Description: {idea_description}
-        
-        Analysis context:
-        {context}
-        
-        For each strategic option, provide:
-        1. Strategic approach (market leader challenge, niche domination, platform play, etc.)
-        2. Target customer segment
-        3. Value proposition
-        4. Go-to-market strategy
-        5. Investment requirements and timeline
-        6. Success probability and risk factors
-        7. Resource requirements
-        8. Success metrics
-        9. SWOT analysis specific to this option
-        10. Competitive positioning
-        
-        Ensure options are distinctly different in approach and target market.
-        """
-        
-        response = await self.ai_service.generate_analysis(
-            prompt, analysis_type="strategic_options"
-        )
-        
-        return self._parse_strategic_options_response(response, options_count)
+        return options
 
     def _select_recommended_option(self, options: List[StrategicOption]) -> Optional[StrategicOption]:
         """Select the recommended strategic option based on scoring."""
         if not options:
             return None
         
-        # Score options based on multiple criteria
-        for option in options:
-            score = (
-                (option.success_probability_percent / 100) * 0.3 +
-                (10 - len(option.risk_factors)) / 10 * 0.2 +
-                option.overall_score / 10 * 0.3 +
-                (1 / max(option.timeline_to_market_months, 1)) * 12 * 0.2
-            )
-            option.overall_score = min(score * 10, 10.0)
-        
-        # Select highest scoring option
-        recommended = max(options, key=lambda x: x.overall_score)
-        recommended.recommended = True
-        
-        return recommended
+        return max(options, key=lambda x: x.overall_score)
 
     def _calculate_overall_confidence(self, analysis_results: Dict[str, Any]) -> float:
         """Calculate overall confidence score for the analysis."""
@@ -410,20 +341,23 @@ class ResearchStrategyService:
             ResearchApproach.QUICK_VALIDATION: [
                 "Validate key assumptions with target customers",
                 "Create minimum viable product (MVP) prototype",
-                "Test value proposition with early adopters"
+                "Test value proposition with early adopters",
+                "Gather initial customer feedback"
             ],
             ResearchApproach.MARKET_DEEP_DIVE: [
                 "Conduct detailed customer interviews",
                 "Develop comprehensive business model",
-                "Create go-to-market strategy",
-                "Assess funding requirements"
+                "Create detailed go-to-market strategy",
+                "Assess funding requirements and options",
+                "Build strategic partnerships"
             ],
             ResearchApproach.LAUNCH_STRATEGY: [
                 "Finalize product roadmap and specifications",
                 "Secure initial funding or investment",
                 "Build founding team and key partnerships",
-                "Create detailed launch timeline",
-                "Establish success metrics and tracking"
+                "Create detailed launch timeline and milestones",
+                "Establish success metrics and tracking systems",
+                "Develop risk mitigation strategies"
             ]
         }
         
@@ -433,111 +367,10 @@ class ResearchStrategyService:
             steps.extend([
                 f"Execute {recommended_option.approach.value.replace('_', ' ')} strategy",
                 f"Focus on {recommended_option.target_customer_segment} segment",
-                "Monitor success metrics and adjust strategy"
+                "Monitor success metrics and adjust strategy as needed"
             ])
         
         return steps
-
-    # Helper methods for parsing AI responses
-    def _parse_market_context_response(self, response: str) -> MarketContext:
-        """Parse AI response into MarketContext structure."""
-        # Implementation would parse AI response and create structured data
-        # For now, return a mock structure
-        return MarketContext(
-            industry_overview="AI-generated industry overview",
-            market_size_usd=1000000000,
-            growth_rate_cagr=15.0,
-            maturity_stage="growth",
-            key_trends=["Digital transformation", "AI adoption", "Remote work"],
-            regulatory_environment="Moderate regulation",
-            technological_factors=["Cloud computing", "AI/ML", "Mobile-first"],
-            confidence_score=0.8
-        )
-
-    def _parse_competitive_intelligence_response(self, response: str) -> CompetitiveIntelligence:
-        """Parse AI response into CompetitiveIntelligence structure."""
-        return CompetitiveIntelligence(
-            competitive_landscape_summary="AI-generated competitive analysis",
-            direct_competitors=[],
-            indirect_competitors=[],
-            substitute_solutions=[],
-            competitive_advantages=["Innovation", "Customer focus"],
-            barriers_to_entry=["Capital requirements", "Technical expertise"],
-            confidence_score=0.75
-        )
-
-    def _parse_customer_understanding_response(self, response: str) -> CustomerUnderstanding:
-        """Parse AI response into CustomerUnderstanding structure."""
-        return CustomerUnderstanding(
-            primary_target_segment="Early adopters",
-            customer_segments=[],
-            customer_journey_insights=["Awareness", "Consideration", "Purchase"],
-            unmet_needs=["Simplified solution", "Better pricing"],
-            market_validation_evidence=["Customer interviews", "Survey data"],
-            confidence_score=0.8
-        )
-
-    def _parse_strategic_assessment_response(self, response: str) -> StrategicAssessment:
-        """Parse AI response into StrategicAssessment structure."""
-        return StrategicAssessment(
-            swot_analysis=SwotAnalysisEnhanced(
-                strengths=["Innovation", "Market knowledge"],
-                weaknesses=["Limited resources", "New brand"],
-                opportunities=["Growing market", "Technology trends"],
-                threats=["Competition", "Market saturation"],
-                strategic_implications=["Focus on differentiation"],
-                critical_success_factors=["Product quality", "Customer acquisition"]
-            ),
-            opportunity_scoring=OpportunityScoring(
-                market_opportunity_score=7.5,
-                competitive_position_score=6.0,
-                execution_feasibility_score=7.0,
-                financial_potential_score=8.0,
-                overall_score=7.1,
-                risk_level="medium"
-            ),
-            strategic_fit_analysis="Good strategic fit with market opportunities",
-            key_assumptions=["Market growth continues", "Technology adoption"],
-            validation_requirements=["Customer validation", "Technical feasibility"],
-            go_no_go_recommendation="go",
-            reasoning="Strong market opportunity with manageable risks",
-            confidence_score=0.8
-        )
-
-    def _parse_strategic_options_response(self, response: str, count: int) -> List[StrategicOption]:
-        """Parse AI response into StrategicOption structures."""
-        # Mock implementation - would parse actual AI response
-        options = []
-        approaches = list(StrategicApproach)[:count]
-        
-        for i, approach in enumerate(approaches):
-            option = StrategicOption(
-                approach=approach,
-                title=f"{approach.value.replace('_', ' ').title()} Strategy",
-                description=f"Strategic approach focusing on {approach.value}",
-                target_customer_segment="Primary target segment",
-                value_proposition="Unique value proposition",
-                go_to_market_strategy="Direct sales and digital marketing",
-                timeline_to_market_months=12 + i * 6,
-                success_probability_percent=70 - i * 10,
-                risk_factors=["Market competition", "Technical challenges"],
-                mitigation_strategies=["Focused execution", "Strong partnerships"],
-                competitive_positioning="Differentiated positioning",
-                overall_score=8.0 - i * 0.5
-            )
-            options.append(option)
-        
-        return options
-
-    def _build_analysis_context(self, results: Dict[str, Any]) -> str:
-        """Build context string from previous analysis results."""
-        context_parts = []
-        
-        for phase, result in results.items():
-            if result:
-                context_parts.append(f"{phase}: {str(result)[:200]}...")
-        
-        return "\n".join(context_parts)
 
     def _get_strategy_description(self, approach: ResearchApproach) -> str:
         """Get description for research strategy approach."""
