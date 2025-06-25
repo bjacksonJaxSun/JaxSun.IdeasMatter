@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   CheckCircleIcon, 
   ClockIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   UsersIcon, 
   AcademicCapIcon,
   ChartBarIcon,

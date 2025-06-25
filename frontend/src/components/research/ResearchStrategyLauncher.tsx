@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   LightBulbIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   RocketLaunchIcon, 
   ArrowRightIcon, 
   SparklesIcon 
@@ -61,7 +61,7 @@ const ResearchStrategyLauncher: React.FC<ResearchStrategyLauncherProps> = ({
             
             <div className="bg-white/70 rounded-lg p-3 border border-blue-200">
               <div className="flex items-center space-x-2 mb-1">
-                <TrendingUpIcon className="w-4 h-4 text-blue-600" />
+                <ArrowTrendingUpIcon className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-medium text-gray-900">Market Deep-Dive</span>
               </div>
               <p className="text-xs text-gray-600">45-min comprehensive analysis</p>

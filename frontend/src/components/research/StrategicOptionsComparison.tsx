@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   CurrencyDollarIcon, 
   ClockIcon, 
   AcademicCapIcon, 
@@ -115,7 +115,7 @@ const StrategicOptionsComparison: React.FC<StrategicOptionsComparisonProps> = ({
       case 'niche_domination':
         return <AcademicCapIcon className="w-5 h-5" />;
       case 'market_leader_challenge':
-        return <TrendingUpIcon className="w-5 h-5" />;
+        return <ArrowTrendingUpIcon className="w-5 h-5" />;
       case 'platform_play':
         return <ChartBarIcon className="w-5 h-5" />;
       case 'disruptive_innovation':
@@ -453,7 +453,7 @@ const StrategicOptionsComparison: React.FC<StrategicOptionsComparisonProps> = ({
                           <ul className="space-y-1">
                             {option.swot_analysis.opportunities.map((item, idx) => (
                               <li key={idx} className="text-sm text-blue-800 flex items-start">
-                                <TrendingUpIcon className="w-3 h-3 text-blue-600 mt-1 mr-2 flex-shrink-0" />
+                                <ArrowTrendingUpIcon className="w-3 h-3 text-blue-600 mt-1 mr-2 flex-shrink-0" />
                                 {item}
                               </li>
                             ))}

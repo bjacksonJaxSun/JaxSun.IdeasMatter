@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
   ClockIcon, 
-  TrendingUpIcon, 
+  ArrowTrendingUpIcon, 
   AcademicCapIcon,
   CheckCircleIcon, 
   ArrowRightIcon,
@@ -388,7 +388,7 @@ const ResearchStrategySelector: React.FC<ResearchStrategySelectorProps> = ({
                   </span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <TrendingUpIcon className="w-4 h-4 text-blue-600" />
+                  <ArrowTrendingUpIcon className="w-4 h-4 text-blue-600" />
                   <span className="text-sm text-blue-800">
                     Complexity: {selectedApproach.complexity}
                   </span>
