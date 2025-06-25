@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import ResearchReports from '../components/ResearchReports'
 import SwotAnalysis from '../components/SwotAnalysis'
 import MarketAnalysis from '../components/MarketAnalysis'
+import ResearchStrategyLauncher from '../components/research/ResearchStrategyLauncher'
 
 interface Message {
   id: number
@@ -350,6 +351,17 @@ const ResearchPage: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* New Research Strategy Launcher */}
+        {session && (
+          <div className="mb-6">
+            <ResearchStrategyLauncher
+              sessionId={parseInt(sessionId || '1')}
+              ideaTitle={session.title}
+              ideaDescription={session.description || ''}
+            />
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Main Chat Area */}
           <div className="lg:col-span-3">
