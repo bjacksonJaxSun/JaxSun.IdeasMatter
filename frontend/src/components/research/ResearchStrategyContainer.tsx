@@ -5,20 +5,11 @@ import {
   ShareIcon, 
   BookOpenIcon 
 } from '@heroicons/react/24/outline';
-import ResearchStrategySelector from './ResearchStrategySelector';
-import GuidedAnalysisFlow from './GuidedAnalysisFlow';
+import OneClickResearchSelector from './OneClickResearchSelector';
+import EnhancedProgressTracker from './EnhancedProgressTracker';
 import StrategicOptionsComparison from './StrategicOptionsComparison';
 
-interface ResearchApproach {
-  approach: 'quick_validation' | 'market_deep_dive' | 'launch_strategy';
-  title: string;
-  description: string;
-  duration_minutes: number;
-  complexity: 'beginner' | 'intermediate' | 'advanced';
-  best_for: string[];
-  includes: string[];
-  deliverables: string[];
-}
+import { ResearchApproach } from '../../services/researchStrategy';
 
 interface ResearchStrategyContainerProps {
   sessionId: number;
@@ -132,13 +123,13 @@ const ResearchStrategyContainer: React.FC<ResearchStrategyContainerProps> = ({
     switch (currentStep) {
       case 'selection':
         return {
-          title: 'Research Strategy Selection',
-          description: 'Choose the research approach that best fits your needs'
+          title: 'Start Your Research',
+          description: 'Choose your approach and begin analysis immediately'
         };
       case 'analysis':
         return {
-          title: 'AI-Powered Analysis',
-          description: `Running ${selectedApproach?.title} analysis for your idea`
+          title: 'AI Research in Progress',
+          description: `Advanced AI conducting ${selectedApproach?.title} with real-time progress tracking`
         };
       case 'results':
         return {
@@ -251,7 +242,7 @@ const ResearchStrategyContainer: React.FC<ResearchStrategyContainerProps> = ({
 
         {/* Step Content */}
         {currentStep === 'selection' && (
-          <ResearchStrategySelector
+          <OneClickResearchSelector
             sessionId={sessionId}
             ideaTitle={ideaTitle}
             ideaDescription={ideaDescription}
@@ -260,11 +251,14 @@ const ResearchStrategyContainer: React.FC<ResearchStrategyContainerProps> = ({
         )}
 
         {currentStep === 'analysis' && selectedApproach && strategyId && (
-          <GuidedAnalysisFlow
+          <EnhancedProgressTracker
             strategyId={strategyId}
-            approach={selectedApproach.approach}
-            onAnalysisComplete={handleAnalysisComplete}
+            approach={selectedApproach}
+            ideaTitle={ideaTitle}
+            ideaDescription={ideaDescription}
+            onComplete={handleAnalysisComplete}
             onError={handleAnalysisError}
+            autoStart={true}
           />
         )}
 

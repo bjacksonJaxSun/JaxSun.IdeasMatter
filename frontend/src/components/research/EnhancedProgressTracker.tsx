@@ -258,6 +258,12 @@ const EnhancedProgressTracker: React.FC<EnhancedProgressTrackerProps> = ({
       ]
     };
 
+    // Ensure approach is valid before accessing phaseConfigs
+    if (!approach?.approach || !phaseConfigs[approach.approach]) {
+      console.warn('Invalid approach provided to EnhancedProgressTracker:', approach);
+      return; // Exit early if approach is invalid
+    }
+
     const initialPhases = phaseConfigs[approach.approach].map(phase => ({
       ...phase,
       status: 'pending' as const,

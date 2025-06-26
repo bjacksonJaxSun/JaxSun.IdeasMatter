@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import axios from 'axios';
-import { EnhancedProgressTracker } from '../EnhancedProgressTracker';
+import EnhancedProgressTracker from '../EnhancedProgressTracker';
 import { OneClickResearchSelector } from '../OneClickResearchSelector';
 import { ResearchStrategyContainer } from '../ResearchStrategyContainer';
 import { toast } from 'react-hot-toast';
