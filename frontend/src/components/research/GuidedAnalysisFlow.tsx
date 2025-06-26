@@ -147,6 +147,15 @@ const GuidedAnalysisFlow: React.FC<GuidedAnalysisFlowProps> = ({
     setPhases(initialPhases);
   }, [approach]);
 
+  // Helper function to get authenticated headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('access_token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    };
+  };
+
   // Start analysis execution
   const startAnalysis = async () => {
     setIsExecuting(true);
@@ -156,6 +165,7 @@ const GuidedAnalysisFlow: React.FC<GuidedAnalysisFlowProps> = ({
     try {
       const response = await fetch(`/api/v1/research-strategy/execute/${strategyId}`, {
         method: 'POST',
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -176,7 +186,9 @@ const GuidedAnalysisFlow: React.FC<GuidedAnalysisFlowProps> = ({
   const startProgressPolling = () => {
     const pollInterval = setInterval(async () => {
       try {
-        const response = await fetch(`/api/v1/research-strategy/progress/${strategyId}`);
+        const response = await fetch(`/api/v1/research-strategy/progress/${strategyId}`, {
+          headers: getAuthHeaders(),
+        });
         
         if (!response.ok) {
           throw new Error('Failed to fetch progress');
@@ -224,7 +236,9 @@ const GuidedAnalysisFlow: React.FC<GuidedAnalysisFlowProps> = ({
   // Fetch final results
   const fetchResults = async () => {
     try {
-      const response = await fetch(`/api/v1/research-strategy/results/${strategyId}`);
+      const response = await fetch(`/api/v1/research-strategy/results/${strategyId}`, {
+        headers: getAuthHeaders(),
+      });
       
       if (!response.ok) {
         throw new Error('Failed to fetch results');

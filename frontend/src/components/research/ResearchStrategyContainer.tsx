@@ -90,14 +90,21 @@ const ResearchStrategyContainer: React.FC<ResearchStrategyContainerProps> = ({
     setError(null);
   };
 
+  // Helper function to get authenticated headers
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('access_token');
+    return {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    };
+  };
+
   // Export functionality
   const handleExport = async () => {
     try {
       const response = await fetch('/api/v1/research-strategy/export', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({
           session_id: sessionId,
           strategy_id: strategyId,

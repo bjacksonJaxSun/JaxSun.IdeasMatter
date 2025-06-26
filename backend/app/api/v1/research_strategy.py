@@ -3,6 +3,7 @@ Research Strategy API Endpoints
 Provides approach-based market research with progressive disclosure.
 """
 from typing import List, Optional, Dict, Any
+from datetime import datetime, timedelta
 from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 
@@ -24,7 +25,7 @@ research_service = ResearchStrategyService()
 # In-memory storage for progress tracking (in production, use Redis or database)
 progress_storage: Dict[int, Dict[str, Any]] = {}
 
-@router.post("/approaches", response_model=List[Dict[str, Any]])
+@router.get("/approaches", response_model=List[Dict[str, Any]])
 async def get_available_approaches():
     """Get available research approaches with descriptions and capabilities."""
     
