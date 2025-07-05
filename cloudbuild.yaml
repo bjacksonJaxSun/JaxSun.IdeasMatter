@@ -1,0 +1,53 @@
+# Cloud Build configuration for deploying both API and Web services
+steps:
+  # Build and push API Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest', '-f', 'Dockerfile.api', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest']
+  
+  # Build and push Web Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/jackson-ideas-web:latest', '-f', 'Dockerfile.web', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/jackson-ideas-web:latest']
+  
+  # Deploy API to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'jackson-ideas-api'
+      - '--image=gcr.io/$PROJECT_ID/jackson-ideas-api:latest'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Production'
+      - '--set-secrets=ConnectionStrings__DefaultConnection=jackson-ideas-db-connection:latest,JwtSettings__SecretKey=jackson-ideas-jwt-secret:latest'
+  
+  # Deploy Web to Cloud Run
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'jackson-ideas-web'
+      - '--image=gcr.io/$PROJECT_ID/jackson-ideas-web:latest'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--port=8080'
+      - '--memory=512Mi'
+      - '--cpu=1'
+      - '--set-env-vars=ASPNETCORE_ENVIRONMENT=Production,ApiSettings__BaseUrl=https://jackson-ideas-api-xxxxx-uc.a.run.app'
+      - '--set-secrets=ConnectionStrings__DefaultConnection=jackson-ideas-db-connection:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest'
+  - 'gcr.io/$PROJECT_ID/jackson-ideas-web:latest'
+
+timeout: '1200s'

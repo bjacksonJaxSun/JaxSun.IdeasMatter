@@ -1,0 +1,13 @@
+# Cloud Build configuration for API only
+steps:
+  # Build and push API Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest', '-f', 'Dockerfile.api', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest']
+
+images:
+  - 'gcr.io/$PROJECT_ID/jackson-ideas-api:latest'
+
+timeout: '600s'

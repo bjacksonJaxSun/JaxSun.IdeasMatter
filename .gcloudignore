@@ -1,0 +1,57 @@
+# This file specifies files that are *not* uploaded to Google Cloud Platform
+# using gcloud. It follows the same syntax as .gitignore, with the addition of
+# "#!include" directives (which insert the entries of the given .gitignore-style
+# file at that point).
+
+.gcloudignore
+.git
+.gitignore
+
+# Ignore development files
+*.user
+*.suo
+*.sln.docstates
+.vs/
+.vscode/
+
+# Ignore build artifacts
+**/bin/
+**/obj/
+**/.vs/
+**/packages/
+
+# Ignore test results
+**/TestResults/
+
+# Ignore local database files
+*.db
+*.db-shm
+*.db-wal
+
+# Ignore logs
+**/logs/
+*.log
+
+# Ignore development configuration
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Ignore documentation
+docs/
+*.md
+
+# Ignore test projects in production
+tests/
+temp_diagnostic_test/
+
+# Ignore scripts
+scripts/
+*.sh
+*.ps1
+*.bat
+
+# Ignore DevOps commands folder
+commands (DevOps)/
+
+# Ignore PMDocs
+PMDocs/
