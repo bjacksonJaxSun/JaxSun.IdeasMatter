@@ -19,6 +19,7 @@ main {
     height: 3.5rem;
     display: flex;
     align-items: center;
+    position: relative;
 }
 
     .top-row ::deep a, .top-row ::deep .btn-link {
@@ -94,3 +95,124 @@ main {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+/* User menu styles */
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.user-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 20px;
+    cursor: pointer;
+    color: #333;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.user-menu-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.user-avatar {
+    font-size: 24px;
+    color: #666;
+}
+
+.user-name {
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dropdown-arrow {
+    font-size: 10px;
+    color: #666;
+    transition: transform 0.2s ease;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    min-width: 200px;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    color: #333;
+    text-decoration: none;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
+    color: #666;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background-color: #e0e0e0;
+    margin: 4px 0;
+}
+
+/* Auth links for non-authenticated users */
+.auth-links {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+.auth-link {
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.auth-link:hover {
+    text-decoration: none;
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.register-btn {
+    background-color: #1a73e8;
+    color: white;
+    padding: 8px 24px;
+}
+
+.register-btn:hover {
+    background-color: #1666d1;
+    color: white;
+}

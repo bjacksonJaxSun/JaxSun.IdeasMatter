@@ -1,16 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Ideas Matter</a>
-        <AuthorizeView>
-            <Authorized>
-                <div class="user-info">
-                    <span class="user-name">@context.User.Identity?.Name</span>
-                    <button class="btn btn-sm btn-outline-light ms-2" @onclick="Logout">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </div>
-            </Authorized>
-        </AuthorizeView>
     </div>
 </div>
 
@@ -37,12 +27,6 @@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="new-idea">
                         <span class="fas fa-plus-square" aria-hidden="true"></span> New Idea
-                    </NavLink>
-                </div>
-
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="profile">
-                        <span class="fas fa-user" aria-hidden="true"></span> Profile
                     </NavLink>
                 </div>
 
@@ -87,13 +71,6 @@
 </div>
 
 @code {
-    [Inject] private IAuthenticationService AuthService { get; set; } = default!;
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-
-    private async Task Logout()
-    {
-        await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/", forceLoad: true);
-    }
+    // Simplified - logout functionality moved to MainLayout
 }
 
