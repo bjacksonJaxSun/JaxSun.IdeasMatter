@@ -28,8 +28,9 @@ COPY --from=publish /app/publish .
 # Install SQLite
 RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
 
-# Create directory for SQLite database
-RUN mkdir -p /app/data
+# Create directory for SQLite database and ensure it's writable
+RUN mkdir -p /app/data && chmod 777 /app/data
+RUN mkdir -p /app && chmod 777 /app
 
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080

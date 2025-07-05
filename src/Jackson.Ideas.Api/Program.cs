@@ -86,14 +86,25 @@ builder.Services.AddDbContext<JacksonIdeasDbContext>(options =>
         connectionString = "Data Source=jackson_ideas.db";
         options.UseSqlite(connectionString);
     }
-    else if (connectionString.Contains("Server=") || connectionString.Contains("Data Source=") && connectionString.Contains("Initial Catalog="))
+    else if (connectionString.Contains("Server=") || (connectionString.Contains("Data Source=") && connectionString.Contains("Initial Catalog=")))
     {
         // SQL Server
         options.UseSqlServer(connectionString);
     }
+    else if (connectionString.Contains("Host=") || connectionString.Contains("host="))
+    {
+        // PostgreSQL connection string detected, convert to SQLite for now
+        Console.WriteLine("PostgreSQL connection string detected, using SQLite instead");
+        connectionString = "Data Source=jackson_ideas.db";
+        options.UseSqlite(connectionString);
+    }
     else
     {
-        // SQLite
+        // SQLite - ensure proper format
+        if (!connectionString.StartsWith("Data Source=", StringComparison.OrdinalIgnoreCase))
+        {
+            connectionString = $"Data Source={connectionString}";
+        }
         options.UseSqlite(connectionString);
     }
 });
