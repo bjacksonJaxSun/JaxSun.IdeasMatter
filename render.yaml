@@ -3,7 +3,7 @@ services:
   - type: web
     name: jackson-ideas-api
     runtime: docker
-    dockerfilePath: ./Dockerfile.api.render
+    dockerfilePath: Dockerfile.api.render
     dockerContext: .
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
