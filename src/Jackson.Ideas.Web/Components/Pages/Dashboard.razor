@@ -1,0 +1,477 @@
+@page "/dashboard"
+@rendermode InteractiveServer
+@using Jackson.Ideas.Core.DTOs.Research
+@using Jackson.Ideas.Core.DTOs.Auth
+@using Jackson.Ideas.Core.Entities
+@using System.Text.Json
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IAuthenticationService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Dashboard - Ideas Matter</PageTitle>
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome back, @currentUser?.Name</h1>
+        <p>Transform your ideas into reality with AI-powered research and analysis</p>
+    </div>
+
+    <div class="dashboard-actions">
+        <button class="btn btn-primary btn-new-idea" @onclick="StartNewIdea">
+            <i class="fas fa-plus"></i>
+            New Idea Research
+        </button>
+        <button class="btn btn-warning" @onclick="StartWithMockIdea">
+            <i class="fas fa-magic"></i>
+            Try Mock Idea
+        </button>
+        <button class="btn btn-secondary" @onclick="Logout">
+            <i class="fas fa-sign-out-alt"></i>
+            Logout
+        </button>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Loading your research sessions...</p>
+        </div>
+    }
+    else if (researchSessions != null && researchSessions.Any())
+    {
+        <div class="sessions-grid">
+            <h2>Your Research Sessions</h2>
+            <div class="row">
+                @foreach (var session in researchSessions)
+                {
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="session-card">
+                            <div class="session-header">
+                                <h3>@session.Title</h3>
+                                <span class="session-status status-@session.Status.ToString().ToLower()">
+                                    @session.Status
+                                </span>
+                            </div>
+                            <div class="session-content">
+                                <p class="session-description">@TruncateDescription(session.Description, 100)</p>
+                                <div class="session-meta">
+                                    <small class="text-muted">
+                                        Created: @session.CreatedAt.ToString("MMM dd, yyyy")
+                                    </small>
+                                    @if (session.ResearchInsights?.Any() == true)
+                                    {
+                                        <small class="text-success">
+                                            <i class="fas fa-lightbulb"></i> @session.ResearchInsights.Count insights
+                                        </small>
+                                    }
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="btn btn-sm btn-primary" @onclick="() => ViewSession(session.Id)">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                                <button class="btn btn-sm btn-outline-secondary" @onclick="() => EditSession(session.Id)">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h3>No Research Sessions Yet</h3>
+            <p>Start your first idea research session to see how AI can help transform your concepts into actionable insights.</p>
+            <button class="btn btn-primary" @onclick="StartNewIdea">
+                <i class="fas fa-plus"></i>
+                Create Your First Research Session
+            </button>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+</div>
+
+@code {
+    private UserInfo? currentUser;
+    private List<ResearchSession>? researchSessions;
+    private bool isLoading = true;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserData();
+        await LoadResearchSessions();
+    }
+
+    private async Task LoadUserData()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                currentUser = new UserInfo
+                {
+                    Id = authState.User.FindFirst("sub")?.Value ?? authState.User.FindFirst("id")?.Value ?? Guid.NewGuid().ToString(),
+                    Name = authState.User.Identity.Name ?? "User",
+                    Email = authState.User.FindFirst("email")?.Value ?? "user@example.com",
+                    Role = authState.User.FindFirst("role")?.Value ?? "User",
+                    IsVerified = true
+                };
+            }
+            else
+            {
+                Navigation.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to load user data.";
+            Navigation.NavigateTo("/login");
+        }
+    }
+
+    private async Task LoadResearchSessions()
+    {
+        try
+        {
+            // In mock mode, create demo sessions directly
+            researchSessions = new List<ResearchSession>
+            {
+                new ResearchSession
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "AI-Powered Task Management App",
+                    Description = "A smart task management application that uses AI to prioritize tasks and optimize workflows",
+                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.InProgress,
+                    CreatedAt = DateTime.Now.AddDays(-2),
+                    UpdatedAt = DateTime.Now.AddDays(-1),
+                    UserId = currentUser?.Id ?? string.Empty,
+                    ProgressPercentage = 65,
+                    EstimatedCompletionTime = 15
+                },
+                new ResearchSession
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Sustainable Fashion Marketplace",
+                    Description = "An online marketplace connecting sustainable fashion brands with eco-conscious consumers",
+                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Completed,
+                    CreatedAt = DateTime.Now.AddDays(-7),
+                    UpdatedAt = DateTime.Now.AddDays(-7).AddHours(1.5),
+                    UserId = currentUser?.Id ?? string.Empty,
+                    ProgressPercentage = 100,
+                    CompletedAt = DateTime.Now.AddDays(-7).AddHours(1.5)
+                },
+                new ResearchSession
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Virtual Reality Fitness Platform",
+                    Description = "An immersive VR platform that gamifies workout routines and connects users globally",
+                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Completed,
+                    CreatedAt = DateTime.Now.AddDays(-14),
+                    UpdatedAt = DateTime.Now.AddDays(-14).AddHours(0.75),
+                    UserId = currentUser?.Id ?? string.Empty,
+                    ProgressPercentage = 100,
+                    CompletedAt = DateTime.Now.AddDays(-14).AddHours(0.75)
+                },
+                new ResearchSession
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Smart Home Energy Optimizer",
+                    Description = "AI-driven system that learns household patterns to reduce energy consumption and costs",
+                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Failed,
+                    CreatedAt = DateTime.Now.AddDays(-3),
+                    UpdatedAt = DateTime.Now.AddDays(-3).AddMinutes(30),
+                    UserId = currentUser?.Id ?? string.Empty,
+                    ProgressPercentage = 35,
+                    ErrorMessage = "Unable to gather sufficient market data"
+                }
+            };
+            
+            // Clear any error message
+            errorMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to load research sessions.";
+            researchSessions = new List<ResearchSession>();
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void StartNewIdea()
+    {
+        Navigation.NavigateTo("/new-idea");
+    }
+
+    private void StartWithMockIdea()
+    {
+        // Navigate to new idea page with a query parameter to indicate mock data
+        Navigation.NavigateTo("/new-idea?mock=true");
+    }
+
+    private void ViewSession(Guid sessionId)
+    {
+        Navigation.NavigateTo($"/session/{sessionId}");
+    }
+
+    private void EditSession(Guid sessionId)
+    {
+        Navigation.NavigateTo($"/session/{sessionId}/edit");
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    private string TruncateDescription(string? description, int maxLength)
+    {
+        if (string.IsNullOrEmpty(description))
+            return "No description available";
+        
+        return description.Length <= maxLength 
+            ? description 
+            : $"{description.Substring(0, maxLength)}...";
+    }
+}
+
+<style>
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .dashboard-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-header h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 40px;
+    }
+
+    .btn-new-idea {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-new-idea:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-warning:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        transition: transform 0.2s;
+        cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+    }
+
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .loading-container .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 20px;
+    }
+
+    .sessions-grid h2 {
+        color: #333;
+        margin-bottom: 30px;
+    }
+
+    .session-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .session-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .session-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 15px;
+    }
+
+    .session-header h3 {
+        color: #333;
+        font-size: 1.2rem;
+        margin: 0;
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .session-status {
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .status-pending {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-inprogress {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-completed {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-failed {
+        background-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .session-content {
+        flex: 1;
+        margin-bottom: 15px;
+    }
+
+    .session-description {
+        color: #666;
+        margin-bottom: 10px;
+        line-height: 1.5;
+    }
+
+    .session-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .session-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        margin-top: 40px;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .empty-state p {
+        color: #666;
+        margin-bottom: 30px;
+        max-width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .alert {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+</style>

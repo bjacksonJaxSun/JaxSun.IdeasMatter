@@ -1,0 +1,7 @@
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\wwwroot\bootstrap\bootstrap.min.css
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\wwwroot\bootstrap\bootstrap.min.css.map
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\wwwroot\app.css
+wwwroot\app.css
+wwwroot\bootstrap\bootstrap.min.css
+wwwroot\bootstrap\bootstrap.min.css.map
+wwwroot\favicon.png

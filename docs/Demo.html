@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ideas Matter - Interactive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .app-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            text-decoration: none;
+        }
+
+        .nav-tab:hover, .nav-tab.active {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-badge {
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        .welcome-section {
+            margin-bottom: 2rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .welcome-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .ideas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .idea-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .idea-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .idea-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-researching {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-draft {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .idea-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+            padding-right: 5rem;
+        }
+
+        .idea-description {
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .idea-progress {
+            background: #f1f5f9;
+            border-radius: 6px;
+            height: 8px;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            transition: width 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: #64748b;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .new-idea-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px dashed #0ea5e9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            min-height: 200px;
+        }
+
+        .new-idea-icon {
+            font-size: 3rem;
+            color: #0ea5e9;
+            margin-bottom: 1rem;
+        }
+
+        .new-idea-text {
+            color: #0369a1;
+            font-weight: 600;
+        }
+
+        .strategy-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .strategy-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .strategy-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .strategy-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .strategy-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .quick-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .deep-icon {
+            background: #dbeafe;
+            color: #2563eb;
+        }
+
+        .launch-icon {
+            background: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .strategy-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #1e293b;
+        }
+
+        .strategy-time {
+            color: #6b7280;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .strategy-features {
+            list-style: none;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+
+        .strategy-features li {
+            padding: 0.25rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .strategy-features li:before {
+            content: "✓";
+            color: #10b981;
+            position: absolute;
+            left: 0;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #2563eb;
+        }
+
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+
+        .progress-tracker {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .progress-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .progress-percentage {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .progress-stages {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-line {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            right: 16px;
+            height: 2px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .progress-line-filled {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            height: 2px;
+            background: #3b82f6;
+            z-index: 2;
+            transition: width 0.5s ease;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 3;
+            position: relative;
+            flex: 1;
+        }
+
+        .stage-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .stage-circle.completed {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .stage-circle.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .stage-name {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .stage-name.active {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .current-activity {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .activity-text {
+            font-size: 0.95rem;
+            color: #4b5563;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .insights-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid #e2e8f0;
+            margin: 2rem 0;
+        }
+
+        .confidence-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .confidence-bar {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 50%, #10b981 100%);
+            transition: width 0.3s ease;
+        }
+
+        .confidence-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        .insight-card {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        .insight-content {
+            color: #4b5563;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .insight-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .metric {
+            text-align: center;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+
+            .header {
+                padding: 1rem;
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .ideas-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .strategy-selection {
+                grid-template-columns: 1fr;
+            }
+
+            .progress-stages {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .progress-line,
+            .progress-line-filled {
+                display: none;
+            }
+
+            .stage {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 1rem;
+            }
+
+            .stage-circle {
+                margin-bottom: 0;
+            }
+
+            .insight-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="header">
+            <div class="logo">Ideas Matter</div>
+            <nav class="nav-tabs">
+                <a href="#" class="nav-tab active" data-screen="dashboard">Dashboard</a>
+                <a href="#" class="nav-tab" data-screen="new-idea">New Idea</a>
+                <a href="#" class="nav-tab" data-screen="analysis">Live Analysis</a>
+                <a href="#" class="nav-tab" data-screen="results">Results</a>
+            </nav>
+            <div class="user-info">
+                <div class="notification-badge">3</div>
+                <span>Welcome, Sarah!</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Dashboard Screen -->
+            <div id="dashboard" class="screen active">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Your Ideas Dashboard</h1>
+                    <p class="welcome-subtitle">Track your business validation journey with AI-powered insights</p>
+                </div>
+
+                <div class="ideas-grid">
+                    <div class="idea-card" data-idea="fitness-app">
+                        <div class="idea-status status-researching">Researching</div>
+                        <h3 class="idea-title">AI-Powered Fitness App</h3>
+                        <p class="idea-description">Personalized workout plans with real-time form correction using computer vision</p>
+                        <div class="idea-progress">
+                            <div class="progress-bar" style="width: 65%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Customer Analysis</span>
+                            <span>65%</span>
+                        </div>
+                    </div>
+
+                    <div class="idea-card" data-idea="eco-packaging">
+                        <div class="idea-status status-completed">Completed</div>
+                        <h3 class="idea-title">Eco-Friendly Packaging</h3>
+                        <p class="idea-description">Biodegradable packaging solutions for e-commerce businesses</p>
+                        <div class="idea-progress">
+                            <div class="progress-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Analysis Complete</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+
+                    <div class="idea-card" data-idea="smart-security">
+                        <div class="idea-status status-draft">Draft</div>
+                        <h3 class="idea-title">Smart Home Security</h3>
+                        <p class="idea-description">AI-powered security system with predictive threat detection</p>
+                        <div class="idea-progress">
+                            <div class="progress-bar" style="width: 15%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Initial Setup</span>
+                            <span>15%</span>
+                        </div>
+                    </div>
+
+                    <div class="idea-card new-idea-card" data-action="new-idea">
+                        <div class="new-idea-icon">+</div>
+                        <div class="new-idea-text">Start Validating a New Idea</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Idea Screen -->
+            <div id="new-idea" class="screen">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">Choose Your Research Strategy</h1>
+                    <p class="welcome-subtitle">Select the analysis depth that matches your needs and timeline</p>
+                </div>
+
+                <div class="strategy-selection">
+                    <div class="strategy-card" data-strategy="quick">
+                        <div class="strategy-icon quick-icon">⚡</div>
+                        <div class="strategy-name">Quick Validation</div>
+                        <div class="strategy-time">~15 minutes</div>
+                        <ul class="strategy-features">
+                            <li>Market size estimate</li>
+                            <li>Basic competitor scan</li>
+                            <li>Simple feasibility check</li>
+                            <li>Go/no-go recommendation</li>
+                        </ul>
+                    </div>
+
+                    <div class="strategy-card selected" data-strategy="deep">
+                        <div class="strategy-icon deep-icon">🔍</div>
+                        <div class="strategy-name">Market Deep-Dive</div>
+                        <div class="strategy-time">~45 minutes</div>
+                        <ul class="strategy-features">
+                            <li>Comprehensive market analysis</li>
+                            <li>SWOT assessment</li>
+                            <li>Customer personas</li>
+                            <li>Competitive landscape</li>
+                            <li>Risk analysis</li>
+                        </ul>
+                    </div>
+
+                    <div class="strategy-card" data-strategy="launch">
+                        <div class="strategy-icon launch-icon">🚀</div>
+                        <div class="strategy-name">Launch Strategy</div>
+                        <div class="strategy-time">~90 minutes</div>
+                        <ul class="strategy-features">
+                            <li>Complete business plan</li>
+                            <li>Financial projections</li>
+                            <li>Go-to-market strategy</li>
+                            <li>Marketing roadmap</li>
+                            <li>Implementation timeline</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn" onclick="startAnalysis()">Start Analysis</button>
+                    <button class="btn btn-secondary" onclick="showScreen('dashboard')" style="margin-left: 1rem;">Back to Dashboard</button>
+                </div>
+            </div>
+
+            <!-- Live Analysis Screen -->
+            <div id="analysis" class="screen">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">AI Analysis in Progress</h1>
+                    <p class="welcome-subtitle">Our AI is researching your idea across multiple dimensions</p>
+                </div>
+
+                <div class="progress-tracker">
+                    <div class="progress-header">
+                        <div class="progress-title">Analyzing "AI-Powered Fitness App"</div>
+                        <div class="progress-percentage" id="live-percentage">65%</div>
+                    </div>
+                    <div class="progress-stages">
+                        <div class="progress-line"></div>
+                        <div class="progress-line-filled" id="progress-line" style="width: 60%"></div>
+                        <div class="stage">
+                            <div class="stage-circle completed">1</div>
+                            <div class="stage-name">Market Context</div>
+                        </div>
+                        <div class="stage">
+                            <div class="stage-circle completed">2</div>
+                            <div class="stage-name">Competitive Intel</div>
+                        </div>
+                        <div class="stage">
+                            <div class="stage-circle active" id="active-stage">3</div>
+                            <div class="stage-name active">Customer Analysis</div>
+                        </div>
+                        <div class="stage">
+                            <div class="stage-circle">4</div>
+                            <div class="stage-name">Strategic Assessment</div>
+                        </div>
+                    </div>
+                    <div class="current-activity">
+                        <div class="activity-text">
+                            <div class="spinner"></div>
+                            <span id="activity-text">Analyzing customer demographics and fitness behavior patterns...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn btn-secondary" onclick="pauseAnalysis()">Pause Analysis</button>
+                    <button class="btn" onclick="completeAnalysis()" style="margin-left: 1rem;">Skip to Results</button>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results" class="screen">
+                <div class="welcome-section">
+                    <h1 class="welcome-title">AI Analysis Results</h1>
+                    <p class="welcome-subtitle">Comprehensive insights for your AI-Powered Fitness App idea</p>
+                </div>
+
+                <div class="insights-container">
+                    <div class="confidence-indicator">
+                        <span style="font-size: 0.9rem; color: #6b7280; font-weight: 500;">AI Confidence Level:</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: 85%"></div>
+                        </div>
+                        <div class="confidence-label">High (85%)</div>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-title">🎯 Market Opportunity</div>
+                        <div class="insight-content">
+                            The fitness app market is experiencing robust 14% annual growth, with particular strength in AI-powered personalization features. Your idea addresses the critical pain point of workout motivation and form correction, which 73% of fitness enthusiasts identify as their primary challenge.
+                        </div>
+                        <div class="insight-metrics">
+                            <div class="metric">
+                                <div class="metric-value">$12.99</div>
+                                <div class="metric-label">Monthly Premium</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">15K</div>
+                                <div class="metric-label">Break-even Users</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">18mo</div>
+                                <div class="metric-label">Break-even Timeline</div>
+                            </div>
+                        </div>
+                        <button class="expand-btn" onclick="showDetails('financial')">View financial projections →</button>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-title">⚠️ Key Risks & Mitigation</div>
+                        <div class="insight-content">
+                            Primary risks include computer vision accuracy requirements and user privacy concerns. Recommended mitigation: partner with established CV providers and implement privacy-first data handling. Market entry timing is favorable with increasing AI acceptance.
+                        </div>
+                        <div class="insight-metrics">
+                            <div class="metric">
+                                <div class="metric-value">Medium</div>
+                                <div class="metric-label">Technical Risk</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">Low</div>
+                                <div class="metric-label">Market Risk</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">High</div>
+                                <div class="metric-label">Success Probability</div>
+                            </div>
+                        </div>
+                        <button class="expand-btn" onclick="showDetails('risks')">View risk analysis →</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button class="btn">Download Full Report</button>
+                    <button class="btn btn-secondary" onclick="showScreen('dashboard')" style="margin-left: 1rem;">Back to Dashboard</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Idea Modal -->
+    <div id="new-idea-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Describe Your Business Idea</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="new-idea-form">
+                <div class="form-group">
+                    <label class="form-label">Idea Title</label>
+                    <input type="text" class="form-input" placeholder="e.g., AI-Powered Fitness App" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input form-textarea" placeholder="Describe your business idea, target audience, and key features..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Industry/Category</label>
+                    <select class="form-input">
+                        <option>Technology</option>
+                        <option>Healthcare</option>
+                        <option>Finance</option>
+                        <option>Education</option>
+                        <option>E-commerce</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn">Create Idea</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="detail-title">Detailed Analysis</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="detail-content">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let currentScreen = 'dashboard';
+        let selectedStrategy = 'deep';
+        let analysisProgress = 65;
+        let analysisStage = 3;
+        let analysisInterval = null;
+
+        // Screen navigation
+        function showScreen(screenName) {
+            // Update navigation
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.screen === screenName) {
+                    tab.classList.add('active');
+                }
+            });
+
+            // Update screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenName).classList.add('active');
+            
+            currentScreen = screenName;
+        }
+
+        // Strategy selection
+        function selectStrategy(strategy) {
+            document.querySelectorAll('.strategy-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.querySelector(`[data-strategy="${strategy}"]`).classList.add('selected');
+            selectedStrategy = strategy;
+        }
+
+        // Start analysis
+        function startAnalysis() {
+            showScreen('analysis');
+            if (analysisInterval) clearInterval(analysisInterval);
+            
+            // Simulate progressive analysis
+            analysisInterval = setInterval(() => {
+                analysisProgress += Math.random() * 3;
+                if (analysisProgress >= 100) {
+                    analysisProgress = 100;
+                    clearInterval(analysisInterval);
+                    setTimeout(() => {
+                        showScreen('results');
+                    }, 2000);
+                }
+                updateAnalysisProgress();
+            }, 1000);
+        }
+
+        // Update analysis progress
+        function updateAnalysisProgress() {
+            const percentage = Math.min(100, Math.floor(analysisProgress));
+            document.getElementById('live-percentage').textContent = `${percentage}%`;
+            document.getElementById('progress-line').style.width = `${(percentage / 100) * 75}%`;
+
+            // Update stage based on progress
+            let newStage = Math.min(4, Math.floor(percentage / 25) + 1);
+            if (newStage !== analysisStage) {
+                updateAnalysisStage(newStage);
+            }
+
+            // Update activity text
+            const activities = [
+                "Gathering market intelligence and industry trends...",
+                "Analyzing competitor strategies and positioning...",
+                "Understanding customer demographics and behavior patterns...",
+                "Synthesizing strategic recommendations and risk assessment..."
+            ];
+            
+            if (percentage < 100) {
+                document.getElementById('activity-text').textContent = activities[Math.min(3, Math.floor(percentage / 25))];
+            } else {
+                document.getElementById('activity-text').textContent = "Analysis complete! Generating final report...";
+            }
+        }
+
+        // Update analysis stage
+        function updateAnalysisStage(newStage) {
+            // Remove active from current stage
+            document.querySelectorAll('.stage-circle').forEach((circle, index) => {
+                circle.classList.remove('active');
+                circle.parentElement.querySelector('.stage-name').classList.remove('active');
+                
+                if (index < newStage - 1) {
+                    circle.classList.add('completed');
+                } else if (index === newStage - 1) {
+                    circle.classList.add('active');
+                    circle.parentElement.querySelector('.stage-name').classList.add('active');
+                } else {
+                    circle.classList.remove('completed');
+                }
+            });
+            analysisStage = newStage;
+        }
+
+        // Pause analysis
+        function pauseAnalysis() {
+            if (analysisInterval) {
+                clearInterval(analysisInterval);
+                analysisInterval = null;
+                document.querySelector('.current-activity .activity-text span').textContent = "Analysis paused. Click 'Resume' to continue...";
+            }
+        }
+
+        // Complete analysis (skip to results)
+        function completeAnalysis() {
+            if (analysisInterval) clearInterval(analysisInterval);
+            analysisProgress = 100;
+            updateAnalysisProgress();
+            setTimeout(() => {
+                showScreen('results');
+            }, 1000);
+        }
+
+        // Show modal
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Show detailed analysis
+        function showDetails(type) {
+            const detailContent = {
+                market: `
+                    <h3>Market Analysis Deep Dive</h3>
+                    <p><strong>Market Size & Growth:</strong></p>
+                    <ul>
+                        <li>Total Addressable Market: $4.4B globally</li>
+                        <li>Serviceable Addressable Market: $1.2B (North America)</li>
+                        <li>Year-over-year growth: 14.2% (above industry average)</li>
+                        <li>AI fitness segment growing at 23% annually</li>
+                    </ul>
+                    <p><strong>Key Market Drivers:</strong></p>
+                    <ul>
+                        <li>Increased health consciousness post-pandemic</li>
+                        <li>Growing acceptance of AI-powered solutions</li>
+                        <li>Shift toward personalized fitness experiences</li>
+                        <li>Rising smartphone penetration and camera quality</li>
+                    </ul>
+                    <p><strong>Target Demographics:</strong></p>
+                    <ul>
+                        <li>Primary: Ages 25-45, tech-savvy fitness enthusiasts</li>
+                        <li>Secondary: Ages 18-25, digital natives seeking convenience</li>
+                        <li>Income: $50K+ household income</li>
+                        <li>Behavior: Currently using 2+ fitness apps</li>
+                    </ul>
+                `,
+                competitive: `
+                    <h3>Competitive Landscape Analysis</h3>
+                    <p><strong>Direct Competitors:</strong></p>
+                    <ul>
+                        <li><strong>Mirror/Tonal:</strong> Hardware-dependent, high cost ($1,500+)</li>
+                        <li><strong>FitnessAI:</strong> Limited to weight training, no form correction</li>
+                        <li><strong>Freeletics:</strong> Static workouts, no personalization</li>
+                    </ul>
+                    <p><strong>Competitive Advantages:</strong></p>
+                    <ul>
+                        <li>Software-only solution (no hardware required)</li>
+                        <li>Real-time form correction via computer vision</li>
+                        <li>Adaptive workout progression based on performance</li>
+                        <li>Multi-exercise type coverage (strength, cardio, flexibility)</li>
+                    </ul>
+                    <p><strong>Market Gaps:</strong></p>
+                    <ul>
+                        <li>78% of fitness apps lack AI-powered form correction</li>
+                        <li>Limited integration between workout and nutrition tracking</li>
+                        <li>Poor user retention after initial 3-month period</li>
+                    </ul>
+                `,
+                financial: `
+                    <h3>Financial Projections & Business Model</h3>
+                    <p><strong>Revenue Model:</strong></p>
+                    <ul>
+                        <li>Freemium: Basic workouts and tracking (Free)</li>
+                        <li>Premium: AI form correction, personalization ($12.99/month)</li>
+                        <li>Enterprise: Corporate wellness programs ($8/employee/month)</li>
+                    </ul>
+                    <p><strong>5-Year Financial Forecast:</strong></p>
+                    <ul>
+                        <li>Year 1: 5,000 users, $180K revenue</li>
+                        <li>Year 2: 25,000 users, $1.2M revenue</li>
+                        <li>Year 3: 75,000 users, $4.8M revenue</li>
+                        <li>Year 4: 150,000 users, $12.5M revenue</li>
+                        <li>Year 5: 300,000 users, $28M revenue</li>
+                    </ul>
+                    <p><strong>Key Metrics:</strong></p>
+                    <ul>
+                        <li>Customer Acquisition Cost: $25-35</li>
+                        <li>Lifetime Value: $180-240</li>
+                        <li>Monthly Churn Rate: 8-12% (industry average: 15%)</li>
+                        <li>Gross Margin: 85% (software business)</li>
+                    </ul>
+                `,
+                risks: `
+                    <h3>Risk Analysis & Mitigation Strategies</h3>
+                    <p><strong>Technical Risks:</strong></p>
+                    <ul>
+                        <li><strong>Risk:</strong> Computer vision accuracy issues</li>
+                        <li><strong>Mitigation:</strong> Partner with established CV providers (MediaPipe, OpenPose)</li>
+                        <li><strong>Risk:</strong> Device compatibility challenges</li>
+                        <li><strong>Mitigation:</strong> Progressive enhancement, fallback modes</li>
+                    </ul>
+                    <p><strong>Market Risks:</strong></p>
+                    <ul>
+                        <li><strong>Risk:</strong> Large tech companies entering market</li>
+                        <li><strong>Mitigation:</strong> Focus on specialized features, build strong user community</li>
+                        <li><strong>Risk:</strong> Economic downturn affecting discretionary spending</li>
+                        <li><strong>Mitigation:</strong> Strong free tier, flexible pricing options</li>
+                    </ul>
+                    <p><strong>Operational Risks:</strong></p>
+                    <ul>
+                        <li><strong>Risk:</strong> User privacy and data security concerns</li>
+                        <li><strong>Mitigation:</strong> Privacy-first design, local processing where possible</li>
+                        <li><strong>Risk:</strong> Scaling infrastructure costs</li>
+                        <li><strong>Mitigation:</strong> Cloud-native architecture, auto-scaling systems</li>
+                    </ul>
+                `
+            };
+
+            document.getElementById('detail-title').textContent = 
+                type.charAt(0).toUpperCase() + type.slice(1) + ' Analysis';
+            document.getElementById('detail-content').innerHTML = detailContent[type];
+            showModal('detail-modal');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Navigation tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showScreen(tab.dataset.screen);
+                });
+            });
+
+            // Strategy cards
+            document.querySelectorAll('.strategy-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    selectStrategy(card.dataset.strategy);
+                });
+            });
+
+            // Idea cards
+            document.querySelectorAll('.idea-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    if (card.dataset.action === 'new-idea') {
+                        showModal('new-idea-modal');
+                    } else if (card.dataset.idea) {
+                        // Handle existing idea clicks
+                        if (card.dataset.idea === 'fitness-app') {
+                            showScreen('analysis');
+                        } else if (card.querySelector('.status-completed')) {
+                            showScreen('results');
+                        }
+                    }
+                });
+            });
+
+            // New idea form
+            document.getElementById('new-idea-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                closeModal();
+                showScreen('new-idea');
+            });
+
+            // Modal click outside to close
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        closeModal();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>value">$4.4B</div>
+                                <div class="metric-label">Market Size</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">14%</div>
+                                <div class="metric-label">Annual Growth</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">73%</div>
+                                <div class="metric-label">Target Pain Point</div>
+                            </div>
+                        </div>
+                        <button class="expand-btn" onclick="showDetails('market')">View detailed market analysis →</button>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-title">⚡ Competitive Advantage</div>
+                        <div class="insight-content">
+                            Your AI-powered form correction feature differentiates from 78% of current fitness apps that rely on static workout plans. The computer vision approach shows strong market validation, with similar features driving 2.3x higher user retention in comparable apps.
+                        </div>
+                        <div class="insight-metrics">
+                            <div class="metric">
+                                <div class="metric-value">78%</div>
+                                <div class="metric-label">Competitors Without AI</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">2.3x</div>
+                                <div class="metric-label">Retention Boost</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value">High</div>
+                                <div class="metric-label">Differentiation</div>
+                            </div>
+                        </div>
+                        <button class="expand-btn" onclick="showDetails('competitive')">See competitor comparison →</button>
+                    </div>
+
+                    <div class="insight-card">
+                        <div class="insight-title">💰 Financial Outlook</div>
+                        <div class="insight-content">
+                            Revenue projections show strong potential with freemium model. Premium features like AI form correction justify $12.99/month pricing, competitive with market leaders. Break-even projected at 15,000 active users within 18 months.
+                        </div>
+                        <div class="insight-metrics">
+                            <div class="metric">
+                                <div class="metric-

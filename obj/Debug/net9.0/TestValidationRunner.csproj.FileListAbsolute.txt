@@ -1,0 +1,6 @@
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.csproj.AssemblyReference.cache
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.AssemblyInfoInputs.cache
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.AssemblyInfo.cs
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.csproj.CoreCompileInputs.cache
+C:\Development\Jackson.Ideas\obj\Debug\net9.0\TestValidationRunner.sourcelink.json

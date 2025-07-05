@@ -1,0 +1,7 @@
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Release\net9.0\CoverletSourceRootsMapping_Jackson.Ideas.Application.Tests
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.csproj.AssemblyReference.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.AssemblyInfoInputs.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.AssemblyInfo.cs
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.csproj.CoreCompileInputs.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\obj\Release\net9.0\Jackson.Ideas.Application.Tests.sourcelink.json

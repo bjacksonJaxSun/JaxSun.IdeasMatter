@@ -1,0 +1,1230 @@
+@page "/new-idea"
+@rendermode InteractiveServer
+@using Jackson.Ideas.Core.DTOs.Research
+@using Jackson.Ideas.Core.Entities
+@using Jackson.Ideas.Web.Components.Research.IdeaSubmission
+@using Jackson.Ideas.Web.Components.Research.Progress
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILogger<NewIdea> Logger
+
+<PageTitle>New Idea Research - Ideas Matter</PageTitle>
+
+<div class="new-idea-page">
+    <!-- UX-Enhanced Header with Contextual Help -->
+    <header class="page-header" role="banner">
+        <div class="header-content">
+            <h1>Start Your Innovation Journey</h1>
+            <p class="header-description">
+                Transform your idea into a validated business opportunity with AI-powered research and analysis.
+                Our step-by-step process makes professional market research accessible to everyone.
+            </p>
+            
+            <!-- Quick Help Toggle -->
+            <button type="button" 
+                    class="help-toggle" 
+                    @onclick="ToggleHelp"
+                    aria-expanded="@showHelp"
+                    aria-controls="contextual-help">
+                <i class="fas fa-question-circle" aria-hidden="true"></i>
+                <span>How it works</span>
+            </button>
+            
+            <!-- Mock Data Button for Testing -->
+            <button type="button" 
+                    class="help-toggle" 
+                    @onclick="FillMockData"
+                    style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); margin-left: 1rem;">
+                <i class="fas fa-magic" aria-hidden="true"></i>
+                <span>Fill Mock Data</span>
+            </button>
+        </div>
+
+        <!-- Contextual Help Panel (Collapsible) -->
+        @if (showHelp)
+        {
+            <div id="contextual-help" 
+                 class="help-panel" 
+                 role="region" 
+                 aria-labelledby="help-heading">
+                <h2 id="help-heading">How Ideas Matter Works</h2>
+                <div class="help-steps">
+                    <div class="help-step">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>1. Describe Your Idea</h3>
+                            <p>Share your concept, target audience, and goals using our progressive form.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>2. Choose Research Strategy</h3>
+                            <p>Select from Quick Validation, Market Deep-Dive, or Launch Strategy based on your needs.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>3. AI Analysis</h3>
+                            <p>Watch as multiple AI systems analyze your market, competition, and opportunities in real-time.</p>
+                        </div>
+                    </div>
+                    <div class="help-step">
+                        <div class="step-icon" aria-hidden="true">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <div class="step-content">
+                            <h3>4. Get Results</h3>
+                            <p>Receive comprehensive insights, strategic recommendations, and professional reports.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="help-footer">
+                    <p><strong>Typical completion time:</strong> 15-90 minutes depending on your chosen strategy</p>
+                </div>
+            </div>
+        }
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content" role="main">
+        @if (currentStep == FormStep.IdeaSubmission)
+        {
+            <!-- UX-Optimized Progressive Form -->
+            <ProgressiveIdeaForm Model="@ideaModel" 
+                                OnSubmit="@HandleIdeaSubmission" />
+        }
+        else if (currentStep == FormStep.StrategySelection)
+        {
+            <!-- Interactive Strategy Selector -->
+            <InteractiveStrategySelector SelectedStrategy="@selectedStrategy"
+                                       OnStrategySelected="@HandleStrategySelection" />
+            
+            <!-- Navigation Controls -->
+            <div class="step-navigation" role="group" aria-label="Step Navigation">
+                <button type="button" 
+                        class="btn btn-outline-secondary"
+                        @onclick="GoBackToIdeaForm"
+                        aria-label="Go back to idea form">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    Back to Idea Details
+                </button>
+                
+                <button type="button" 
+                        class="btn btn-primary"
+                        @onclick="GoToReview"
+                        disabled="@(selectedStrategy == null)"
+                        aria-label="Review your submission">
+                    <i class="fas fa-check-circle" aria-hidden="true"></i>
+                    <span>Review & Submit</span>
+                </button>
+            </div>
+        }
+        else if (currentStep == FormStep.ReviewAndSubmit)
+        {
+            <!-- Review and Submit Section -->
+            <div class="review-container">
+                <div class="review-header">
+                    <h2>Review Your Research Request</h2>
+                    <p>Please review your idea details and selected research strategy before submitting.</p>
+                </div>
+
+                <div class="review-sections">
+                    <!-- Idea Summary -->
+                    <div class="review-section">
+                        <h3><i class="fas fa-lightbulb"></i> Your Idea</h3>
+                        <div class="review-content">
+                            <div class="review-field">
+                                <label>Title:</label>
+                                <p>@ideaModel.Title</p>
+                            </div>
+                            <div class="review-field">
+                                <label>Brief Description:</label>
+                                <p>@ideaModel.BriefDescription</p>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(ideaModel.DetailedDescription))
+                            {
+                                <div class="review-field">
+                                    <label>Detailed Description:</label>
+                                    <p>@ideaModel.DetailedDescription</p>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(ideaModel.TargetAudience))
+                            {
+                                <div class="review-field">
+                                    <label>Target Audience:</label>
+                                    <p>@ideaModel.TargetAudience</p>
+                                </div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(ideaModel.Industry))
+                            {
+                                <div class="review-field">
+                                    <label>Industry:</label>
+                                    <p>@ideaModel.Industry</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Research Goals -->
+                    @if (!string.IsNullOrWhiteSpace(ideaModel.ResearchGoals) || ideaModel.FocusAreas != null)
+                    {
+                        <div class="review-section">
+                            <h3><i class="fas fa-bullseye"></i> Research Goals</h3>
+                            <div class="review-content">
+                                @if (!string.IsNullOrWhiteSpace(ideaModel.ResearchGoals))
+                                {
+                                    <div class="review-field">
+                                        <label>Specific Goals:</label>
+                                        <p>@ideaModel.ResearchGoals</p>
+                                    </div>
+                                }
+                                @if (ideaModel.FocusAreas != null)
+                                {
+                                    <div class="review-field">
+                                        <label>Focus Areas:</label>
+                                        <ul class="focus-areas-list">
+                                            @if (ideaModel.FocusAreas.MarketSize)
+                                            {
+                                                <li><i class="fas fa-check text-success"></i> Market Size Analysis</li>
+                                            }
+                                            @if (ideaModel.FocusAreas.Competition)
+                                            {
+                                                <li><i class="fas fa-check text-success"></i> Competitive Analysis</li>
+                                            }
+                                            @if (ideaModel.FocusAreas.CustomerAnalysis)
+                                            {
+                                                <li><i class="fas fa-check text-success"></i> Customer Segmentation</li>
+                                            }
+                                            @if (ideaModel.FocusAreas.BusinessModel)
+                                            {
+                                                <li><i class="fas fa-check text-success"></i> Business Model Validation</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Selected Strategy -->
+                    @if (selectedStrategy != null)
+                    {
+                        <div class="review-section">
+                            <h3><i class="fas fa-chart-line"></i> Research Strategy</h3>
+                            <div class="review-content">
+                                <div class="strategy-summary">
+                                    <div class="strategy-icon">
+                                        <i class="@selectedStrategy.IconClass"></i>
+                                    </div>
+                                    <div class="strategy-details">
+                                        <h4>@selectedStrategy.Name</h4>
+                                        <p>@selectedStrategy.Description</p>
+                                        <div class="strategy-meta">
+                                            <span class="badge badge-info">
+                                                <i class="fas fa-clock"></i> @selectedStrategy.EstimatedDuration
+                                            </span>
+                                            <span class="badge badge-success">
+                                                <i class="fas fa-dollar-sign"></i> @selectedStrategy.Price
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (selectedStrategy.Features.Any())
+                                {
+                                    <div class="strategy-features">
+                                        <label>What you'll receive:</label>
+                                        <ul>
+                                            @foreach (var feature in selectedStrategy.Features)
+                                            {
+                                                <li><i class="fas fa-check-circle text-primary"></i> @feature</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="review-actions">
+                    <button type="button" 
+                            class="btn btn-outline-secondary"
+                            @onclick="GoBackToStrategySelection"
+                            aria-label="Go back to strategy selection">
+                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                        Back to Strategy Selection
+                    </button>
+                    
+                    <button type="button" 
+                            class="btn btn-success btn-submit"
+                            @onclick="StartResearchAnalysis"
+                            disabled="@isProcessing"
+                            aria-label="Submit and start analysis">
+                        @if (isProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span>Submitting...</span>
+                        }
+                        else
+                        {
+                            <i class="fas fa-rocket" aria-hidden="true"></i>
+                            <span>Submit & Start Analysis</span>
+                        }
+                    </button>
+                </div>
+            </div>
+        }
+        else if (currentStep == FormStep.Processing)
+        {
+            <!-- Psychology-Based Progress Tracking -->
+            <PsychologyBasedProgressTracker SessionId="@mockSessionId"
+                                          OnAnalysisComplete="@HandleAnalysisComplete"
+                                          OnAnalysisPaused="@HandleAnalysisPaused"
+                                          OnAnalysisStopped="@HandleAnalysisStopped" />
+        }
+
+        <!-- Error Handling -->
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger" role="alert" aria-live="assertive">
+                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                <span>@errorMessage</span>
+                <button type="button" 
+                        class="alert-close" 
+                        @onclick="ClearError"
+                        aria-label="Dismiss error">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+        }
+
+        <!-- Success Messages -->
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success" role="alert" aria-live="polite">
+                <i class="fas fa-check-circle" aria-hidden="true"></i>
+                <span>@successMessage</span>
+            </div>
+        }
+    </main>
+
+    <!-- Session State Indicator -->
+    <aside class="session-state" role="complementary" aria-label="Session information">
+        <div class="state-indicator">
+            <i class="fas fa-save" aria-hidden="true"></i>
+            <span>Auto-saved @lastSaved.ToString("HH:mm")</span>
+        </div>
+    </aside>
+</div>
+@code {
+    // UX-Enhanced State Management
+    private ProgressiveIdeaForm.IdeaSubmissionModel ideaModel = new();
+    private InteractiveStrategySelector.ResearchStrategyModel? selectedStrategy;
+    private FormStep currentStep = FormStep.IdeaSubmission;
+    private bool showHelp = false;
+    private bool isProcessing = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private DateTime lastSaved = DateTime.Now;
+    private string mockSessionId = Guid.NewGuid().ToString();
+
+    private enum FormStep
+    {
+        IdeaSubmission,
+        StrategySelection,
+        ReviewAndSubmit,
+        Processing,
+        Results
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Check if we should load mock data
+        var uri = new Uri(Navigation.Uri);
+        if (uri.Query.Contains("mock=true", StringComparison.OrdinalIgnoreCase))
+        {
+            FillMockData();
+        }
+
+        // Auto-save mechanism
+        _ = Task.Run(async () =>
+        {
+            while (true)
+            {
+                await Task.Delay(30000); // Auto-save every 30 seconds
+                await AutoSave();
+            }
+        });
+    }
+
+    // UX Event Handlers
+    private void ToggleHelp()
+    {
+        showHelp = !showHelp;
+        StateHasChanged();
+    }
+
+    private void FillMockData()
+    {
+        // Fill in mock data for testing
+        ideaModel = new ProgressiveIdeaForm.IdeaSubmissionModel
+        {
+            Title = "AI-Powered Personal Finance Assistant",
+            BriefDescription = "An intelligent mobile app that helps millennials manage their finances through personalized AI recommendations, automated budgeting, and gamified savings goals.",
+            DetailedDescription = "Our AI-powered personal finance assistant revolutionizes how young adults manage money. Using advanced machine learning algorithms, the app analyzes spending patterns, predicts future expenses, and provides actionable insights to help users save more effectively. Key features include: automated expense categorization using AI, personalized budget recommendations based on lifestyle, gamified savings challenges with social features, investment suggestions tailored to risk tolerance, and real-time alerts for unusual spending patterns. The app integrates with all major banks and credit cards, providing a unified view of finances while maintaining bank-level security.",
+            TargetAudience = "Millennials and Gen Z adults (ages 22-40) who are tech-savvy but struggle with traditional budgeting methods",
+            Industry = "FinTech / Personal Finance",
+            ResearchGoals = "Validate market demand for AI-driven financial advice among younger demographics. Analyze competitor landscape and identify unique positioning opportunities. Determine optimal pricing strategy and feature prioritization.",
+            FocusAreas = new ProgressiveIdeaForm.FocusAreasModel
+            {
+                MarketSize = true,
+                Competition = true,
+                CustomerAnalysis = true,
+                BusinessModel = true
+            }
+        };
+
+        // Pre-select a strategy
+        selectedStrategy = new InteractiveStrategySelector.ResearchStrategyModel
+        {
+            Id = "market-deep-dive",
+            Name = "Market Deep-Dive",
+            EstimatedDuration = "~45 minutes",
+            Description = "Comprehensive market analysis with detailed competitive intelligence and customer insights.",
+            IconClass = "fas fa-microscope",
+            Price = "$49",
+            Features = new List<string>
+            {
+                "Detailed market analysis (TAM/SAM/SOM)",
+                "Comprehensive competitor analysis",
+                "Customer segmentation",
+                "Market trends and opportunities",
+                "Business model options",
+                "Pricing strategy recommendations"
+            }
+        };
+
+        // Show success message
+        successMessage = "Mock data loaded! Click through the form to see the review page.";
+        StateHasChanged();
+        
+        // Clear message after a few seconds
+        _ = Task.Run(async () =>
+        {
+            await Task.Delay(3000);
+            successMessage = string.Empty;
+            await InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private async Task HandleIdeaSubmission(ProgressiveIdeaForm.IdeaSubmissionModel model)
+    {
+        ideaModel = model;
+        currentStep = FormStep.StrategySelection;
+        await AutoSave();
+        StateHasChanged();
+    }
+
+    private async Task HandleStrategySelection(InteractiveStrategySelector.ResearchStrategyModel strategy)
+    {
+        selectedStrategy = strategy;
+        await AutoSave();
+        StateHasChanged();
+    }
+
+    private void GoBackToIdeaForm()
+    {
+        currentStep = FormStep.IdeaSubmission;
+        StateHasChanged();
+    }
+
+    private void GoToReview()
+    {
+        if (selectedStrategy != null)
+        {
+            currentStep = FormStep.ReviewAndSubmit;
+            StateHasChanged();
+        }
+    }
+
+    private void GoBackToStrategySelection()
+    {
+        currentStep = FormStep.StrategySelection;
+        StateHasChanged();
+    }
+
+    private async Task StartResearchAnalysis()
+    {
+        if (selectedStrategy == null) return;
+
+        isProcessing = true;
+        currentStep = FormStep.Processing;
+        StateHasChanged();
+
+        try
+        {
+            Logger.LogInformation("Starting research analysis for idea: {IdeaTitle}", ideaModel.Title);
+
+            // In mock mode, we'll show the progress tracker directly
+            successMessage = "Research session started successfully!";
+            
+            // Brief delay to show the submission
+            await Task.Delay(1000);
+            
+            // For now, stay on the processing page to show progress
+            // In a real implementation, this would create a session via API
+            isProcessing = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error starting research analysis");
+            errorMessage = "Failed to start research analysis. Please try again.";
+            currentStep = FormStep.ReviewAndSubmit;
+            isProcessing = false;
+            StateHasChanged();
+        }
+        finally
+        {
+            isProcessing = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task AutoSave()
+    {
+        try
+        {
+            // Implement session state persistence
+            lastSaved = DateTime.Now;
+            
+            // Could save to browser local storage or API
+            // For now, just update the last saved time
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during auto-save");
+        }
+    }
+
+    private string BuildComprehensiveDescription()
+    {
+        var description = $"**Idea Title:** {ideaModel.Title}\n\n";
+        description += $"**Brief Description:** {ideaModel.BriefDescription}\n\n";
+        description += $"**Detailed Description:** {ideaModel.DetailedDescription}\n\n";
+        
+        if (!string.IsNullOrWhiteSpace(ideaModel.TargetAudience))
+            description += $"**Target Audience:** {ideaModel.TargetAudience}\n\n";
+        
+        if (!string.IsNullOrWhiteSpace(ideaModel.Industry))
+            description += $"**Industry:** {ideaModel.Industry}\n\n";
+
+        return description;
+    }
+
+    private string BuildResearchGoals()
+    {
+        var goals = new List<string>();
+
+        // Add user-specified goals
+        if (!string.IsNullOrWhiteSpace(ideaModel.ResearchGoals))
+        {
+            goals.Add($"**User-Specified Goals:** {ideaModel.ResearchGoals}");
+        }
+
+        // Add strategy-specific goals
+        if (selectedStrategy != null)
+        {
+            goals.Add($"**Research Strategy:** {selectedStrategy.Name} ({selectedStrategy.EstimatedDuration})");
+            goals.Add($"**Strategy Description:** {selectedStrategy.Description}");
+            
+            if (selectedStrategy.Features.Any())
+            {
+                goals.Add($"**Expected Deliverables:** {string.Join(", ", selectedStrategy.Features)}");
+            }
+        }
+
+        // Add focus area goals
+        var focusAreas = new List<string>();
+        if (ideaModel.FocusAreas.MarketSize) focusAreas.Add("Market Size & Opportunity Analysis");
+        if (ideaModel.FocusAreas.Competition) focusAreas.Add("Competitive Landscape Analysis");
+        if (ideaModel.FocusAreas.CustomerAnalysis) focusAreas.Add("Customer Segmentation & Analysis");
+        if (ideaModel.FocusAreas.BusinessModel) focusAreas.Add("Business Model Validation");
+
+        if (focusAreas.Any())
+        {
+            goals.Add($"**Focus Areas:** {string.Join(", ", focusAreas)}");
+        }
+
+        return string.Join("\n\n", goals);
+    }
+
+    private string GetEstimatedTime()
+    {
+        return selectedStrategy?.EstimatedDuration ?? "45-90 minutes";
+    }
+
+    private void ClearError()
+    {
+        errorMessage = string.Empty;
+        StateHasChanged();
+    }
+
+    // Progress Tracker Event Handlers
+    private async Task HandleAnalysisComplete()
+    {
+        currentStep = FormStep.Results;
+        successMessage = "Analysis completed successfully! Redirecting to dashboard...";
+        StateHasChanged();
+        
+        // For now, navigate to dashboard since results page doesn't exist yet
+        await Task.Delay(2000);
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private async Task HandleAnalysisPaused(string sessionId)
+    {
+        successMessage = "Analysis paused. You can resume anytime from your dashboard.";
+        StateHasChanged();
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private async Task HandleAnalysisStopped(string sessionId)
+    {
+        currentStep = FormStep.StrategySelection;
+        errorMessage = "Analysis stopped. You can restart with different settings if needed.";
+        StateHasChanged();
+    }
+}
+
+<style>
+    /* UX-Enhanced Page Layout */
+    .new-idea-page {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        position: relative;
+    }
+
+    /* Header with Contextual Help */
+    .page-header {
+        background: white;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .header-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem 2rem 2rem;
+        text-align: center;
+        position: relative;
+    }
+
+    .header-content h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .header-description {
+        color: #666;
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto 2rem auto;
+        line-height: 1.6;
+    }
+
+    .help-toggle {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .help-toggle:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Contextual Help Panel */
+    .help-panel {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 2rem;
+        text-align: left;
+    }
+
+    .help-panel h2 {
+        color: #333;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .help-steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .help-step {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-icon {
+        width: 48px;
+        height: 48px;
+        background: #007bff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .step-content h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+    }
+
+    .help-footer {
+        text-align: center;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+        color: #666;
+    }
+
+    /* Main Content */
+    .main-content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem 2rem;
+    }
+
+    /* Step Navigation */
+    .step-navigation {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding: 2rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Processing State */
+    .processing-container {
+        background: white;
+        border-radius: 8px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .processing-header h2 {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    .processing-header p {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+
+    .progress-placeholder {
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border: 2px dashed #ced4da;
+    }
+
+    .progress-placeholder .spinner-border {
+        width: 3rem;
+        height: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    /* Session State Indicator */
+    .session-state {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: white;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+    }
+
+    .state-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    .state-indicator i {
+        color: #28a745;
+    }
+
+    /* Enhanced Button Styles */
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+        font-size: 1rem;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #0056b3;
+        border-color: #0056b3;
+        transform: translateY(-1px);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background: #1e7e34;
+        border-color: #1e7e34;
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover:not(:disabled) {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+    /* Enhanced Alert Styles */
+    .alert {
+        position: relative;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    .alert-success {
+        background-color: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .alert-close {
+        background: none;
+        border: none;
+        color: inherit;
+        cursor: pointer;
+        margin-left: auto;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .alert-close:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    /* Spinner Animations */
+    .spinner-border {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        vertical-align: text-bottom;
+        border: 0.125em solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border 0.75s linear infinite;
+    }
+
+    .spinner-border-sm {
+        width: 0.875rem;
+        height: 0.875rem;
+        border-width: 0.1em;
+    }
+
+    @@keyframes spinner-border {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Accessibility Helpers */
+    .visually-hidden {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    }
+
+    /* Review and Submit Styles */
+    .review-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .review-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .review-header h2 {
+        color: #333;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .review-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .review-sections {
+        margin-bottom: 2rem;
+    }
+
+    .review-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .review-section h3 {
+        color: #333;
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .review-section h3 i {
+        color: #667eea;
+    }
+
+    .review-content {
+        background: white;
+        border-radius: 6px;
+        padding: 1.5rem;
+    }
+
+    .review-field {
+        margin-bottom: 1rem;
+    }
+
+    .review-field:last-child {
+        margin-bottom: 0;
+    }
+
+    .review-field label {
+        font-weight: 600;
+        color: #555;
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+
+    .review-field p {
+        color: #333;
+        margin: 0;
+        line-height: 1.6;
+    }
+
+    .focus-areas-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .focus-areas-list li {
+        padding: 0.3rem 0;
+        color: #333;
+    }
+
+    .focus-areas-list i {
+        margin-right: 0.5rem;
+    }
+
+    /* Strategy Summary Styles */
+    .strategy-summary {
+        display: flex;
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .strategy-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .strategy-details h4 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .strategy-details p {
+        color: #666;
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .strategy-meta {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .badge-info {
+        background-color: #e7f1ff;
+        color: #0066cc;
+    }
+
+    .badge-success {
+        background-color: #e6f7e6;
+        color: #0a7c0a;
+    }
+
+    .strategy-features {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .strategy-features label {
+        font-weight: 600;
+        color: #555;
+        display: block;
+        margin-bottom: 0.5rem;
+    }
+
+    .strategy-features ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .strategy-features li {
+        padding: 0.3rem 0;
+        color: #333;
+    }
+
+    .strategy-features i {
+        margin-right: 0.5rem;
+    }
+
+    /* Review Actions */
+    .review-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #e9ecef;
+    }
+
+    .btn-submit {
+        font-size: 1.1rem;
+        padding: 0.75rem 2rem;
+    }
+
+    /* Text color utilities */
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .text-primary {
+        color: #007bff !important;
+    }
+
+    /* Mobile Responsiveness */
+    @@media (max-width: 768px) {
+        .header-content {
+            padding: 2rem 1rem 1rem 1rem;
+        }
+
+        .header-content h1 {
+            font-size: 2rem;
+        }
+
+        .main-content {
+            padding: 0 1rem 2rem 1rem;
+        }
+
+        .help-steps {
+            grid-template-columns: 1fr;
+        }
+
+        .step-navigation {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .session-state {
+            bottom: 1rem;
+            right: 1rem;
+            left: 1rem;
+        }
+
+        .processing-container {
+            padding: 2rem 1rem;
+        }
+    }
+
+    /* Reduced Motion */
+    @@media (prefers-reduced-motion: reduce) {
+        .help-toggle,
+        .btn,
+        .spinner-border {
+            transition: none;
+            animation: none;
+        }
+    }
+
+    /* High Contrast Mode */
+    @@media (prefers-contrast: high) {
+        .help-panel,
+        .processing-container,
+        .step-navigation {
+            border: 2px solid black;
+        }
+        
+        .btn:focus {
+            box-shadow: 0 0 0 3px black;
+        }
+    }
+
+    /* Dark Mode Support */
+    @@media (prefers-color-scheme: dark) {
+        .new-idea-page {
+            background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        }
+
+        .page-header,
+        .help-panel,
+        .processing-container,
+        .step-navigation,
+        .session-state {
+            background: #2d3748;
+            color: #e2e8f0;
+        }
+
+        .header-content h1,
+        .step-content h3 {
+            color: #e2e8f0;
+        }
+
+        .header-description,
+        .step-content p,
+        .state-indicator {
+            color: #a0aec0;
+        }
+    }
+</style>

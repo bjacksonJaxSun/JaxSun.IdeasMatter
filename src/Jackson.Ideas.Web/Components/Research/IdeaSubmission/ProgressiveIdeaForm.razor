@@ -1,0 +1,1118 @@
+@using Jackson.Ideas.Core.DTOs.Research
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<div class="progressive-form-container" role="main" aria-label="Idea Submission Form">
+    <EditForm Model="@Model" OnValidSubmit="@HandleValidSubmit" FormName="progressive-idea-form">
+        <DataAnnotationsValidator />
+        
+        <!-- Step Navigation (Interactive Sequence Map) -->
+        <nav class="form-steps" role="tablist" aria-label="Form Steps">
+            @for (int i = 0; i < FormSteps.Count; i++)
+            {
+                var step = FormSteps[i];
+                var stepIndex = i;
+                <button type="button" 
+                        class="step-button @GetStepClass(stepIndex)" 
+                        role="tab"
+                        aria-selected="@(CurrentStep == stepIndex)"
+                        aria-controls="step-@stepIndex"
+                        @onclick="() => NavigateToStep(stepIndex)"
+                        disabled="@(!CanNavigateToStep(stepIndex))">
+                    <span class="step-number" aria-hidden="true">@(stepIndex + 1)</span>
+                    <span class="step-title">@step.Title</span>
+                    @if (step.IsCompleted)
+                    {
+                        <i class="fas fa-check step-check" aria-hidden="true"></i>
+                    }
+                </button>
+            }
+        </nav>
+
+        <!-- Form Content with Staged Disclosure -->
+        <div class="form-content" id="step-@CurrentStep" role="tabpanel" aria-labelledby="step-@CurrentStep-button">
+            @switch (CurrentStep)
+            {
+                case 0:
+                    @RenderBasicInfoStep()
+                    break;
+                case 1:
+                    @RenderIdeaDetailsStep()
+                    break;
+                case 2:
+                    @RenderResearchGoalsStep()
+                    break;
+                case 3:
+                    @RenderStrategySelectionStep()
+                    break;
+                case 4:
+                    @RenderReviewStep()
+                    break;
+            }
+        </div>
+
+        <!-- Form Navigation -->
+        <div class="form-navigation" role="group" aria-label="Form Navigation">
+            <button type="button" 
+                    class="btn btn-outline-secondary"
+                    @onclick="PreviousStep"
+                    disabled="@(CurrentStep == 0)"
+                    aria-label="Go to previous step">
+                <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                Previous
+            </button>
+
+            @if (CurrentStep < FormSteps.Count - 1)
+            {
+                <button type="button" 
+                        class="btn btn-primary"
+                        @onclick="NextStep"
+                        disabled="@(!CanProceedToNext())"
+                        aria-label="Go to next step">
+                    Next
+                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                </button>
+            }
+            else
+            {
+                <button type="submit" 
+                        class="btn btn-success"
+                        disabled="@(!IsFormValid())"
+                        aria-label="Submit idea for research">
+                    <i class="fas fa-rocket" aria-hidden="true"></i>
+                    Start Research
+                </button>
+            }
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-container" role="progressbar" 
+             aria-valuenow="@GetProgressPercentage()" 
+             aria-valuemin="0" 
+             aria-valuemax="100"
+             aria-label="Form completion progress">
+            <div class="progress-bar" style="width: @GetProgressPercentage()%"></div>
+            <span class="progress-text">@GetProgressPercentage()% Complete</span>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    [Parameter] public IdeaSubmissionModel Model { get; set; } = new();
+    [Parameter] public EventCallback<IdeaSubmissionModel> OnSubmit { get; set; }
+
+    private int CurrentStep = 0;
+    private List<FormStepInfo> FormSteps = new();
+    private string selectedStrategyId = string.Empty;
+
+    private class FormStepInfo
+    {
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public bool IsCompleted { get; set; }
+        public bool IsRequired { get; set; } = true;
+    }
+
+    protected override void OnInitialized()
+    {
+        InitializeFormSteps();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Check if model is already filled (for mock data)
+        if (!string.IsNullOrWhiteSpace(Model.Title) && FormSteps.Count > 0)
+        {
+            // Mark steps as completed based on filled data
+            if (!string.IsNullOrWhiteSpace(Model.Title) && !string.IsNullOrWhiteSpace(Model.BriefDescription))
+            {
+                FormSteps[0].IsCompleted = true;
+            }
+            if (!string.IsNullOrWhiteSpace(Model.DetailedDescription))
+            {
+                FormSteps[1].IsCompleted = true;
+            }
+            if (!string.IsNullOrWhiteSpace(Model.ResearchGoals) || Model.FocusAreas != null)
+            {
+                FormSteps[2].IsCompleted = true;
+            }
+        }
+    }
+
+    private void InitializeFormSteps()
+    {
+        FormSteps = new List<FormStepInfo>
+        {
+            new() { Title = "Basic Info", Description = "Tell us about your idea", IsRequired = true },
+            new() { Title = "Idea Details", Description = "Provide comprehensive details", IsRequired = true },
+            new() { Title = "Research Goals", Description = "Define what you want to learn", IsRequired = false },
+            new() { Title = "Strategy Selection", Description = "Choose your research approach", IsRequired = true },
+            new() { Title = "Review & Submit", Description = "Review and start research", IsRequired = true }
+        };
+    }
+
+    private RenderFragment RenderBasicInfoStep() => __builder =>
+    {
+        <div class="form-step">
+            <div class="step-header">
+                <h2>Let's Start with the Basics</h2>
+                <p class="step-description">Give your idea a name and brief description to get started.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="ideaTitle" class="form-label required">
+                    Idea Title
+                    <span class="required-indicator" aria-label="required">*</span>
+                </label>
+                <InputText id="ideaTitle" 
+                          class="form-control" 
+                          @bind-Value="Model.Title" 
+                          placeholder="e.g., AI-Powered Task Management App"
+                          aria-describedby="title-help" />
+                <div id="title-help" class="form-help">
+                    Choose a clear, memorable name that captures the essence of your idea.
+                </div>
+                <ValidationMessage For="@(() => Model.Title)" />
+            </div>
+
+            <div class="form-group">
+                <label for="briefDescription" class="form-label required">
+                    Brief Description
+                    <span class="required-indicator" aria-label="required">*</span>
+                </label>
+                <InputTextArea id="briefDescription" 
+                              class="form-control" 
+                              rows="3"
+                              @bind-Value="Model.BriefDescription" 
+                              placeholder="In 1-2 sentences, what does your idea do and who is it for?"
+                              aria-describedby="brief-help" />
+                <div id="brief-help" class="form-help">
+                    Keep it simple - you'll add more details in the next step.
+                </div>
+                <ValidationMessage For="@(() => Model.BriefDescription)" />
+            </div>
+        </div>
+    };
+
+    private RenderFragment RenderIdeaDetailsStep() => __builder =>
+    {
+        <div class="form-step">
+            <div class="step-header">
+                <h2>Tell Us More About Your Idea</h2>
+                <p class="step-description">The more details you provide, the better our AI can help you.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="detailedDescription" class="form-label required">
+                    Detailed Description
+                    <span class="required-indicator" aria-label="required">*</span>
+                </label>
+                <InputTextArea id="detailedDescription" 
+                              class="form-control" 
+                              rows="6"
+                              @bind-Value="Model.DetailedDescription" 
+                              placeholder="Describe your idea in detail. What problem does it solve? How does it work? What makes it unique?"
+                              aria-describedby="detailed-help" />
+                <div id="detailed-help" class="form-help">
+                    Include the problem you're solving, your solution approach, and what makes it different.
+                </div>
+                <ValidationMessage For="@(() => Model.DetailedDescription)" />
+            </div>
+
+            <div class="form-group">
+                <label for="targetAudience" class="form-label">
+                    Target Audience
+                </label>
+                <InputText id="targetAudience" 
+                          class="form-control" 
+                          @bind-Value="Model.TargetAudience" 
+                          placeholder="e.g., Small business owners, Remote teams, Students"
+                          aria-describedby="audience-help" />
+                <div id="audience-help" class="form-help">
+                    Who would use this? Be as specific as possible.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="industry" class="form-label">
+                    Industry/Category
+                </label>
+                <InputText id="industry" 
+                          class="form-control" 
+                          @bind-Value="Model.Industry" 
+                          placeholder="e.g., Productivity, Healthcare, Education, E-commerce"
+                          aria-describedby="industry-help" />
+                <div id="industry-help" class="form-help">
+                    Which industry or category best describes your idea?
+                </div>
+            </div>
+        </div>
+    };
+
+    private RenderFragment RenderResearchGoalsStep() => __builder =>
+    {
+        <div class="form-step">
+            <div class="step-header">
+                <h2>What Do You Want to Learn?</h2>
+                <p class="step-description">Help us focus our research on what matters most to you.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="researchGoals" class="form-label">
+                    Specific Research Goals
+                </label>
+                <InputTextArea id="researchGoals" 
+                              class="form-control" 
+                              rows="4"
+                              @bind-Value="Model.ResearchGoals" 
+                              placeholder="e.g., Market size analysis, Competitor landscape, Pricing strategies, Customer validation"
+                              aria-describedby="goals-help" />
+                <div id="goals-help" class="form-help">
+                    What specific aspects would you like us to research? (Optional - we'll provide comprehensive analysis regardless)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Research Focus Areas</label>
+                <div class="checkbox-grid" role="group" aria-labelledby="focus-areas">
+                    <div class="form-check">
+                        <InputCheckbox id="marketSize" class="form-check-input" @bind-Value="Model.FocusAreas.MarketSize" />
+                        <label class="form-check-label" for="marketSize">Market Size & Opportunity</label>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox id="competition" class="form-check-input" @bind-Value="Model.FocusAreas.Competition" />
+                        <label class="form-check-label" for="competition">Competitive Analysis</label>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox id="customerAnalysis" class="form-check-input" @bind-Value="Model.FocusAreas.CustomerAnalysis" />
+                        <label class="form-check-label" for="customerAnalysis">Customer Analysis</label>
+                    </div>
+                    <div class="form-check">
+                        <InputCheckbox id="businessModel" class="form-check-input" @bind-Value="Model.FocusAreas.BusinessModel" />
+                        <label class="form-check-label" for="businessModel">Business Model</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    };
+
+    private RenderFragment RenderStrategySelectionStep() => __builder =>
+    {
+        <div class="form-step">
+            <div class="step-header">
+                <h2>Choose Your Research Strategy</h2>
+                <p class="step-description">Select the depth and focus of your research analysis.</p>
+            </div>
+
+            <!-- Embedded Strategy Selector -->
+            <div class="embedded-strategy-selector">
+                @{
+                    var strategies = GetAvailableStrategies();
+                }
+                
+                <div class="strategy-cards-mini">
+                    @foreach (var strategy in strategies)
+                    {
+                        <div class="strategy-card-mini @(selectedStrategyId == strategy.Id ? "selected" : "")"
+                             @onclick="() => SelectStrategy(strategy.Id)"
+                             role="button"
+                             tabindex="0"
+                             aria-pressed="@(selectedStrategyId == strategy.Id)">
+                            
+                            <div class="card-header-mini">
+                                <div class="strategy-icon-mini">
+                                    <i class="@strategy.IconClass" aria-hidden="true"></i>
+                                </div>
+                                <div class="strategy-info">
+                                    <h4>@strategy.Name</h4>
+                                    <span class="duration">@strategy.Duration</span>
+                                </div>
+                                @if (selectedStrategyId == strategy.Id)
+                                {
+                                    <div class="selected-check">
+                                        <i class="fas fa-check-circle" aria-hidden="true"></i>
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="card-body-mini">
+                                <p>@strategy.Description</p>
+                                <div class="features-mini">
+                                    @foreach (var feature in strategy.KeyFeatures.Take(3))
+                                    {
+                                        <span class="feature-tag">@feature</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                @if (!string.IsNullOrEmpty(selectedStrategyId))
+                {
+                    var selected = strategies.FirstOrDefault(s => s.Id == selectedStrategyId);
+                    if (selected != null)
+                    {
+                        <div class="strategy-details">
+                            <h4>@selected.Name Details</h4>
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <strong>Duration:</strong> @selected.Duration
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Confidence Level:</strong> @selected.ConfidenceLevel%
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Best For:</strong> @string.Join(", ", selected.IdealFor)
+                                </div>
+                            </div>
+                            <div class="full-features">
+                                <strong>What You'll Get:</strong>
+                                <ul>
+                                    @foreach (var feature in selected.KeyFeatures)
+                                    {
+                                        <li>@feature</li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    };
+
+    private RenderFragment RenderReviewStep() => __builder =>
+    {
+        <div class="form-step">
+            <div class="step-header">
+                <h2>Review Your Submission</h2>
+                <p class="step-description">Review your information before starting the AI research.</p>
+            </div>
+
+            <div class="review-summary">
+                <div class="review-item">
+                    <h3>Idea Title</h3>
+                    <p>@Model.Title</p>
+                </div>
+                <div class="review-item">
+                    <h3>Brief Description</h3>
+                    <p>@Model.BriefDescription</p>
+                </div>
+                <div class="review-item">
+                    <h3>Target Audience</h3>
+                    <p>@(Model.TargetAudience ?? "Not specified")</p>
+                </div>
+                <div class="review-item">
+                    <h3>Industry</h3>
+                    <p>@(Model.Industry ?? "Not specified")</p>
+                </div>
+            </div>
+        </div>
+    };
+
+    private void NavigateToStep(int stepIndex)
+    {
+        if (CanNavigateToStep(stepIndex))
+        {
+            CurrentStep = stepIndex;
+            StateHasChanged();
+        }
+    }
+
+    private void NextStep()
+    {
+        if (CurrentStep < FormSteps.Count - 1 && CanProceedToNext())
+        {
+            MarkCurrentStepCompleted();
+            CurrentStep++;
+            StateHasChanged();
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (CurrentStep > 0)
+        {
+            CurrentStep--;
+            StateHasChanged();
+        }
+    }
+
+    private bool CanNavigateToStep(int stepIndex)
+    {
+        // Allow navigation to completed steps or next step
+        return stepIndex <= CurrentStep + 1 || FormSteps[stepIndex].IsCompleted;
+    }
+
+    private bool CanProceedToNext()
+    {
+        return ValidateCurrentStep();
+    }
+
+    private bool ValidateCurrentStep()
+    {
+        return CurrentStep switch
+        {
+            0 => !string.IsNullOrWhiteSpace(Model.Title) && !string.IsNullOrWhiteSpace(Model.BriefDescription),
+            1 => !string.IsNullOrWhiteSpace(Model.DetailedDescription),
+            2 => true, // Optional step
+            3 => !string.IsNullOrEmpty(selectedStrategyId), // Strategy selection required
+            4 => true, // Review step
+            _ => false
+        };
+    }
+
+    private void SelectStrategy(string strategyId)
+    {
+        selectedStrategyId = strategyId;
+        Model.SelectedStrategyId = strategyId;
+        StateHasChanged();
+    }
+
+    private List<StrategyInfo> GetAvailableStrategies()
+    {
+        return new List<StrategyInfo>
+        {
+            new()
+            {
+                Id = "quick-validation",
+                Name = "Quick Validation",
+                Duration = "~15 minutes",
+                Description = "Fast go/no-go decision with essential market insights.",
+                IconClass = "fas fa-tachometer-alt",
+                ConfidenceLevel = 85,
+                KeyFeatures = new List<string>
+                {
+                    "Basic market analysis",
+                    "Competitor overview",
+                    "SWOT analysis",
+                    "Go/no-go recommendation"
+                },
+                IdealFor = new List<string> { "Idea screening", "Quick decisions" }
+            },
+            new()
+            {
+                Id = "market-deep-dive",
+                Name = "Market Deep-Dive",
+                Duration = "~45 minutes", 
+                Description = "Comprehensive market analysis with detailed competitive intelligence.",
+                IconClass = "fas fa-microscope",
+                ConfidenceLevel = 92,
+                KeyFeatures = new List<string>
+                {
+                    "Detailed market analysis",
+                    "Comprehensive competitor analysis",
+                    "Customer segmentation",
+                    "Business model options"
+                },
+                IdealFor = new List<string> { "Market research", "Business planning" }
+            },
+            new()
+            {
+                Id = "launch-strategy",
+                Name = "Launch Strategy",
+                Duration = "~90 minutes",
+                Description = "Complete launch-ready analysis with go-to-market strategy.",
+                IconClass = "fas fa-rocket",
+                ConfidenceLevel = 88,
+                KeyFeatures = new List<string>
+                {
+                    "Complete market analysis",
+                    "Strategic positioning",
+                    "Customer personas",
+                    "Go-to-market strategy"
+                },
+                IdealFor = new List<string> { "Product launch", "Strategic planning" }
+            }
+        };
+    }
+
+    public class StrategyInfo
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Duration { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
+        public int ConfidenceLevel { get; set; }
+        public List<string> KeyFeatures { get; set; } = new();
+        public List<string> IdealFor { get; set; } = new();
+    }
+
+    private void MarkCurrentStepCompleted()
+    {
+        if (CurrentStep < FormSteps.Count)
+        {
+            FormSteps[CurrentStep].IsCompleted = true;
+        }
+    }
+
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(Model.Title) &&
+               !string.IsNullOrWhiteSpace(Model.BriefDescription) &&
+               !string.IsNullOrWhiteSpace(Model.DetailedDescription);
+    }
+
+    private int GetProgressPercentage()
+    {
+        int completedSteps = FormSteps.Count(s => s.IsCompleted);
+        if (ValidateCurrentStep()) completedSteps++; // Count current step if valid
+        return (completedSteps * 100) / FormSteps.Count;
+    }
+
+    private string GetStepClass(int stepIndex)
+    {
+        var classes = new List<string> { "step" };
+        
+        if (stepIndex == CurrentStep)
+            classes.Add("active");
+        else if (FormSteps[stepIndex].IsCompleted)
+            classes.Add("completed");
+        else if (stepIndex < CurrentStep)
+            classes.Add("visited");
+        
+        return string.Join(" ", classes);
+    }
+
+    public class IdeaSubmissionModel
+    {
+        [Required(ErrorMessage = "Idea title is required")]
+        [StringLength(200, ErrorMessage = "Title must be less than 200 characters")]
+        public string Title { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Brief description is required")]
+        [StringLength(500, ErrorMessage = "Brief description must be less than 500 characters")]
+        public string BriefDescription { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Detailed description is required")]
+        [StringLength(2000, ErrorMessage = "Detailed description must be less than 2000 characters")]
+        public string DetailedDescription { get; set; } = string.Empty;
+
+        [StringLength(200, ErrorMessage = "Target audience must be less than 200 characters")]
+        public string? TargetAudience { get; set; }
+
+        [StringLength(100, ErrorMessage = "Industry must be less than 100 characters")]
+        public string? Industry { get; set; }
+
+        [StringLength(1000, ErrorMessage = "Research goals must be less than 1000 characters")]
+        public string? ResearchGoals { get; set; }
+
+        public FocusAreasModel FocusAreas { get; set; } = new();
+
+        public string SelectedStrategyId { get; set; } = string.Empty;
+    }
+
+    public class FocusAreasModel
+    {
+        public bool MarketSize { get; set; }
+        public bool Competition { get; set; } = true; // Default to true
+        public bool CustomerAnalysis { get; set; } = true; // Default to true
+        public bool BusinessModel { get; set; }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnSubmit.InvokeAsync(Model);
+    }
+}
+
+<style>
+    .progressive-form-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Interactive Sequence Map */
+    .form-steps {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+        padding: 0;
+        border: none;
+        background: none;
+    }
+
+    .step-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        border: 2px solid #e9ecef;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 120px;
+        position: relative;
+    }
+
+    .step-button:hover:not(:disabled) {
+        border-color: #007bff;
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+    }
+
+    .step-button.active {
+        border-color: #007bff;
+        background: #f8f9ff;
+    }
+
+    .step-button.completed {
+        border-color: #28a745;
+        background: #f8fff9;
+    }
+
+    .step-button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .step-number {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .step-button.active .step-number {
+        background: #007bff;
+        color: white;
+    }
+
+    .step-button.completed .step-number {
+        background: #28a745;
+        color: white;
+    }
+
+    .step-title {
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .step-check {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        color: #28a745;
+    }
+
+    /* Form Content */
+    .form-step {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .step-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .step-header h2 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .step-description {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    /* Form Controls */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .form-label.required .required-indicator {
+        color: #dc3545;
+        margin-left: 0.25rem;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .form-help {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+
+    /* Checkbox Grid */
+    .checkbox-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .form-check-label {
+        font-size: 0.95rem;
+        color: #333;
+        cursor: pointer;
+    }
+
+    /* Navigation */
+    .form-navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover:not(:disabled) {
+        background: #1e7e34;
+        border-color: #1e7e34;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover:not(:disabled) {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+    }
+
+    /* Progress Indicator */
+    .progress-container {
+        background: #e9ecef;
+        border-radius: 4px;
+        height: 8px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        transition: width 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .progress-text {
+        position: absolute;
+        top: -24px;
+        right: 0;
+        font-size: 0.75rem;
+        color: #6c757d;
+        font-weight: 500;
+    }
+
+    /* Review Summary */
+    .review-summary {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .review-item {
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .review-item:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .review-item h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .review-item p {
+        color: #666;
+        margin: 0;
+    }
+
+    /* Embedded Strategy Selector */
+    .embedded-strategy-selector {
+        margin-top: 1rem;
+    }
+
+    .strategy-cards-mini {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .strategy-card-mini {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+
+    .strategy-card-mini:hover {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    .strategy-card-mini.selected {
+        border-color: #007bff;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+    }
+
+    .card-header-mini {
+        padding: 1rem;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+    }
+
+    .strategy-icon-mini {
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.25rem;
+    }
+
+    .strategy-info {
+        flex: 1;
+    }
+
+    .strategy-info h4 {
+        margin: 0 0 0.25rem 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .strategy-info .duration {
+        font-size: 0.875rem;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .selected-check {
+        color: #28a745;
+        font-size: 1.25rem;
+    }
+
+    .card-body-mini {
+        padding: 1rem;
+    }
+
+    .card-body-mini p {
+        margin: 0 0 1rem 0;
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .features-mini {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .feature-tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .strategy-details {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+
+    .strategy-details h4 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .detail-item {
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .detail-item strong {
+        color: #333;
+    }
+
+    .full-features {
+        margin-top: 1rem;
+    }
+
+    .full-features strong {
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .full-features ul {
+        margin: 0.5rem 0 0 0;
+        padding-left: 1.5rem;
+    }
+
+    .full-features li {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+
+    /* Mobile Responsiveness */
+    @@media (max-width: 768px) {
+        .progressive-form-container {
+            padding: 1rem;
+        }
+
+        .form-steps {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .step-button {
+            flex-direction: row;
+            min-width: auto;
+            justify-content: flex-start;
+            padding: 0.75rem;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            margin-bottom: 0;
+            margin-right: 0.75rem;
+        }
+
+        .form-step {
+            padding: 1.5rem;
+        }
+
+        .checkbox-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .form-navigation {
+            flex-direction: column-reverse;
+            gap: 1rem;
+        }
+    }
+
+    /* Accessibility Enhancements */
+    @@media (prefers-reduced-motion: reduce) {
+        .step-button, .form-control, .btn, .progress-bar {
+            transition: none;
+        }
+    }
+
+    /* High Contrast Mode */
+    @@media (prefers-contrast: high) {
+        .step-button {
+            border-width: 3px;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px black;
+        }
+    }
+</style>

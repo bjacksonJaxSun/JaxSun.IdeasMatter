@@ -1,0 +1,12 @@
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\bin\Debug\net9.0\Jackson.Ideas.Shared.deps.json
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\bin\Debug\net9.0\Jackson.Ideas.Shared.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\bin\Debug\net9.0\Jackson.Ideas.Shared.pdb
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.AssemblyInfoInputs.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.AssemblyInfo.cs
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.csproj.CoreCompileInputs.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.sourcelink.json
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\refint\Jackson.Ideas.Shared.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\Jackson.Ideas.Shared.pdb
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Shared\obj\Debug\net9.0\ref\Jackson.Ideas.Shared.dll

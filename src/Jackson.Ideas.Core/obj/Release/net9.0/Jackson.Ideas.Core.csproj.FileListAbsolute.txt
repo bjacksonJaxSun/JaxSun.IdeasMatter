@@ -1,0 +1,13 @@
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\bin\Release\net9.0\Jackson.Ideas.Core.deps.json
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\bin\Release\net9.0\Jackson.Ideas.Core.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\bin\Release\net9.0\Jackson.Ideas.Core.pdb
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.csproj.AssemblyReference.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.AssemblyInfoInputs.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.AssemblyInfo.cs
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.csproj.CoreCompileInputs.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.sourcelink.json
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\refint\Jackson.Ideas.Core.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\Jackson.Ideas.Core.pdb
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Core\obj\Release\net9.0\ref\Jackson.Ideas.Core.dll

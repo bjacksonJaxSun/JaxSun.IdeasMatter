@@ -1,0 +1,645 @@
+using Jackson.Ideas.Application.Services;
+using Jackson.Ideas.Core.DTOs.Research;
+using Jackson.Ideas.Core.Interfaces.AI;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
+namespace Jackson.Ideas.Application.Tests.Services;
+
+public class CustomerSegmentationServiceTests
+{
+    private readonly Mock<IAIOrchestrator> _mockAIOrchestrator;
+    private readonly Mock<ILogger<CustomerSegmentationService>> _mockLogger;
+    private readonly CustomerSegmentationService _service;
+
+    public CustomerSegmentationServiceTests()
+    {
+        _mockAIOrchestrator = new Mock<IAIOrchestrator>();
+        _mockLogger = new Mock<ILogger<CustomerSegmentationService>>();
+        
+        _service = new CustomerSegmentationService(
+            _mockAIOrchestrator.Object,
+            _mockLogger.Object);
+    }
+
+    [Fact]
+    public async Task AnalyzeCustomerSegmentsAsync_WithValidInput_ShouldReturnSegmentation()
+    {
+        // Arrange
+        var ideaTitle = "AI-Powered Learning Platform";
+        var ideaDescription = "Personalized learning platform using AI to adapt content to individual learning styles";
+        var marketAnalysis = "Growing online education market with increasing demand for personalized learning";
+        
+        var expectedSegmentation = new CustomerSegmentationResult
+        {
+            PrimarySegments = new List<CustomerSegment>
+            {
+                new CustomerSegment
+                {
+                    Name = "Working Professionals",
+                    Size = "45 million users",
+                    Demographics = new List<string>
+                    {
+                        "Age: 25-45 years",
+                        "Income: $50,000-$150,000 annually",
+                        "Education: College-educated",
+                        "Location: Urban and suburban areas"
+                    },
+                    Psychographics = new List<string>
+                    {
+                        "Career-focused and ambitious",
+                        "Values efficiency and time management",
+                        "Tech-savvy and early adopters",
+                        "Willing to invest in self-improvement"
+                    },
+                    Characteristics = new List<string>
+                    {
+                        "Limited time for traditional learning",
+                        "Prefer mobile and flexible learning options",
+                        "Motivated by career advancement",
+                        "Value practical, applicable skills"
+                    },
+                    PainPoints = new List<string>
+                    {
+                        "Lack of time for extended learning programs",
+                        "Difficulty finding relevant, high-quality content",
+                        "Generic learning paths don't match their specific needs",
+                        "Struggle to maintain learning consistency"
+                    },
+                    ValueProposition = "Learn career-relevant skills in 15-minute daily sessions with AI-personalized content that adapts to your schedule and learning pace",
+                    WillingnessToPay = "High - $50-$200 per month for career advancement",
+                    PreferredChannels = new List<string>
+                    {
+                        "Professional networks (LinkedIn)",
+                        "Corporate learning platforms",
+                        "Industry conferences and events",
+                        "Mobile app stores"
+                    },
+                    EngagementStrategy = "Focus on ROI and career outcomes, provide progress tracking and skill certifications",
+                    ConversionPotential = 8.5
+                },
+                new CustomerSegment
+                {
+                    Name = "University Students",
+                    Size = "20 million users",
+                    Demographics = new List<string>
+                    {
+                        "Age: 18-25 years",
+                        "Income: Limited, often student loans",
+                        "Education: Currently pursuing higher education",
+                        "Location: College towns and urban areas"
+                    },
+                    Psychographics = new List<string>
+                    {
+                        "Academic achievement oriented",
+                        "Social and collaborative learners",
+                        "Budget-conscious but technology embracing",
+                        "Future-focused and career-planning minded"
+                    },
+                    Characteristics = new List<string>
+                    {
+                        "Need to supplement classroom learning",
+                        "Prefer interactive and gamified experiences",
+                        "Heavy mobile device usage",
+                        "Influenced by peer recommendations"
+                    },
+                    PainPoints = new List<string>
+                    {
+                        "Expensive textbooks and learning materials",
+                        "Large class sizes with limited individual attention",
+                        "Difficulty connecting theory to practical applications",
+                        "Academic pressure and stress management"
+                    },
+                    ValueProposition = "Affordable AI tutor that provides personalized explanations and practice problems, making complex subjects easier to understand",
+                    WillingnessToPay = "Low-Medium - $10-$30 per month with student discounts",
+                    PreferredChannels = new List<string>
+                    {
+                        "Social media (TikTok, Instagram, YouTube)",
+                        "Campus marketing and partnerships",
+                        "Student app recommendations",
+                        "University career centers"
+                    },
+                    EngagementStrategy = "Gamification, social features, study groups, and clear academic outcome tracking",
+                    ConversionPotential = 6.8
+                }
+            },
+            SecondarySegments = new List<CustomerSegment>
+            {
+                new CustomerSegment
+                {
+                    Name = "Career Changers",
+                    Size = "8 million users",
+                    Demographics = new List<string>
+                    {
+                        "Age: 30-55 years",
+                        "Income: Variable, often in transition",
+                        "Education: Varied backgrounds",
+                        "Location: Nationwide"
+                    },
+                    Characteristics = new List<string>
+                    {
+                        "Need to acquire new skills for career transition",
+                        "Highly motivated but time-constrained",
+                        "Require structured learning paths",
+                        "Value practical, immediately applicable knowledge"
+                    },
+                    PainPoints = new List<string>
+                    {
+                        "Overwhelming number of learning options",
+                        "Uncertainty about which skills to prioritize",
+                        "Financial pressure during career transition",
+                        "Lack of confidence in new field"
+                    },
+                    ValueProposition = "Guided career transition with AI-curated learning paths and industry-specific skill development",
+                    WillingnessToPay = "Medium-High - $75-$150 per month during transition period",
+                    ConversionPotential = 7.2
+                }
+            },
+            MarketSizeTotal = "73 million potential users",
+            RevenueOpportunity = "$2.8 billion annually",
+            SegmentationStrategy = "Focus on working professionals as primary target, with student freemium model for market penetration",
+            RecommendedPrioritization = new List<string>
+            {
+                "Phase 1: Working Professionals (highest revenue potential)",
+                "Phase 2: University Students (scale and brand building)",
+                "Phase 3: Career Changers (specialized high-value segment)"
+            }
+        };
+
+        _mockAIOrchestrator.Setup(x => x.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, marketAnalysis, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedSegmentation);
+
+        // Act
+        var result = await _service.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, marketAnalysis);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.PrimarySegments);
+        Assert.NotEmpty(result.SecondarySegments);
+        Assert.NotEmpty(result.MarketSizeTotal);
+        Assert.NotEmpty(result.RevenueOpportunity);
+        Assert.NotEmpty(result.SegmentationStrategy);
+        Assert.NotEmpty(result.RecommendedPrioritization);
+        
+        // Verify primary segments are comprehensive
+        Assert.All(result.PrimarySegments, segment =>
+        {
+            Assert.NotEmpty(segment.Name);
+            Assert.NotEmpty(segment.Size);
+            Assert.NotEmpty(segment.Demographics);
+            Assert.NotEmpty(segment.Characteristics);
+            Assert.NotEmpty(segment.PainPoints);
+            Assert.NotEmpty(segment.ValueProposition);
+            Assert.NotEmpty(segment.WillingnessToPay);
+            Assert.True(segment.ConversionPotential >= 0 && segment.ConversionPotential <= 10);
+        });
+        
+        // Verify specific segment content
+        var workingProfessionals = result.PrimarySegments.First(s => s.Name == "Working Professionals");
+        Assert.Contains("career", workingProfessionals.ValueProposition.ToLower());
+        Assert.Contains("time", workingProfessionals.PainPoints[0].ToLower());
+        
+        // Verify AI orchestrator was called
+        _mockAIOrchestrator.Verify(x => x.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, marketAnalysis, It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task AnalyzeCustomerSegmentsAsync_WithEmptyTitle_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var emptyTitle = "";
+        var ideaDescription = "Valid description";
+        var marketAnalysis = "Valid market analysis";
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => 
+            _service.AnalyzeCustomerSegmentsAsync(emptyTitle, ideaDescription, marketAnalysis));
+    }
+
+    [Fact]
+    public async Task AnalyzeCustomerSegmentsAsync_WithNullDescription_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var ideaTitle = "Valid Title";
+        string? nullDescription = null;
+        var marketAnalysis = "Valid market analysis";
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => 
+            _service.AnalyzeCustomerSegmentsAsync(ideaTitle, nullDescription!, marketAnalysis));
+    }
+
+    [Fact]
+    public async Task AnalyzeCustomerSegmentsAsync_WithEmptyMarketAnalysis_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var ideaTitle = "Valid Title";
+        var ideaDescription = "Valid description";
+        var emptyMarketAnalysis = "";
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentException>(() => 
+            _service.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, emptyMarketAnalysis));
+    }
+
+    [Fact]
+    public async Task AnalyzeCustomerSegmentsAsync_WhenAIOrchestratorFails_ShouldThrowException()
+    {
+        // Arrange
+        var ideaTitle = "Test Idea";
+        var ideaDescription = "Test Description";
+        var marketAnalysis = "Test market analysis";
+
+        _mockAIOrchestrator.Setup(x => x.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, marketAnalysis, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("AI service failed"));
+
+        // Act & Assert
+        await Assert.ThrowsAsync<InvalidOperationException>(() => 
+            _service.AnalyzeCustomerSegmentsAsync(ideaTitle, ideaDescription, marketAnalysis));
+    }
+
+    [Fact]
+    public async Task AnalyzeTargetMarketAsync_WithValidInput_ShouldReturnTargetMarketAnalysis()
+    {
+        // Arrange
+        var segments = new List<CustomerSegment>
+        {
+            new CustomerSegment
+            {
+                Name = "Tech Enthusiasts",
+                Size = "5 million users",
+                ConversionPotential = 8.5,
+                WillingnessToPay = "High - $100-$300 per month"
+            },
+            new CustomerSegment
+            {
+                Name = "Casual Users",
+                Size = "25 million users",
+                ConversionPotential = 4.2,
+                WillingnessToPay = "Low - $10-$30 per month"
+            }
+        };
+
+        var criteria = new MarketPrioritizationCriteria
+        {
+            RevenueWeight = 0.4,
+            SizeWeight = 0.3,
+            ConversionWeight = 0.2,
+            StrategicFitWeight = 0.1
+        };
+
+        // Act
+        var result = await _service.AnalyzeTargetMarketAsync(segments, criteria);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.RecommendedPrimaryTarget);
+        Assert.NotEmpty(result.RecommendedSecondaryTargets);
+        Assert.NotEmpty(result.MarketApproachStrategy);
+        Assert.NotEmpty(result.PrioritizationRationale);
+        
+        // Verify analysis considers both size and conversion potential
+        // Tech Enthusiasts should score higher despite smaller size due to higher conversion and revenue
+        Assert.Contains("Tech Enthusiasts", result.RecommendedPrimaryTarget);
+        
+        // Verify target market analysis structure
+        Assert.True(result.TotalAddressableMarket > 0);
+        Assert.True(result.ServiceableAddressableMarket > 0);
+        Assert.True(result.ServiceableObtainableMarket > 0);
+        Assert.True(result.ServiceableObtainableMarket <= result.ServiceableAddressableMarket);
+        Assert.True(result.ServiceableAddressableMarket <= result.TotalAddressableMarket);
+    }
+
+    [Fact]
+    public async Task ValidateSegmentAssumptionsAsync_WithValidInput_ShouldReturnValidation()
+    {
+        // Arrange
+        var segment = new CustomerSegment
+        {
+            Name = "Small Business Owners",
+            Size = "10 million users",
+            Demographics = new List<string> { "Age: 25-55", "Revenue: $100K-$10M" },
+            PainPoints = new List<string> { "Limited time for manual processes", "Need for cost-effective solutions" },
+            WillingnessToPay = "Medium - $50-$150 per month",
+            ConversionPotential = 7.5
+        };
+
+        var marketData = "Small business software market growing at 12% annually";
+        
+        var expectedValidation = new SegmentValidationResult
+        {
+            SegmentName = segment.Name,
+            ValidationScore = 8.2,
+            ConfidenceLevel = "High",
+            KeyAssumptions = new List<string>
+            {
+                "Small businesses are willing to adopt new software solutions",
+                "Price sensitivity is balanced by value perception",
+                "Market size estimates are based on SBA data",
+                "Pain points are validated through market research"
+            },
+            SupportingEvidence = new List<string>
+            {
+                "SBA reports 32.5 million small businesses in US",
+                "74% of small businesses plan to increase technology spending",
+                "Average small business spends $1,200 monthly on software",
+                "Small business software market growing 12% annually"
+            },
+            RiskFactors = new List<string>
+            {
+                "Economic downturns affect small business spending first",
+                "High competition in small business software space",
+                "Longer sales cycles for business software adoption",
+                "Need for strong customer support and onboarding"
+            },
+            RecommendedValidationTests = new List<string>
+            {
+                "Survey 500+ small business owners about pain points and willingness to pay",
+                "Conduct 20+ in-depth interviews with target segment",
+                "Run pilot program with 50 early adopter businesses",
+                "A/B test different pricing models and value propositions"
+            },
+            AdjustmentRecommendations = new List<string>
+            {
+                "Consider freemium model to reduce adoption barriers",
+                "Focus on specific verticals (restaurants, retail, services) initially",
+                "Emphasize ROI and time savings in value proposition",
+                "Build strong customer success and support capabilities"
+            }
+        };
+
+        _mockAIOrchestrator.Setup(x => x.ValidateIdeaFeasibilityAsync(
+                It.Is<string>(s => s.Contains("segment") && s.Contains(segment.Name)), 
+                It.IsAny<string>(), 
+                It.IsAny<string>(), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Core.DTOs.AI.FactCheckResponseDto
+            {
+                OverallFeasibilityScore = expectedValidation.ValidationScore,
+                KeyAssumptions = expectedValidation.KeyAssumptions,
+                CriticalRisks = expectedValidation.RiskFactors,
+                RecommendedNextSteps = expectedValidation.RecommendedValidationTests
+            });
+
+        // Act
+        var result = await _service.ValidateSegmentAssumptionsAsync(segment, marketData);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(segment.Name, result.SegmentName);
+        Assert.True(result.ValidationScore >= 0 && result.ValidationScore <= 10);
+        Assert.NotEmpty(result.ConfidenceLevel);
+        Assert.NotEmpty(result.KeyAssumptions);
+        Assert.NotEmpty(result.RiskFactors);
+        Assert.NotEmpty(result.RecommendedValidationTests);
+        
+        // Verify validation includes market-specific insights
+        Assert.Contains("small business", result.KeyAssumptions[0].ToLower());
+        
+        // Verify AI orchestrator was called with validation prompt
+        _mockAIOrchestrator.Verify(x => x.ValidateIdeaFeasibilityAsync(
+            It.Is<string>(s => s.Contains("segment") && s.Contains(segment.Name)), 
+            It.IsAny<string>(), 
+            It.IsAny<string>(), 
+            It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+
+    [Fact]
+    public async Task GeneratePersonasAsync_WithValidSegment_ShouldReturnDetailedPersonas()
+    {
+        // Arrange
+        var segment = new CustomerSegment
+        {
+            Name = "Busy Professionals",
+            Demographics = new List<string> { "Age: 28-45", "Income: $75K-$150K", "Urban/Suburban" },
+            Psychographics = new List<string> { "Career-focused", "Tech-savvy", "Time-conscious" },
+            PainPoints = new List<string> { "Work-life balance", "Career advancement pressure", "Information overload" }
+        };
+
+        var expectedPersonas = new List<CustomerPersona>
+        {
+            new CustomerPersona
+            {
+                Name = "Sarah Chen",
+                Title = "Marketing Manager",
+                Age = 32,
+                Location = "San Francisco, CA",
+                Industry = "Technology",
+                Background = "MBA graduate working at a fast-growing SaaS company, responsible for demand generation and brand marketing",
+                Goals = new List<string>
+                {
+                    "Advance to Director level within 2 years",
+                    "Improve team productivity and campaign ROI",
+                    "Develop strategic marketing skills and leadership capabilities",
+                    "Maintain work-life balance while meeting ambitious targets"
+                },
+                Challenges = new List<string>
+                {
+                    "Managing multiple campaigns with limited resources",
+                    "Staying current with rapidly evolving marketing technology",
+                    "Balancing strategic work with operational demands",
+                    "Finding time for professional development and skill building"
+                },
+                Motivations = new List<string>
+                {
+                    "Career growth and recognition",
+                    "Making meaningful impact on business results",
+                    "Learning new skills and staying competitive",
+                    "Building a strong professional network"
+                },
+                TechSavviness = "High",
+                PreferredChannels = new List<string> { "LinkedIn", "Industry blogs", "Podcasts", "Mobile apps" },
+                DecisionMakingStyle = "Research-driven but values peer recommendations",
+                BudgetAuthority = "$5,000 monthly for tools and training",
+                KeyQuote = "I need solutions that save me time so I can focus on strategy rather than getting lost in tactical execution."
+            },
+            new CustomerPersona
+            {
+                Name = "Michael Rodriguez",
+                Title = "Software Engineer",
+                Age = 29,
+                Location = "Austin, TX",
+                Industry = "Fintech",
+                Background = "Computer Science degree, 5 years experience, working at a mid-size fintech startup on backend systems",
+                Goals = new List<string>
+                {
+                    "Become a senior engineer or tech lead",
+                    "Develop expertise in cloud architecture and system design",
+                    "Contribute to open source projects",
+                    "Eventually start his own tech company"
+                },
+                Challenges = new List<string>
+                {
+                    "Keeping up with rapidly evolving technology landscape",
+                    "Finding time for side projects and learning new frameworks",
+                    "Balancing code quality with delivery pressure",
+                    "Building leadership and communication skills"
+                },
+                Motivations = new List<string>
+                {
+                    "Technical mastery and engineering excellence",
+                    "Building products that users love",
+                    "Professional growth and skill development",
+                    "Financial security and stock options"
+                },
+                TechSavviness = "Expert",
+                PreferredChannels = new List<string> { "GitHub", "Stack Overflow", "Tech Twitter", "Developer conferences" },
+                DecisionMakingStyle = "Analytical, tests solutions thoroughly before adopting",
+                BudgetAuthority = "$2,000 annually for courses and tools",
+                KeyQuote = "I want to learn efficiently and build things that matter, but I don't have time to waste on low-quality content."
+            }
+        };
+
+        _mockAIOrchestrator.Setup(x => x.AnalyzeCustomerSegmentsAsync(
+                It.Is<string>(s => s.Contains("persona") && s.Contains(segment.Name)), 
+                It.IsAny<string>(), 
+                It.IsAny<string>(), 
+                It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new CustomerSegmentationResult
+            {
+                PrimarySegments = new List<CustomerSegment> { segment },
+                SecondarySegments = new List<CustomerSegment>()
+            });
+
+        // Act
+        var result = await _service.GeneratePersonasAsync(segment);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result);
+        
+        // Verify personas are detailed and realistic
+        Assert.All(result, persona =>
+        {
+            Assert.NotEmpty(persona.Name);
+            Assert.NotEmpty(persona.Title);
+            Assert.True(persona.Age > 0);
+            Assert.NotEmpty(persona.Location);
+            Assert.NotEmpty(persona.Background);
+            Assert.NotEmpty(persona.Goals);
+            Assert.NotEmpty(persona.Challenges);
+            Assert.NotEmpty(persona.Motivations);
+            Assert.NotEmpty(persona.TechSavviness);
+            Assert.NotEmpty(persona.PreferredChannels);
+            Assert.NotEmpty(persona.KeyQuote);
+        });
+        
+        // Verify AI orchestrator was called with persona generation prompt
+        _mockAIOrchestrator.Verify(x => x.AnalyzeCustomerSegmentsAsync(
+            It.Is<string>(s => s.Contains("persona") && s.Contains(segment.Name)), 
+            It.IsAny<string>(), 
+            It.IsAny<string>(), 
+            It.IsAny<CancellationToken>()), 
+            Times.Once);
+    }
+
+    [Theory]
+    [InlineData(0.5, 0.3, 0.2, 0.0)]
+    [InlineData(0.3, 0.4, 0.2, 0.1)]
+    [InlineData(0.2, 0.2, 0.3, 0.3)]
+    public async Task AnalyzeTargetMarketAsync_WithDifferentWeights_ShouldAdjustPrioritization(
+        double revenueWeight, double sizeWeight, double conversionWeight, double strategicWeight)
+    {
+        // Arrange
+        var segments = new List<CustomerSegment>
+        {
+            new CustomerSegment { Name = "High Revenue", ConversionPotential = 8.0, Size = "1M", WillingnessToPay = "High - $200/month" },
+            new CustomerSegment { Name = "Large Market", ConversionPotential = 5.0, Size = "50M", WillingnessToPay = "Low - $20/month" }
+        };
+
+        var criteria = new MarketPrioritizationCriteria
+        {
+            RevenueWeight = revenueWeight,
+            SizeWeight = sizeWeight,
+            ConversionWeight = conversionWeight,
+            StrategicFitWeight = strategicWeight
+        };
+
+        // Act
+        var result = await _service.AnalyzeTargetMarketAsync(segments, criteria);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.NotEmpty(result.RecommendedPrimaryTarget);
+        
+        // Verify that different weights produce logical prioritization
+        if (revenueWeight > sizeWeight)
+        {
+            // Should favor high revenue segment when revenue is weighted more heavily
+            Assert.Contains("High Revenue", result.RecommendedPrimaryTarget);
+        }
+        else if (sizeWeight > revenueWeight)
+        {
+            // Should favor large market when size is weighted more heavily
+            Assert.Contains("Large Market", result.RecommendedPrimaryTarget);
+        }
+    }
+}
+
+// Supporting classes for customer segmentation tests
+public class CustomerSegment
+{
+    public string Name { get; set; } = string.Empty;
+    public string Size { get; set; } = string.Empty;
+    public List<string> Demographics { get; set; } = new();
+    public List<string> Psychographics { get; set; } = new();
+    public List<string> Characteristics { get; set; } = new();
+    public List<string> PainPoints { get; set; } = new();
+    public string ValueProposition { get; set; } = string.Empty;
+    public string WillingnessToPay { get; set; } = string.Empty;
+    public List<string> PreferredChannels { get; set; } = new();
+    public string EngagementStrategy { get; set; } = string.Empty;
+    public double ConversionPotential { get; set; }
+}
+
+public class MarketPrioritizationCriteria
+{
+    public double RevenueWeight { get; set; }
+    public double SizeWeight { get; set; }
+    public double ConversionWeight { get; set; }
+    public double StrategicFitWeight { get; set; }
+}
+
+public class TargetMarketAnalysis
+{
+    public string RecommendedPrimaryTarget { get; set; } = string.Empty;
+    public List<string> RecommendedSecondaryTargets { get; set; } = new();
+    public string MarketApproachStrategy { get; set; } = string.Empty;
+    public List<string> PrioritizationRationale { get; set; } = new();
+    public long TotalAddressableMarket { get; set; }
+    public long ServiceableAddressableMarket { get; set; }
+    public long ServiceableObtainableMarket { get; set; }
+}
+
+public class SegmentValidationResult
+{
+    public string SegmentName { get; set; } = string.Empty;
+    public double ValidationScore { get; set; }
+    public string ConfidenceLevel { get; set; } = string.Empty;
+    public List<string> KeyAssumptions { get; set; } = new();
+    public List<string> SupportingEvidence { get; set; } = new();
+    public List<string> RiskFactors { get; set; } = new();
+    public List<string> RecommendedValidationTests { get; set; } = new();
+    public List<string> AdjustmentRecommendations { get; set; } = new();
+}
+
+public class CustomerPersona
+{
+    public string Name { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public int Age { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public string Industry { get; set; } = string.Empty;
+    public string Background { get; set; } = string.Empty;
+    public List<string> Goals { get; set; } = new();
+    public List<string> Challenges { get; set; } = new();
+    public List<string> Motivations { get; set; } = new();
+    public string TechSavviness { get; set; } = string.Empty;
+    public List<string> PreferredChannels { get; set; } = new();
+    public string DecisionMakingStyle { get; set; } = string.Empty;
+    public string BudgetAuthority { get; set; } = string.Empty;
+    public string KeyQuote { get; set; } = string.Empty;
+}

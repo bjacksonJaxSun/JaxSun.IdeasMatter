@@ -7,178 +7,248 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Ideas Matter is an AI-powered idea development platform that transforms concepts into deployable code. The system conducts market research, creates business plans, generates technical architecture, and produces production-ready applications.
 
 **Tech Stack:**
-- Frontend: React 18 + TypeScript + Vite + Tailwind CSS
-- Backend: FastAPI + SQLAlchemy + Multiple AI providers (OpenAI, Claude, Azure OpenAI)
-- Database: MySQL/SQLite with Alembic migrations
-- AI Integration: Multi-provider architecture with OpenAI, Claude, and LangChain support
+- Frontend: Blazor Server (.NET 8)
+- Backend: ASP.NET Core Web API (.NET 8) 
+- Database: Entity Framework Core with SQL Server/SQLite
+- AI Integration: Multi-provider architecture with OpenAI, Claude, Azure OpenAI support
 
 ## Development Commands
 
-### Quick Start (Recommended)
+### Quick Start
 ```bash
-# Backend (from backend/)
-python quick_start.py
+# Build solution
+dotnet build
 
-# Frontend (from frontend/)
-npm install
-npm run dev
+# Run API
+dotnet run --project src/Jackson.Ideas.Api
+
+# Run Blazor Web (when created)
+dotnet run --project src/Jackson.Ideas.Web
+
+# Run tests
+dotnet test
 ```
 
-### Manual Setup
-```bash
-# Backend
-cd backend
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python main.py
+### Build Error Resolution Protocol
+**CRITICAL**: Always check for and resolve build errors before completing any task.
 
-# Frontend
-cd frontend
-npm install
-npm run dev
+```bash
+# Always run build check after making changes
+dotnet build
+
+# Fix any compilation errors before proceeding
+# Check for missing using statements
+# Verify correct package versions
+# Ensure all dependencies are referenced
 ```
 
-### Development Scripts
-- `start_dev.bat` / `start_dev.ps1` - Intelligent scripts that stop existing services, start fresh, and open browser
-- These scripts handle all setup automatically including dependency installation
-
-Additional scripts:
-- `scripts/test/run_tests.py` - Unified test runner
-- `scripts/setup/quick_setup.py` - One-command project setup
-
-Backend runs on http://localhost:8000 (API docs at /docs)
-Frontend runs on http://localhost:4000
-
-### Testing
+### Testing Commands
 ```bash
-# Backend tests
-cd backend
-pytest tests/
+# Run all tests
+dotnet test
 
-# Frontend
-cd frontend
-npm run lint       # ESLint checking
-npm run build     # Production build
-npm run preview   # Preview production build
+# Run with coverage
+dotnet test --collect:"XPlat Code Coverage"
+
+# Run specific test project
+dotnet test tests/Jackson.Ideas.Core.Tests/
 ```
 
-### Database Management
-```bash
-# Create migration
-cd backend
-alembic revision --autogenerate -m "description"
+## Development Workflows
 
-# Apply migrations
-alembic upgrade head
-```
+### Phase Implementation Command
+
+**Command:** `Implement Phase <phase_number>`
+
+**Example Usage:**
+- `Implement Phase 1`
+- `Implement Phase 2`
+- `Implement Phase 3`
+
+**Workflow Process:**
+
+#### 1. Analysis Phase
+When this command is invoked, perform the following analysis:
+
+1. **Read Documentation:**
+   - Load and analyze `/docs/PRD.md`
+   - Load and analyze `/docs/IMPLEMENTATION_PLAN.md`
+   - Identify the specific phase requirements
+
+2. **Status Assessment:**
+   - Review current solution structure
+   - Check existing implementations against phase requirements
+   - Identify completed, in-progress, and pending items
+   - Analyze dependencies and prerequisites
+
+3. **Todo List Generation:**
+   - Create comprehensive todo list for the phase
+   - Break down complex items into specific, actionable tasks
+   - Identify technical dependencies and order of implementation
+   - Estimate complexity and priority for each item
+
+4. **Technical Design Presentation:**
+   - Present architectural decisions and patterns to be used
+   - Outline file structure and class hierarchies
+   - Describe integration points and interfaces
+   - Explain testing strategy and approach
+   - **IMPORTANT:** Wait for user approval before proceeding
+
+#### 2. Implementation Phase (After User Approval)
+Once user approves the technical design:
+
+1. **Test-Driven Development (TDD) Approach:**
+   - Create comprehensive test suite FIRST for all new functionality
+   - Write unit tests for all services and business logic
+   - Write integration tests for API endpoints
+   - Write component tests for Blazor components (when applicable)
+   - Ensure 80%+ code coverage target
+
+2. **Implementation:**
+   - Implement functionality to make tests pass
+   - Follow SOLID principles and clean architecture patterns
+   - Implement proper error handling and validation
+   - Add comprehensive logging and monitoring
+   - Follow .NET coding conventions and best practices
+
+3. **Quality Assurance:**
+   - Build solution until all compilation errors are resolved
+   - Run all tests until 100% pass rate achieved
+   - Fix any failing tests and implementation issues
+   - Verify integration points work correctly
+   - Validate against phase acceptance criteria
+
+#### 3. Completion Criteria
+A phase is considered complete when:
+- ✅ Clean build with zero errors or warnings
+- ✅ All tests passing (100% success rate)
+- ✅ Code coverage meets 80% threshold
+- ✅ All phase requirements implemented
+- ✅ Integration tests validate end-to-end functionality
+- ✅ Documentation updated for new features
+
+### Phase-Specific Guidelines
+
+#### Phase 1: Foundation & Infrastructure
+- Focus on solution architecture and database setup
+- Implement authentication and security infrastructure
+- Create base Blazor project with authentication
+- Establish testing frameworks and CI/CD foundations
+
+#### Phase 2: Core Business Logic
+- Implement AI integration services
+- Create research and analysis services
+- Build business logic for idea validation and market analysis
+- Establish real-time progress tracking
+
+#### Phase 3: User Interface & Experience
+- Create comprehensive Blazor components
+- Implement responsive design and accessibility
+- Build user workflows and navigation
+- Integrate real-time updates with SignalR
+
+#### Phase 4: Advanced Features & Integration
+- Implement PDF generation and reporting
+- Create data export functionality
+- Add advanced real-time features
+- Build integration points for external systems
+
+#### Phase 5: Testing & Quality Assurance
+- Comprehensive test coverage validation
+- Performance testing and optimization
+- Security testing and vulnerability assessment
+- Documentation and code quality improvements
+
+#### Phase 6: Deployment & DevOps
+- CI/CD pipeline implementation
+- Production deployment configuration
+- Monitoring and alerting setup
+- Performance monitoring and maintenance procedures
 
 ## Architecture Key Points
 
-### AI Orchestration Layer
-The system uses a provider abstraction pattern in `backend/app/ai/` that supports multiple AI services:
-- OpenAI adapter (`providers/openai_provider.py`)
-- Modular agent system in `agents/`
-- Template-driven prompt management
+### Solution Structure
+```
+Jackson.Ideas/
+├── src/
+│   ├── Jackson.Ideas.Api/          # ASP.NET Core Web API
+│   ├── Jackson.Ideas.Web/          # Blazor Server (Phase 1)
+│   ├── Jackson.Ideas.Application/  # Business Logic Layer
+│   ├── Jackson.Ideas.Core/         # Domain Models & Interfaces
+│   ├── Jackson.Ideas.Infrastructure/ # Data Access & Services
+│   └── Jackson.Ideas.Shared/       # Shared DTOs
+├── tests/
+│   ├── Jackson.Ideas.Api.Tests/
+│   ├── Jackson.Ideas.Web.Tests/
+│   ├── Jackson.Ideas.Application.Tests/
+│   ├── Jackson.Ideas.Core.Tests/
+│   └── Jackson.Ideas.Infrastructure.Tests/
+└── docs/
+    ├── PRD.md
+    └── IMPLEMENTATION_PLAN.md
+```
 
-### Backend Structure
-- `app/api/v1/endpoints/` - API route handlers
-- `app/services/` - Business logic layer including AI orchestration
-- `app/models/` - SQLAlchemy database models
-- `app/schemas/` - Pydantic request/response schemas
-- `app/core/` - Configuration and database setup
+### Key Principles
+- **Clean Architecture:** Separation of concerns with clear layer boundaries
+- **SOLID Principles:** Maintainable and extensible code design
+- **Test-Driven Development:** Tests written before implementation
+- **Dependency Injection:** Loose coupling and testability
+- **Async/Await:** Non-blocking operations throughout
+- **Error Handling:** Comprehensive exception handling and logging
 
-### Frontend Structure
-- `src/components/` - Reusable React components
-- `src/pages/` - Page-level components
-- `src/services/` - API client code
-- `src/contexts/` - React context providers (AuthContext)
+### Database Management
+```bash
+# Add migration
+dotnet ef migrations add <MigrationName> --project src/Jackson.Ideas.Infrastructure
 
-### Configuration
-- Backend config in `backend/app/core/config.py` uses Pydantic Settings
-- Supports quick launch mode with SQLite (QUICK_LAUNCH=True)
-- AI provider keys configured via environment variables
-- Google OAuth integration available
+# Update database
+dotnet ef database update --project src/Jackson.Ideas.Infrastructure
 
-### Environment Variables
-Key environment variables for backend:
-- `JWT_SECRET_KEY` - Generate: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
-- `ENCRYPTION_KEY` - Generate: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`
-- `ADMIN_EMAILS` - Comma-separated list of admin user emails
-- `RATE_LIMIT_ENABLED` / `RATE_LIMIT_PER_MINUTE` - API rate limiting
-- Multiple AI provider keys (OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.)
+# Drop database (development only)
+dotnet ef database drop --project src/Jackson.Ideas.Infrastructure
+```
+
+## Configuration
+
+### Development Environment
+- Uses SQLite for local development
+- In-memory caching for development
+- Console logging for debugging
+- Development authentication with test users
+
+### Production Environment
+- SQL Server for production database
+- Redis for distributed caching
+- Application Insights for monitoring
+- Azure AD or production OAuth providers
 
 ## Important Notes
 
-- The system supports both MySQL (production) and SQLite (development) databases
-- Quick launch mode bypasses Redis dependency for rapid development
-- Multi-tenant architecture with role-based access control
-- Comprehensive error handling and logging with Loguru
-- Uses Alembic for database migrations
-- Authentication via JWT with Google OAuth support
-- Multiple requirements files available: requirements-core.txt, requirements-minimal.txt, requirements-windows.txt
-- Admin access granted to emails containing "admin@" or "systemadmin@"
-- Admin dashboard available at `/admin` route
+- Always run `dotnet build` before committing code
+- Ensure all tests pass before submitting pull requests
+- Follow semantic versioning for releases
+- Update documentation for any architectural changes
+- Use feature flags for experimental functionality
+- Implement proper security practices for all endpoints
 
-## Scripts Organization
+## Troubleshooting
 
-Development scripts organized in structured directories:
+### Common Issues
+1. **Build Errors:** Check package references and target frameworks
+2. **Test Failures:** Verify database state and test isolation
+3. **Authentication Issues:** Check JWT configuration and token validation
+4. **AI Provider Issues:** Verify API keys and network connectivity
 
-**Main Scripts:**
-- `start_dev.bat` / `start_dev.ps1` - Single intelligent scripts that handle everything: stop existing services, install dependencies, start servers, open browser
-
-**Additional Scripts:**
-- `scripts/setup/` - Installation and setup scripts
-- `scripts/test/` - Test runners and utilities (HTML and Python tests)
-- `scripts/utils/` - Various utility scripts
-- `backend/scripts/auth/` - Authentication server variants
-- `backend/scripts/db/` - Database management scripts
-- `backend/scripts/test/` - Backend-specific test scripts
-- `backend/scripts/setup/` - Alternative server configurations
-
-**Documentation:**
-- `docs/` - Organized documentation (architecture, troubleshooting, setup, fixes)
-- `scripts/README.md` - Script usage instructions
-- `docs/README.md` - Documentation index
-
-## Authentication Setup
-
-### Production Authentication (Recommended)
-Use the production-ready authentication server with full JWT and database support:
+### Debug Commands
 ```bash
-cd backend
-python3 scripts/auth/production_server.py
+# Verbose build output
+dotnet build --verbosity detailed
+
+# Run specific test with debug info
+dotnet test --logger "console;verbosity=detailed"
+
+# Check package vulnerabilities
+dotnet list package --vulnerable
 ```
 
-**Features:**
-- JWT access and refresh tokens with proper expiration
-- SQLite database with persistent user storage
-- Password hashing and secure authentication
-- Role-based access control (user, admin, system_admin)
-- User registration and login endpoints
-- Google OAuth integration ready
-- Comprehensive API endpoints
-
-**Endpoints:**
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - Email/password login
-- `POST /api/v1/auth/google` - Google OAuth login
-- `GET /api/v1/auth/me` - Get current user info
-- `POST /api/v1/auth/bypass` - Development bypass login
-- `GET /health` - Health check
-
-### Development Quick Start
-For minimal dependency development, use:
-```bash
-cd backend
-python3 scripts/auth/auth_server_with_google.py
-```
-
-### Production Configuration
-Copy `.env.production` to `.env` and configure:
-- Database credentials (MySQL/PostgreSQL for production)
-- JWT secret keys (minimum 32 characters)
-- Google OAuth client credentials
-- CORS origins for production domain
-
-The frontend has bypass login buttons in development mode for quick access without Google OAuth configuration.
+This workflow ensures systematic, quality-driven development following the established implementation plan and maintaining high code quality standards throughout the project.

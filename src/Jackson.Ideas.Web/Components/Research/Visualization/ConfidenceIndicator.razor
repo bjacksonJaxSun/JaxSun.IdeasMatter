@@ -1,0 +1,292 @@
+@* 
+Confidence Visualization Component
+Implements UX Blueprint requirement for calibrated trust in AI-generated insights.
+Uses color gradients, progress bars, and numerical displays with hover context.
+*@
+
+<div class="confidence-indicator @CssClass" role="region" aria-label="Confidence Level">
+    <div class="confidence-header">
+        <span class="confidence-label">@Label</span>
+        <span class="confidence-value" aria-live="polite">@Score%</span>
+    </div>
+    
+    <div class="confidence-bar-container" 
+         title="@GetConfidenceDescription()" 
+         @onmouseover="ShowDetails" 
+         @onmouseout="HideDetails">
+        
+        <div class="confidence-bar" style="width: @Score%; background-color: @GetConfidenceColor();">
+            <div class="confidence-shine"></div>
+        </div>
+        
+        @if (ShowTooltip)
+        {
+            <div class="confidence-tooltip" role="tooltip">
+                <div class="tooltip-content">
+                    <h4>Confidence Analysis</h4>
+                    <p>@GetConfidenceDescription()</p>
+                    
+                    @if (ConfidenceFactors?.Any() == true)
+                    {
+                        <div class="confidence-factors">
+                            <strong>Contributing Factors:</strong>
+                            <ul>
+                                @foreach (var factor in ConfidenceFactors.Take(3))
+                                {
+                                    <li>@factor.Key: @factor.Value%</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+                    
+                    @if (!string.IsNullOrEmpty(Methodology))
+                    {
+                        <div class="methodology">
+                            <strong>Method:</strong> @Methodology
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+    
+    @if (ShowRecommendation && !string.IsNullOrEmpty(GetRecommendation()))
+    {
+        <div class="confidence-recommendation" role="alert">
+            <i class="icon-info" aria-hidden="true"></i>
+            @GetRecommendation()
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int Score { get; set; } = 0;
+    [Parameter] public string Label { get; set; } = "Confidence";
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public bool ShowRecommendation { get; set; } = true;
+    [Parameter] public Dictionary<string, int>? ConfidenceFactors { get; set; }
+    [Parameter] public string? Methodology { get; set; }
+    [Parameter] public EventCallback<int> OnScoreChanged { get; set; }
+
+    private bool ShowTooltip { get; set; } = false;
+
+    private string GetConfidenceColor()
+    {
+        return Score switch
+        {
+            >= 90 => "#10b981", // High confidence - green
+            >= 75 => "#f59e0b", // Medium confidence - amber
+            >= 60 => "#f97316", // Low-medium confidence - orange
+            _ => "#ef4444"      // Low confidence - red
+        };
+    }
+
+    private string GetConfidenceDescription()
+    {
+        return Score switch
+        {
+            >= 90 => "Very High Confidence - Analysis is based on comprehensive data with strong validation",
+            >= 75 => "High Confidence - Analysis is well-supported with good data quality",
+            >= 60 => "Medium Confidence - Analysis has reasonable support but some limitations",
+            _ => "Lower Confidence - Analysis should be validated with additional research"
+        };
+    }
+
+    private string GetRecommendation()
+    {
+        return Score switch
+        {
+            >= 90 => "",
+            >= 75 => "Consider additional validation for critical decisions",
+            >= 60 => "Recommend supplementing with primary research",
+            _ => "Exercise caution - seek additional data sources before proceeding"
+        };
+    }
+
+    private void ShowDetails()
+    {
+        ShowTooltip = true;
+        StateHasChanged();
+    }
+
+    private void HideDetails()
+    {
+        ShowTooltip = false;
+        StateHasChanged();
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Ensure score is within valid range
+        Score = Math.Max(0, Math.Min(100, Score));
+    }
+}
+
+@* CSS Styles *@
+<style>
+    .confidence-indicator {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        margin: 1rem 0;
+        position: relative;
+    }
+
+    .confidence-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .confidence-value {
+        font-weight: 600;
+        color: #374151;
+    }
+
+    .confidence-bar-container {
+        position: relative;
+        height: 8px;
+        background-color: #e5e7eb;
+        border-radius: 4px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .confidence-bar-container:hover {
+        height: 10px;
+        transform: scale(1.02);
+    }
+
+    .confidence-bar {
+        height: 100%;
+        border-radius: 4px;
+        position: relative;
+        transition: all 0.3s ease;
+        background: linear-gradient(90deg, currentColor 0%, currentColor 100%);
+    }
+
+    .confidence-shine {
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: shine 2s infinite;
+    }
+
+    @@keyframes shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .confidence-tooltip {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 0.5rem;
+        z-index: 10;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .tooltip-content {
+        background: #1f2937;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        min-width: 300px;
+        max-width: 400px;
+        font-size: 0.875rem;
+        line-height: 1.4;
+    }
+
+    .tooltip-content h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .confidence-factors ul {
+        margin: 0.5rem 0 0 1rem;
+        padding: 0;
+    }
+
+    .confidence-factors li {
+        margin: 0.25rem 0;
+    }
+
+    .methodology {
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid #374151;
+        font-size: 0.8rem;
+        opacity: 0.9;
+    }
+
+    .confidence-recommendation {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: #fef3c7;
+        border: 1px solid #f59e0b;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        color: #92400e;
+    }
+
+    .icon-info::before {
+        content: "ℹ️";
+        font-style: normal;
+    }
+
+    @@keyframes fadeIn {
+        from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+        to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Mobile optimizations following UX Blueprint */
+    @@media (max-width: 768px) {
+        .tooltip-content {
+            min-width: 280px;
+            font-size: 0.8rem;
+        }
+        
+        .confidence-bar-container {
+            min-height: 12px; /* Touch-friendly minimum */
+        }
+        
+        .confidence-header {
+            font-size: 1rem; /* Larger for mobile readability */
+        }
+    }
+
+    /* Accessibility enhancements */
+    @@media (prefers-reduced-motion: reduce) {
+        .confidence-bar,
+        .confidence-bar-container,
+        .confidence-tooltip {
+            transition: none;
+        }
+        
+        .confidence-shine {
+            animation: none;
+        }
+    }
+
+    /* High contrast mode support */
+    @@media (prefers-contrast: high) {
+        .confidence-bar-container {
+            border: 2px solid;
+        }
+        
+        .tooltip-content {
+            border: 2px solid white;
+        }
+    }
+</style>

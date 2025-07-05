@@ -1,0 +1,272 @@
+@page "/profile"
+@using Jackson.Ideas.Core.DTOs.Auth
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IAuthenticationService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<PageTitle>Profile - Ideas Matter</PageTitle>
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>User Profile</h1>
+        <p>Manage your account settings and preferences</p>
+    </div>
+
+    @if (currentUser != null)
+    {
+        <div class="profile-card">
+            <div class="profile-section">
+                <h3>Account Information</h3>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <label>Name</label>
+                        <p>@currentUser.Name</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Email</label>
+                        <p>@currentUser.Email</p>
+                    </div>
+                    <div class="info-item">
+                        <label>Role</label>
+                        <span class="badge role-badge">@currentUser.Role</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Account Status</label>
+                        <span class="badge @(currentUser.IsVerified ? "verified-badge" : "unverified-badge")">
+                            @(currentUser.IsVerified ? "Verified" : "Unverified")
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h3>Account Actions</h3>
+                <div class="action-buttons">
+                    <button class="btn btn-outline-primary" @onclick="EditProfile">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </button>
+                    <button class="btn btn-outline-secondary" @onclick="ChangePassword">
+                        <i class="fas fa-key"></i> Change Password
+                    </button>
+                    <button class="btn btn-outline-danger" @onclick="Logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading profile...</span>
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @errorMessage
+        </div>
+    }
+</div>
+
+@code {
+    private UserInfo? currentUser;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUserProfile();
+    }
+
+    private async Task LoadUserProfile()
+    {
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState.User.Identity?.IsAuthenticated == true)
+            {
+                currentUser = new UserInfo
+                {
+                    Id = authState.User.FindFirst("sub")?.Value ?? authState.User.FindFirst("id")?.Value ?? Guid.NewGuid().ToString(),
+                    Name = authState.User.Identity.Name ?? "User",
+                    Email = authState.User.FindFirst("email")?.Value ?? "user@example.com",
+                    Role = authState.User.FindFirst("role")?.Value ?? "User",
+                    IsVerified = bool.Parse(authState.User.FindFirst("email_verified")?.Value ?? "true")
+                };
+            }
+            else
+            {
+                Navigation.NavigateTo("/login");
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = "Failed to load user profile.";
+        }
+    }
+
+    private void EditProfile()
+    {
+        // Future implementation - navigate to edit profile page
+        errorMessage = "Edit profile functionality coming soon.";
+    }
+
+    private void ChangePassword()
+    {
+        // Future implementation - navigate to change password page
+        errorMessage = "Change password functionality coming soon.";
+    }
+
+    private async Task Logout()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+}
+
+<style>
+    .profile-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .profile-header h1 {
+        color: #333;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .profile-header p {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .profile-section {
+        margin-bottom: 30px;
+    }
+
+    .profile-section:last-child {
+        margin-bottom: 0;
+    }
+
+    .profile-section h3 {
+        color: #333;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .info-item {
+        margin-bottom: 15px;
+    }
+
+    .info-item label {
+        display: block;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .info-item p {
+        color: #666;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .badge {
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .role-badge {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .verified-badge {
+        background-color: #e8f5e8;
+        color: #2e7d32;
+    }
+
+    .unverified-badge {
+        background-color: #fff3e0;
+        color: #f57c00;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .action-buttons .btn {
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .loading-container {
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .loading-container .spinner-border {
+        width: 3rem;
+        height: 3rem;
+    }
+
+    .alert {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid transparent;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+
+    @@media (max-width: 768px) {
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+    }
+</style>

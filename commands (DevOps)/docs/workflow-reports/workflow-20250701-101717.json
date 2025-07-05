@@ -1,0 +1,38 @@
+{
+    "CreatedItems":  {
+                         "Vision":  [
+
+                                    ],
+                         "Tasks":  [
+
+                                   ],
+                         "Strategy":  [
+
+                                      ],
+                         "Features":  [
+
+                                      ],
+                         "Stories":  [
+
+                                     ],
+                         "TestCases":  [
+
+                                       ],
+                         "Epics":  [
+
+                                   ]
+                     },
+    "Warnings":  [
+                     "Strategy: Skipped by user",
+                     "Epics: Skipped by user"
+                 ],
+    "Errors":  [
+
+               ],
+    "CurrentPhase":  "Strategy",
+    "StartTime":  {
+                      "value":  "\/Date(1751383037909)\/",
+                      "DisplayHint":  2,
+                      "DateTime":  "Tuesday, July 1, 2025 10:17:17 AM"
+                  }
+}

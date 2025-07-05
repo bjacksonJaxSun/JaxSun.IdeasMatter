@@ -1,0 +1,1302 @@
+@using System.Timers
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@implements IAsyncDisposable
+
+<div class="progress-tracker-container" role="region" aria-label="AI Analysis Progress Tracking">
+    <!-- Progress Header with Never-Stopping Progress Principle -->
+    <div class="progress-header">
+        <h2>AI Analysis in Progress</h2>
+        <p class="progress-subtitle">
+            Our AI systems are analyzing your idea with @GetActiveProcessCount() parallel processes.
+            @if (EstimatedTimeRemaining > 0)
+            {
+                <span class="time-remaining">~@EstimatedTimeRemaining minutes remaining</span>
+            }
+        </p>
+    </div>
+
+    <!-- Multi-Process Progress Visualization -->
+    <div class="multi-process-container" role="group" aria-label="Analysis Processes">
+        @foreach (var process in AnalysisProcesses)
+        {
+            <div class="process-card @GetProcessStatusClass(process)" 
+                 role="status" 
+                 aria-label="@process.Name progress: @process.Progress%">
+                
+                <div class="process-header">
+                    <div class="process-icon" aria-hidden="true">
+                        <i class="@process.IconClass"></i>
+                    </div>
+                    <div class="process-info">
+                        <h3>@process.Name</h3>
+                        <span class="process-status">@GetProcessStatusText(process)</span>
+                    </div>
+                    <div class="process-progress-value">
+                        @if (process.Status == ProcessStatus.InProgress)
+                        {
+                            <span class="progress-percentage">@process.Progress%</span>
+                        }
+                        else if (process.Status == ProcessStatus.Completed)
+                        {
+                            <i class="fas fa-check-circle text-success" aria-label="Completed"></i>
+                        }
+                        else if (process.Status == ProcessStatus.Failed)
+                        {
+                            <i class="fas fa-exclamation-triangle text-danger" aria-label="Failed"></i>
+                        }
+                    </div>
+                </div>
+
+                <div class="process-body">
+                    <!-- Never-Stopping Progress Bar -->
+                    <div class="progress-bar-container">
+                        <div class="progress-bar @GetProgressBarClass(process)"
+                             role="progressbar"
+                             aria-valuenow="@process.Progress"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                            <div class="progress-fill" style="width: @process.Progress%"></div>
+                            @if (process.Status == ProcessStatus.InProgress)
+                            {
+                                <div class="progress-shimmer"></div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Real-Time Feedback -->
+                    <div class="process-feedback">
+                        @if (!string.IsNullOrEmpty(process.CurrentTask))
+                        {
+                            <div class="current-task" aria-live="polite">
+                                <i class="fas fa-cog fa-spin" aria-hidden="true"></i>
+                                @process.CurrentTask
+                            </div>
+                        }
+                        
+                        @if (process.CompletedTasks.Any())
+                        {
+                            <div class="completed-tasks">
+                                <button type="button" 
+                                        class="completed-toggle"
+                                        @onclick="() => ToggleCompletedTasks(process.Id)"
+                                        aria-expanded="@IsCompletedTasksVisible(process.Id)"
+                                        aria-controls="completed-@process.Id">
+                                    <i class="fas fa-list" aria-hidden="true"></i>
+                                    View @process.CompletedTasks.Count completed tasks
+                                </button>
+                                
+                                @if (IsCompletedTasksVisible(process.Id))
+                                {
+                                    <div id="completed-@process.Id" class="completed-list">
+                                        @foreach (var task in process.CompletedTasks.TakeLast(3))
+                                        {
+                                            <div class="completed-task">
+                                                <i class="fas fa-check" aria-hidden="true"></i>
+                                                @task.Description
+                                                <span class="task-timestamp">@task.CompletedAt.ToString("HH:mm:ss")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Process-Specific Insights (Progressive Revelation) -->
+                @if (process.Status == ProcessStatus.Completed && process.PreviewInsights.Any())
+                {
+                    <div class="process-insights">
+                        <h4>Key Findings</h4>
+                        <div class="insights-preview">
+                            @foreach (var insight in process.PreviewInsights.Take(2))
+                            {
+                                <div class="insight-item">
+                                    <div class="insight-confidence">
+                                        <div class="mini-confidence-indicator" style="width: @insight.Confidence%"></div>
+                                        <span>@insight.Confidence%</span>
+                                    </div>
+                                    <p>@insight.Text</p>
+                                </div>
+                            }
+                        </div>
+                        @if (process.PreviewInsights.Count > 2)
+                        {
+                            <p class="more-insights">+@(process.PreviewInsights.Count - 2) more insights available</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Overall Progress with Psychology-Based Indicators -->
+    <div class="overall-progress-section">
+        <div class="overall-progress-header">
+            <h3>Overall Analysis Progress</h3>
+            <div class="progress-stats">
+                <span class="stat">@GetCompletedProcessCount()/@AnalysisProcesses.Count processes complete</span>
+                <span class="stat">@GetTotalInsights() insights discovered</span>
+                <span class="stat">@GetElapsedTime() elapsed</span>
+            </div>
+        </div>
+
+        <!-- Determinate Progress with Confidence Visualization -->
+        <div class="overall-progress-bar">
+            <div class="progress-track">
+                <div class="progress-segment completed" style="width: @GetOverallProgress()%"></div>
+                <div class="progress-segment remaining" style="width: @(100 - GetOverallProgress())%"></div>
+            </div>
+            <div class="progress-milestones">
+                <div class="milestone @(GetOverallProgress() >= 25 ? "reached" : "")" style="left: 25%">
+                    <i class="fas fa-flag" aria-hidden="true"></i>
+                    <span>Market Analysis</span>
+                </div>
+                <div class="milestone @(GetOverallProgress() >= 50 ? "reached" : "")" style="left: 50%">
+                    <i class="fas fa-flag" aria-hidden="true"></i>
+                    <span>Competition Research</span>
+                </div>
+                <div class="milestone @(GetOverallProgress() >= 75 ? "reached" : "")" style="left: 75%">
+                    <i class="fas fa-flag" aria-hidden="true"></i>
+                    <span>Customer Analysis</span>
+                </div>
+                <div class="milestone @(GetOverallProgress() >= 100 ? "reached" : "")" style="left: 95%">
+                    <i class="fas fa-trophy" aria-hidden="true"></i>
+                    <span>Complete</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-Time Communication Panel -->
+    <div class="communication-panel" role="complementary" aria-label="Real-time updates">
+        <div class="panel-header">
+            <h3>Live Updates</h3>
+            <div class="connection-status @(IsConnected ? "connected" : "disconnected")">
+                <i class="fas fa-circle" aria-hidden="true"></i>
+                @(IsConnected ? "Connected" : "Reconnecting...")
+            </div>
+        </div>
+        
+        <div class="updates-feed" role="log" aria-live="polite" aria-atomic="false">
+            @foreach (var update in RecentUpdates.TakeLast(5).Reverse())
+            {
+                <div class="update-item @GetUpdateTypeClass(update.Type)">
+                    <div class="update-timestamp">@update.Timestamp.ToString("HH:mm:ss")</div>
+                    <div class="update-content">
+                        <i class="@GetUpdateIcon(update.Type)" aria-hidden="true"></i>
+                        @update.Message
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Emergency Controls (Transparency) -->
+    <div class="emergency-controls">
+        <button type="button" 
+                class="control-btn pause-btn"
+                @onclick="PauseAnalysis"
+                disabled="@(OverallStatus != AnalysisStatus.InProgress)"
+                aria-label="Pause analysis">
+            <i class="fas fa-pause" aria-hidden="true"></i>
+            Pause
+        </button>
+        
+        <button type="button" 
+                class="control-btn stop-btn"
+                @onclick="StopAnalysis"
+                disabled="@(OverallStatus != AnalysisStatus.InProgress)"
+                aria-label="Stop analysis">
+            <i class="fas fa-stop" aria-hidden="true"></i>
+            Stop
+        </button>
+        
+        <button type="button" 
+                class="control-btn help-btn"
+                @onclick="ShowProgressHelp"
+                aria-label="Get help with progress tracking">
+            <i class="fas fa-question-circle" aria-hidden="true"></i>
+            Help
+        </button>
+    </div>
+
+    <!-- Completion Celebration (Psychology-Based Positive Reinforcement) -->
+    @if (OverallStatus == AnalysisStatus.Completed)
+    {
+        <div class="completion-celebration" role="status" aria-live="polite">
+            <div class="celebration-content">
+                <div class="celebration-icon">
+                    <i class="fas fa-trophy celebration-trophy"></i>
+                </div>
+                <h2>Analysis Complete! 🎉</h2>
+                <p>We've successfully analyzed your idea and generated @GetTotalInsights() actionable insights.</p>
+                <div class="celebration-stats">
+                    <div class="stat-item">
+                        <span class="stat-value">@GetTotalInsights()</span>
+                        <span class="stat-label">Insights Generated</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">@GetAnalysisAccuracy()%</span>
+                        <span class="stat-label">Confidence Score</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value">@GetElapsedTime()</span>
+                        <span class="stat-label">Time Taken</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string SessionId { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnAnalysisComplete { get; set; }
+    [Parameter] public EventCallback<string> OnAnalysisPaused { get; set; }
+    [Parameter] public EventCallback<string> OnAnalysisStopped { get; set; }
+
+    // Mock SignalR connection for UX demonstration
+    private Timer? progressTimer;
+    private DateTime StartTime = DateTime.Now;
+    private bool IsConnected = false;
+    private AnalysisStatus OverallStatus = AnalysisStatus.InProgress;
+    private int EstimatedTimeRemaining = 45;
+
+    private List<AnalysisProcess> AnalysisProcesses = new();
+    private List<ProgressUpdate> RecentUpdates = new();
+    private HashSet<string> ExpandedCompletedTasks = new();
+
+    public enum AnalysisStatus
+    {
+        Pending,
+        InProgress,
+        Paused,
+        Completed,
+        Failed
+    }
+
+    public enum ProcessStatus
+    {
+        Pending,
+        InProgress,
+        Completed,
+        Failed
+    }
+
+    public enum UpdateType
+    {
+        Info,
+        Success,
+        Warning,
+        Error
+    }
+
+    public class AnalysisProcess
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
+        public ProcessStatus Status { get; set; } = ProcessStatus.Pending;
+        public int Progress { get; set; } = 0;
+        public string CurrentTask { get; set; } = string.Empty;
+        public List<CompletedTask> CompletedTasks { get; set; } = new();
+        public List<ProcessInsight> PreviewInsights { get; set; } = new();
+    }
+
+    public class CompletedTask
+    {
+        public string Description { get; set; } = string.Empty;
+        public DateTime CompletedAt { get; set; }
+    }
+
+    public class ProcessInsight
+    {
+        public string Text { get; set; } = string.Empty;
+        public int Confidence { get; set; }
+    }
+
+    public class ProgressUpdate
+    {
+        public DateTime Timestamp { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public UpdateType Type { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        InitializeMockProcesses();
+        await StartSignalRConnection();
+        StartProgressSimulation();
+    }
+
+    private void InitializeMockProcesses()
+    {
+        AnalysisProcesses = new List<AnalysisProcess>
+        {
+            new()
+            {
+                Id = "market-analysis",
+                Name = "Market Analysis",
+                IconClass = "fas fa-chart-pie",
+                Status = ProcessStatus.InProgress,
+                Progress = 15,
+                CurrentTask = "Analyzing market size and trends..."
+            },
+            new()
+            {
+                Id = "competitor-research",
+                Name = "Competitor Research",
+                IconClass = "fas fa-chess",
+                Status = ProcessStatus.Pending,
+                Progress = 0
+            },
+            new()
+            {
+                Id = "customer-analysis",
+                Name = "Customer Analysis",
+                IconClass = "fas fa-users",
+                Status = ProcessStatus.Pending,
+                Progress = 0
+            },
+            new()
+            {
+                Id = "swot-analysis",
+                Name = "SWOT Analysis",
+                IconClass = "fas fa-balance-scale",
+                Status = ProcessStatus.Pending,
+                Progress = 0
+            }
+        };
+    }
+
+    private async Task StartSignalRConnection()
+    {
+        // Mock SignalR connection for UX demonstration
+        await Task.Delay(100); // Simulate connection time
+        IsConnected = true;
+        AddUpdate("Connected to AI analysis engine", UpdateType.Success);
+        StateHasChanged();
+    }
+
+    private void StartProgressSimulation()
+    {
+        progressTimer = new Timer(2000); // Update every 2 seconds for demo
+        progressTimer.Elapsed += async (sender, e) => await SimulateProgress();
+        progressTimer.Start();
+    }
+
+    private async Task SimulateProgress()
+    {
+        await InvokeAsync(() =>
+        {
+            var activeProcess = AnalysisProcesses.FirstOrDefault(p => p.Status == ProcessStatus.InProgress);
+            
+            if (activeProcess != null)
+            {
+                // Simulate never-stopping progress
+                activeProcess.Progress = Math.Min(activeProcess.Progress + Random.Shared.Next(5, 15), 100);
+                
+                // Update current task
+                UpdateCurrentTask(activeProcess);
+                
+                // Complete process if at 100%
+                if (activeProcess.Progress >= 100)
+                {
+                    CompleteProcess(activeProcess);
+                }
+            }
+            else
+            {
+                // Start next process
+                var nextProcess = AnalysisProcesses.FirstOrDefault(p => p.Status == ProcessStatus.Pending);
+                if (nextProcess != null)
+                {
+                    StartProcess(nextProcess);
+                }
+                else if (AnalysisProcesses.All(p => p.Status == ProcessStatus.Completed))
+                {
+                    CompleteAnalysis();
+                }
+            }
+
+            // Update time remaining
+            EstimatedTimeRemaining = Math.Max(EstimatedTimeRemaining - 1, 0);
+            
+            StateHasChanged();
+        });
+    }
+
+    private void UpdateCurrentTask(AnalysisProcess process)
+    {
+        var tasks = process.Id switch
+        {
+            "market-analysis" => new[]
+            {
+                "Gathering market size data...",
+                "Analyzing industry trends...",
+                "Evaluating market opportunities...",
+                "Calculating TAM/SAM/SOM metrics..."
+            },
+            "competitor-research" => new[]
+            {
+                "Identifying key competitors...",
+                "Analyzing competitor strategies...",
+                "Evaluating competitive positioning...",
+                "Assessing market share distribution..."
+            },
+            "customer-analysis" => new[]
+            {
+                "Segmenting target customers...",
+                "Analyzing customer needs...",
+                "Evaluating customer pain points...",
+                "Developing customer personas..."
+            },
+            "swot-analysis" => new[]
+            {
+                "Identifying strengths...",
+                "Analyzing weaknesses...",
+                "Evaluating opportunities...",
+                "Assessing threats..."
+            },
+            _ => new[] { "Processing data..." }
+        };
+
+        var taskIndex = (process.Progress / 25) % tasks.Length;
+        process.CurrentTask = tasks[taskIndex];
+        
+        AddUpdate($"{process.Name}: {process.CurrentTask}", UpdateType.Info);
+    }
+
+    private void CompleteProcess(AnalysisProcess process)
+    {
+        process.Status = ProcessStatus.Completed;
+        process.CurrentTask = "";
+        
+        // Add completed task
+        process.CompletedTasks.Add(new CompletedTask
+        {
+            Description = $"Completed {process.Name.ToLower()}",
+            CompletedAt = DateTime.Now
+        });
+
+        // Add mock insights
+        AddMockInsights(process);
+        
+        AddUpdate($"{process.Name} completed successfully!", UpdateType.Success);
+    }
+
+    private void AddMockInsights(AnalysisProcess process)
+    {
+        var insights = process.Id switch
+        {
+            "market-analysis" => new[]
+            {
+                new ProcessInsight { Text = "Market size estimated at $2.5B with 15% annual growth", Confidence = 87 },
+                new ProcessInsight { Text = "Early adopter segment shows high demand signals", Confidence = 82 }
+            },
+            "competitor-research" => new[]
+            {
+                new ProcessInsight { Text = "3 direct competitors identified with significant market gaps", Confidence = 91 },
+                new ProcessInsight { Text = "Pricing opportunity exists in premium segment", Confidence = 78 }
+            },
+            "customer-analysis" => new[]
+            {
+                new ProcessInsight { Text = "Primary target: 25-40 year old professionals", Confidence = 89 },
+                new ProcessInsight { Text = "High willingness to pay for time-saving solutions", Confidence = 85 }
+            },
+            "swot-analysis" => new[]
+            {
+                new ProcessInsight { Text = "Strong technology advantage identified", Confidence = 93 },
+                new ProcessInsight { Text = "Regulatory risk requires monitoring", Confidence = 76 }
+            },
+            _ => new ProcessInsight[0]
+        };
+
+        process.PreviewInsights.AddRange(insights);
+    }
+
+    private void StartProcess(AnalysisProcess process)
+    {
+        process.Status = ProcessStatus.InProgress;
+        process.Progress = 5; // Never start at 0% (psychology principle)
+        AddUpdate($"Starting {process.Name.ToLower()}...", UpdateType.Info);
+    }
+
+    private async Task CompleteAnalysis()
+    {
+        OverallStatus = AnalysisStatus.Completed;
+        progressTimer?.Stop();
+        
+        AddUpdate("Analysis completed successfully!", UpdateType.Success);
+        
+        await OnAnalysisComplete.InvokeAsync();
+    }
+
+    private void AddUpdate(string message, UpdateType type)
+    {
+        RecentUpdates.Add(new ProgressUpdate
+        {
+            Timestamp = DateTime.Now,
+            Message = message,
+            Type = type
+        });
+
+        // Keep only last 10 updates
+        if (RecentUpdates.Count > 10)
+        {
+            RecentUpdates.RemoveAt(0);
+        }
+    }
+
+    // UI Helper Methods
+    private int GetActiveProcessCount() => AnalysisProcesses.Count(p => p.Status == ProcessStatus.InProgress);
+    private int GetCompletedProcessCount() => AnalysisProcesses.Count(p => p.Status == ProcessStatus.Completed);
+    private int GetTotalInsights() => AnalysisProcesses.Sum(p => p.PreviewInsights.Count);
+    private string GetElapsedTime() => $"{(DateTime.Now - StartTime).TotalMinutes:F0}m";
+    private int GetOverallProgress() => (int)(AnalysisProcesses.Average(p => p.Progress));
+    private int GetAnalysisAccuracy() => 87; // Mock value
+
+    private string GetProcessStatusClass(AnalysisProcess process)
+    {
+        return process.Status switch
+        {
+            ProcessStatus.InProgress => "process-active",
+            ProcessStatus.Completed => "process-completed",
+            ProcessStatus.Failed => "process-failed",
+            _ => "process-pending"
+        };
+    }
+
+    private string GetProcessStatusText(AnalysisProcess process)
+    {
+        return process.Status switch
+        {
+            ProcessStatus.InProgress => "In Progress",
+            ProcessStatus.Completed => "Completed",
+            ProcessStatus.Failed => "Failed",
+            _ => "Pending"
+        };
+    }
+
+    private string GetProgressBarClass(AnalysisProcess process)
+    {
+        return process.Status switch
+        {
+            ProcessStatus.InProgress => "progress-active",
+            ProcessStatus.Completed => "progress-completed",
+            ProcessStatus.Failed => "progress-failed",
+            _ => "progress-pending"
+        };
+    }
+
+    private void ToggleCompletedTasks(string processId)
+    {
+        if (ExpandedCompletedTasks.Contains(processId))
+            ExpandedCompletedTasks.Remove(processId);
+        else
+            ExpandedCompletedTasks.Add(processId);
+        
+        StateHasChanged();
+    }
+
+    private bool IsCompletedTasksVisible(string processId) => ExpandedCompletedTasks.Contains(processId);
+
+    private string GetUpdateTypeClass(UpdateType type)
+    {
+        return type switch
+        {
+            UpdateType.Success => "update-success",
+            UpdateType.Warning => "update-warning",
+            UpdateType.Error => "update-error",
+            _ => "update-info"
+        };
+    }
+
+    private string GetUpdateIcon(UpdateType type)
+    {
+        return type switch
+        {
+            UpdateType.Success => "fas fa-check-circle",
+            UpdateType.Warning => "fas fa-exclamation-triangle",
+            UpdateType.Error => "fas fa-times-circle",
+            _ => "fas fa-info-circle"
+        };
+    }
+
+    private async Task PauseAnalysis()
+    {
+        OverallStatus = AnalysisStatus.Paused;
+        progressTimer?.Stop();
+        AddUpdate("Analysis paused by user", UpdateType.Warning);
+        await OnAnalysisPaused.InvokeAsync(SessionId);
+    }
+
+    private async Task StopAnalysis()
+    {
+        OverallStatus = AnalysisStatus.Failed;
+        progressTimer?.Stop();
+        AddUpdate("Analysis stopped by user", UpdateType.Error);
+        await OnAnalysisStopped.InvokeAsync(SessionId);
+    }
+
+    private void ShowProgressHelp()
+    {
+        // Implementation for help modal
+        AddUpdate("Help information displayed", UpdateType.Info);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        progressTimer?.Stop();
+        progressTimer?.Dispose();
+        
+        // Mock cleanup - no actual SignalR hub to dispose
+        await Task.CompletedTask;
+    }
+}
+
+<style>
+    .progress-tracker-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    /* Progress Header */
+    .progress-header {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-header h2 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    .progress-subtitle {
+        color: #666;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .time-remaining {
+        display: inline-block;
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 500;
+        margin-left: 1rem;
+    }
+
+    /* Multi-Process Container */
+    .multi-process-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .process-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .process-card.process-active {
+        border-left: 4px solid #007bff;
+        box-shadow: 0 6px 20px rgba(0, 123, 255, 0.15);
+    }
+
+    .process-card.process-completed {
+        border-left: 4px solid #28a745;
+    }
+
+    .process-card.process-failed {
+        border-left: 4px solid #dc3545;
+    }
+
+    .process-card.process-pending {
+        border-left: 4px solid #6c757d;
+        opacity: 0.7;
+    }
+
+    .process-header {
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: #f8f9fa;
+    }
+
+    .process-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        background: #007bff;
+    }
+
+    .process-card.process-completed .process-icon {
+        background: #28a745;
+    }
+
+    .process-card.process-failed .process-icon {
+        background: #dc3545;
+    }
+
+    .process-card.process-pending .process-icon {
+        background: #6c757d;
+    }
+
+    .process-info {
+        flex: 1;
+    }
+
+    .process-info h3 {
+        margin: 0 0 0.25rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .process-status {
+        font-size: 0.875rem;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 500;
+    }
+
+    .process-progress-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .process-body {
+        padding: 1.5rem;
+    }
+
+    /* Never-Stopping Progress Bars */
+    .progress-bar-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .progress-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        transition: width 0.5s ease;
+        border-radius: 4px;
+    }
+
+    .progress-bar.progress-completed .progress-fill {
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+
+    .progress-bar.progress-failed .progress-fill {
+        background: linear-gradient(90deg, #dc3545, #c82333);
+    }
+
+    /* Shimmer effect for active progress */
+    .progress-shimmer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%
+        );
+        animation: shimmer 2s infinite;
+    }
+
+    @@keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    /* Real-Time Feedback */
+    .process-feedback {
+        margin-bottom: 1rem;
+    }
+
+    .current-task {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #007bff;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        font-weight: 500;
+    }
+
+    .completed-toggle {
+        background: none;
+        border: 1px solid #e9ecef;
+        color: #666;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .completed-toggle:hover {
+        border-color: #007bff;
+        color: #007bff;
+    }
+
+    .completed-list {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+    }
+
+    .completed-task {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .completed-task i {
+        color: #28a745;
+    }
+
+    .task-timestamp {
+        margin-left: auto;
+        color: #999;
+        font-size: 0.75rem;
+    }
+
+    /* Process Insights */
+    .process-insights {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-top: 1rem;
+    }
+
+    .process-insights h4 {
+        margin: 0 0 1rem 0;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .insight-item {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 0.75rem;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 4px;
+    }
+
+    .insight-confidence {
+        min-width: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .mini-confidence-indicator {
+        height: 4px;
+        background: #28a745;
+        border-radius: 2px;
+        width: 50px;
+    }
+
+    .insight-confidence span {
+        font-size: 0.75rem;
+        color: #666;
+        font-weight: 600;
+    }
+
+    .insight-item p {
+        margin: 0;
+        color: #333;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    .more-insights {
+        text-align: center;
+        color: #666;
+        font-size: 0.8rem;
+        margin: 0;
+        font-style: italic;
+    }
+
+    /* Overall Progress Section */
+    .overall-progress-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .overall-progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+
+    .overall-progress-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .progress-stats {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .stat {
+        font-size: 0.9rem;
+        color: #666;
+        background: #f8f9fa;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+
+    /* Psychology-Based Progress Visualization */
+    .overall-progress-bar {
+        position: relative;
+        margin-bottom: 3rem;
+    }
+
+    .progress-track {
+        height: 12px;
+        background: #e9ecef;
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+    }
+
+    .progress-segment.completed {
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.5s ease;
+    }
+
+    .progress-segment.remaining {
+        background: #e9ecef;
+    }
+
+    .progress-milestones {
+        position: relative;
+        height: 40px;
+        margin-top: 1rem;
+    }
+
+    .milestone {
+        position: absolute;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: #666;
+    }
+
+    .milestone.reached {
+        color: #28a745;
+    }
+
+    .milestone i {
+        font-size: 1rem;
+    }
+
+    /* Real-Time Communication Panel */
+    .communication-panel {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .panel-header h3 {
+        margin: 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .connection-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+    }
+
+    .connection-status.connected {
+        background: #d4f6d4;
+        color: #28a745;
+    }
+
+    .connection-status.disconnected {
+        background: #f8d7da;
+        color: #dc3545;
+    }
+
+    .updates-feed {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .update-item {
+        display: flex;
+        gap: 1rem;
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        border-left: 3px solid #e9ecef;
+    }
+
+    .update-item.update-success {
+        background: #f8fff9;
+        border-left-color: #28a745;
+    }
+
+    .update-item.update-warning {
+        background: #fffbf0;
+        border-left-color: #ffc107;
+    }
+
+    .update-item.update-error {
+        background: #fff5f5;
+        border-left-color: #dc3545;
+    }
+
+    .update-item.update-info {
+        background: #f0f8ff;
+        border-left-color: #007bff;
+    }
+
+    .update-timestamp {
+        font-size: 0.75rem;
+        color: #999;
+        min-width: 60px;
+    }
+
+    .update-content {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #333;
+    }
+
+    /* Emergency Controls */
+    .emergency-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .control-btn {
+        padding: 0.75rem 1.5rem;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .pause-btn {
+        background: #ffc107;
+        color: #212529;
+        border-color: #ffc107;
+    }
+
+    .pause-btn:hover:not(:disabled) {
+        background: #e0a800;
+        border-color: #e0a800;
+    }
+
+    .stop-btn {
+        background: #dc3545;
+        color: white;
+        border-color: #dc3545;
+    }
+
+    .stop-btn:hover:not(:disabled) {
+        background: #c82333;
+        border-color: #c82333;
+    }
+
+    .help-btn {
+        background: #6c757d;
+        color: white;
+        border-color: #6c757d;
+    }
+
+    .help-btn:hover {
+        background: #5a6268;
+        border-color: #5a6268;
+    }
+
+    .control-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Completion Celebration */
+    .completion-celebration {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 3rem;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .celebration-content h2 {
+        margin: 1rem 0;
+        font-size: 2rem;
+    }
+
+    .celebration-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .celebration-trophy {
+        color: #ffd700;
+        animation: bounce 2s infinite;
+    }
+
+    @@keyframes bounce {
+        0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+        40% { transform: translateY(-10px); }
+        60% { transform: translateY(-5px); }
+    }
+
+    .celebration-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #ffd700;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    /* Mobile Responsiveness */
+    @@media (max-width: 768px) {
+        .progress-tracker-container {
+            padding: 1rem;
+        }
+
+        .multi-process-container {
+            grid-template-columns: 1fr;
+        }
+
+        .overall-progress-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+
+        .progress-stats {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .emergency-controls {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .celebration-stats {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .milestone span {
+            display: none;
+        }
+    }
+
+    /* Accessibility */
+    @@media (prefers-reduced-motion: reduce) {
+        .progress-fill,
+        .celebration-trophy,
+        .progress-shimmer {
+            animation: none;
+            transition: none;
+        }
+    }
+
+    @@media (prefers-contrast: high) {
+        .process-card {
+            border: 2px solid black;
+        }
+        
+        .control-btn:focus {
+            box-shadow: 0 0 0 3px black;
+        }
+    }
+</style>

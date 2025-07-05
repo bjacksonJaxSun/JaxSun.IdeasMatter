@@ -1,0 +1,8 @@
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Release\net9.0\CoverletSourceRootsMapping_Jackson.Ideas.Api.Tests
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.csproj.AssemblyReference.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\MvcTestingAppManifest.json
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.AssemblyInfoInputs.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.AssemblyInfo.cs
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.csproj.CoreCompileInputs.cache
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\obj\Release\net9.0\Jackson.Ideas.Api.Tests.sourcelink.json

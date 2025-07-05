@@ -1,0 +1,38 @@
+{
+    "CreatedItems":  {
+                         "Vision":  [
+
+                                    ],
+                         "Tasks":  [
+
+                                   ],
+                         "Strategy":  [
+
+                                      ],
+                         "Features":  [
+
+                                      ],
+                         "Stories":  [
+
+                                     ],
+                         "TestCases":  [
+
+                                       ],
+                         "Epics":  [
+
+                                   ]
+                     },
+    "Warnings":  [
+
+                 ],
+    "Errors":  [
+                   "Vision: Command failed: The term \u0027D:\\IDDevelopment\\Integrity.HRP\\commands\\commands\\vision\\create-product-vision.ps1\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again.",
+                   "Error: Workflow failed: The term \u0027D:\\IDDevelopment\\Integrity.HRP\\commands\\commands\\vision\\create-product-vision.ps1\u0027 is not recognized as the name of a cmdlet, function, script file, or operable program. Check the spelling of the name, or if a path was included, verify that the path is correct and try again."
+               ],
+    "CurrentPhase":  "Vision",
+    "StartTime":  {
+                      "value":  "\/Date(1751383050511)\/",
+                      "DisplayHint":  2,
+                      "DateTime":  "Tuesday, July 1, 2025 10:17:30 AM"
+                  }
+}

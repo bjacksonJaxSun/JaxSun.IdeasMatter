@@ -1,0 +1,1032 @@
+@using Jackson.Ideas.Core.DTOs.Research
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Components.Web
+
+<div class="strategy-selector-container" role="main" aria-label="Research Strategy Selection">
+    <div class="selector-header">
+        <h2>Choose Your Research Strategy</h2>
+        <p class="selector-description">
+            Select the depth and focus of your AI-powered research analysis. 
+            Each strategy is optimized for different business development stages.
+        </p>
+    </div>
+
+    <!-- Strategy Comparison Overview -->
+    <div class="strategy-overview" role="region" aria-labelledby="comparison-heading">
+        <h3 id="comparison-heading" class="sr-only">Strategy Comparison</h3>
+        <div class="comparison-table-container">
+            <table class="comparison-table" role="table" aria-label="Strategy feature comparison">
+                <thead>
+                    <tr>
+                        <th scope="col">Feature</th>
+                        <th scope="col">Quick Validation</th>
+                        <th scope="col">Market Deep-Dive</th>
+                        <th scope="col">Launch Strategy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Duration</th>
+                        <td>~15 minutes</td>
+                        <td>~45 minutes</td>
+                        <td>~90 minutes</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Market Analysis</th>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Basic</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Comprehensive</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Comprehensive</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Competitive Analysis</th>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Overview</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Detailed</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Strategic</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Customer Insights</th>
+                        <td><i class="fas fa-minus text-muted" aria-label="Not included"></i></td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Segmentation</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Personas</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Business Model</th>
+                        <td><i class="fas fa-minus text-muted" aria-label="Not included"></i></td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Options</td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Detailed</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Go-to-Market</th>
+                        <td><i class="fas fa-minus text-muted" aria-label="Not included"></i></td>
+                        <td><i class="fas fa-minus text-muted" aria-label="Not included"></i></td>
+                        <td><i class="fas fa-check text-success" aria-label="Included"></i> Strategy</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Strategy Cards -->
+    <div class="strategy-cards" role="group" aria-label="Available research strategies">
+        @foreach (var strategy in ResearchStrategies)
+        {
+            <div class="strategy-card @GetCardClass(strategy)" 
+                 role="button" 
+                 tabindex="0"
+                 aria-pressed="@(SelectedStrategy?.Id == strategy.Id)"
+                 @onclick="() => SelectStrategy(strategy)"
+                 @onkeypress="@(async (e) => await HandleKeyPress(e, strategy))">
+                
+                <div class="card-header">
+                    <div class="strategy-icon" aria-hidden="true">
+                        <i class="@strategy.IconClass"></i>
+                    </div>
+                    <div class="strategy-meta">
+                        <h3 class="strategy-title">@strategy.Name</h3>
+                        <div class="strategy-info">
+                            <span class="strategy-duration">
+                                <i class="fas fa-clock" aria-hidden="true"></i>
+                                @strategy.EstimatedDuration
+                            </span>
+                            <span class="strategy-price">
+                                <i class="fas fa-tag" aria-hidden="true"></i>
+                                @strategy.Price
+                            </span>
+                        </div>
+                    </div>
+                    @if (SelectedStrategy?.Id == strategy.Id)
+                    {
+                        <div class="selected-indicator" aria-label="Selected">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-body">
+                    <p class="strategy-description">@strategy.Description</p>
+                    
+                    <div class="strategy-features">
+                        <h4>What You'll Get:</h4>
+                        <ul class="feature-list" role="list">
+                            @foreach (var feature in strategy.Features)
+                            {
+                                <li role="listitem">
+                                    <i class="fas fa-check" aria-hidden="true"></i>
+                                    @feature
+                                </li>
+                            }
+                        </ul>
+                    </div>
+
+                    <div class="strategy-ideal-for">
+                        <h4>Ideal For:</h4>
+                        <div class="ideal-tags">
+                            @foreach (var scenario in strategy.IdealFor)
+                            {
+                                <span class="ideal-tag">@scenario</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="strategy-preview">
+                        <button type="button" 
+                                class="preview-btn"
+                                @onclick:stopPropagation="true"
+                                @onclick="() => ShowPreview(strategy)"
+                                aria-label="Preview @strategy.Name strategy outputs">
+                            <i class="fas fa-eye" aria-hidden="true"></i>
+                            Preview Outputs
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="confidence-indicator" role="progressbar" 
+                         aria-valuenow="@strategy.ConfidenceLevel" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100"
+                         aria-label="Confidence level: @strategy.ConfidenceLevel%">
+                        <span class="confidence-label">AI Confidence</span>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: @strategy.ConfidenceLevel%"></div>
+                        </div>
+                        <span class="confidence-value">@strategy.ConfidenceLevel%</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Industry Templates Section -->
+    <div class="template-marketplace" role="region" aria-labelledby="templates-heading">
+        <h3 id="templates-heading">Industry-Specific Templates</h3>
+        <p class="templates-description">
+            Get started faster with pre-configured research approaches for your industry.
+        </p>
+        
+        <div class="template-categories">
+            @foreach (var category in IndustryTemplates)
+            {
+                <div class="template-category">
+                    <h4>@category.Name</h4>
+                    <div class="template-items">
+                        @foreach (var template in category.Templates)
+                        {
+                            <button type="button" 
+                                    class="template-item"
+                                    @onclick="() => ApplyTemplate(template)"
+                                    aria-label="Apply @template.Name template">
+                                <div class="template-icon" aria-hidden="true">
+                                    <i class="@template.IconClass"></i>
+                                </div>
+                                <span class="template-name">@template.Name</span>
+                                <span class="template-description">@template.Description</span>
+                            </button>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Configuration Wizard (appears when strategy is selected) -->
+    @if (SelectedStrategy != null && ShowConfiguration)
+    {
+        <div class="configuration-wizard" role="dialog" aria-labelledby="config-title">
+            <h3 id="config-title">Customize Your @SelectedStrategy.Name</h3>
+            
+            <div class="config-options">
+                <div class="form-group">
+                    <label for="priority-focus" class="form-label">Priority Focus Areas</label>
+                    <div class="focus-options" role="group" aria-labelledby="priority-focus">
+                        @foreach (var focus in PriorityFocusOptions)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" 
+                                       id="focus-@focus.Key" 
+                                       class="form-check-input"
+                                       @onchange="@((e) => UpdateFocusArea(focus.Key, (bool)e.Value!))" />
+                                <label class="form-check-label" for="focus-@focus.Key">
+                                    @focus.Value
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="depth-level" class="form-label">Analysis Depth</label>
+                    <select id="depth-level" 
+                            class="form-control"
+                            @onchange="@((e) => UpdateAnalysisDepth(e.Value?.ToString() ?? ""))">
+                        <option value="standard">Standard Analysis</option>
+                        <option value="detailed">Detailed Analysis (+15 min)</option>
+                        <option value="comprehensive">Comprehensive Analysis (+30 min)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="special-requirements" class="form-label">Special Requirements</label>
+                    <textarea id="special-requirements" 
+                             class="form-control" 
+                             rows="3"
+                             placeholder="Any specific aspects you'd like us to focus on or considerations for your industry?"
+                             @onchange="@((e) => UpdateSpecialRequirements(e.Value?.ToString() ?? ""))"></textarea>
+                </div>
+            </div>
+
+            <div class="config-actions">
+                <button type="button" 
+                        class="btn btn-secondary"
+                        @onclick="CancelConfiguration">
+                    Cancel
+                </button>
+                <button type="button" 
+                        class="btn btn-primary"
+                        @onclick="SaveConfiguration">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public ResearchStrategyModel? SelectedStrategy { get; set; }
+    [Parameter] public EventCallback<ResearchStrategyModel> OnStrategySelected { get; set; }
+
+    private bool ShowConfiguration = false;
+    private Dictionary<string, bool> SelectedFocusAreas = new();
+    private string AnalysisDepth = "standard";
+    private string SpecialRequirements = string.Empty;
+
+    private List<ResearchStrategyModel> ResearchStrategies = new();
+    private List<IndustryTemplateCategory> IndustryTemplates = new();
+    private Dictionary<string, string> PriorityFocusOptions = new();
+
+    protected override void OnInitialized()
+    {
+        InitializeStrategies();
+        InitializeIndustryTemplates();
+        InitializeFocusOptions();
+    }
+
+    private void InitializeStrategies()
+    {
+        ResearchStrategies = new List<ResearchStrategyModel>
+        {
+            new()
+            {
+                Id = "quick-validation",
+                Name = "Quick Validation",
+                EstimatedDuration = "~15 minutes",
+                Description = "Fast go/no-go decision with essential market insights. Perfect for rapid idea screening.",
+                IconClass = "fas fa-tachometer-alt",
+                ConfidenceLevel = 85,
+                Price = "Free",
+                Features = new List<string>
+                {
+                    "Basic market size estimation",
+                    "Competitor landscape overview",
+                    "High-level SWOT analysis",
+                    "Go/no-go recommendation",
+                    "Key risk identification"
+                },
+                IdealFor = new List<string> { "Idea screening", "Quick decisions", "Early stage validation" }
+            },
+            new()
+            {
+                Id = "market-deep-dive",
+                Name = "Market Deep-Dive",
+                EstimatedDuration = "~45 minutes",
+                Description = "Comprehensive market analysis with detailed competitive intelligence and customer insights.",
+                IconClass = "fas fa-microscope",
+                ConfidenceLevel = 92,
+                Price = "$49",
+                Features = new List<string>
+                {
+                    "Detailed market analysis (TAM/SAM/SOM)",
+                    "Comprehensive competitor analysis",
+                    "Customer segmentation",
+                    "Market trends and opportunities",
+                    "Business model options",
+                    "Pricing strategy recommendations"
+                },
+                IdealFor = new List<string> { "Market research", "Business planning", "Investment preparation" }
+            },
+            new()
+            {
+                Id = "launch-strategy",
+                Name = "Launch Strategy",
+                EstimatedDuration = "~90 minutes",
+                Description = "Complete launch-ready analysis with go-to-market strategy, customer personas, and execution roadmap.",
+                IconClass = "fas fa-rocket",
+                ConfidenceLevel = 88,
+                Price = "$99",
+                Features = new List<string>
+                {
+                    "Complete market analysis",
+                    "Strategic competitive positioning",
+                    "Detailed customer personas",
+                    "Go-to-market strategy",
+                    "Marketing channel recommendations",
+                    "Launch timeline and milestones",
+                    "Risk mitigation strategies"
+                },
+                IdealFor = new List<string> { "Product launch", "Strategic planning", "Funding rounds" }
+            }
+        };
+    }
+
+    private void InitializeIndustryTemplates()
+    {
+        IndustryTemplates = new List<IndustryTemplateCategory>
+        {
+            new()
+            {
+                Name = "Technology",
+                Templates = new List<IndustryTemplate>
+                {
+                    new() { Name = "SaaS Platform", Description = "Software as a Service", IconClass = "fas fa-cloud" },
+                    new() { Name = "Mobile App", Description = "Consumer mobile application", IconClass = "fas fa-mobile-alt" },
+                    new() { Name = "AI/ML Solution", Description = "Artificial intelligence product", IconClass = "fas fa-robot" }
+                }
+            },
+            new()
+            {
+                Name = "E-commerce",
+                Templates = new List<IndustryTemplate>
+                {
+                    new() { Name = "Online Marketplace", Description = "Multi-vendor platform", IconClass = "fas fa-store" },
+                    new() { Name = "Direct-to-Consumer", Description = "DTC brand", IconClass = "fas fa-shopping-cart" },
+                    new() { Name = "Subscription Box", Description = "Recurring delivery service", IconClass = "fas fa-box" }
+                }
+            },
+            new()
+            {
+                Name = "Services",
+                Templates = new List<IndustryTemplate>
+                {
+                    new() { Name = "Professional Services", Description = "B2B service offering", IconClass = "fas fa-briefcase" },
+                    new() { Name = "Healthcare", Description = "Medical/health service", IconClass = "fas fa-heartbeat" },
+                    new() { Name = "Education", Description = "Learning platform", IconClass = "fas fa-graduation-cap" }
+                }
+            }
+        };
+    }
+
+    private void InitializeFocusOptions()
+    {
+        PriorityFocusOptions = new Dictionary<string, string>
+        {
+            { "market-size", "Market Size & Opportunity" },
+            { "competition", "Competitive Landscape" },
+            { "customers", "Customer Analysis" },
+            { "business-model", "Business Model Validation" },
+            { "pricing", "Pricing Strategy" },
+            { "go-to-market", "Go-to-Market Planning" }
+        };
+    }
+
+    private async Task SelectStrategy(ResearchStrategyModel strategy)
+    {
+        SelectedStrategy = strategy;
+        ShowConfiguration = true;
+        await OnStrategySelected.InvokeAsync(strategy);
+        StateHasChanged();
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e, ResearchStrategyModel strategy)
+    {
+        if (e.Key == "Enter" || e.Key == " ")
+        {
+            await SelectStrategy(strategy);
+        }
+    }
+
+    private void ShowPreview(ResearchStrategyModel strategy)
+    {
+        // Implementation for preview modal/drawer
+        // This would show sample outputs for the selected strategy
+    }
+
+    private void ApplyTemplate(IndustryTemplate template)
+    {
+        // Apply template-specific configurations
+        // This would pre-configure focus areas and settings based on industry
+    }
+
+    private void UpdateFocusArea(string key, bool value)
+    {
+        SelectedFocusAreas[key] = value;
+    }
+
+    private void UpdateAnalysisDepth(string depth)
+    {
+        AnalysisDepth = depth;
+    }
+
+    private void UpdateSpecialRequirements(string requirements)
+    {
+        SpecialRequirements = requirements;
+    }
+
+    private void SaveConfiguration()
+    {
+        ShowConfiguration = false;
+        // Save the configuration to the selected strategy
+        StateHasChanged();
+    }
+
+    private void CancelConfiguration()
+    {
+        ShowConfiguration = false;
+        SelectedStrategy = null;
+        StateHasChanged();
+    }
+
+    private string GetCardClass(ResearchStrategyModel strategy)
+    {
+        var classes = new List<string> { "strategy-card" };
+        
+        if (SelectedStrategy?.Id == strategy.Id)
+            classes.Add("selected");
+        
+        return string.Join(" ", classes);
+    }
+
+    public class ResearchStrategyModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string EstimatedDuration { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
+        public int ConfidenceLevel { get; set; }
+        public string Price { get; set; } = string.Empty;
+        public List<string> Features { get; set; } = new();
+        public List<string> IdealFor { get; set; } = new();
+    }
+
+    public class IndustryTemplateCategory
+    {
+        public string Name { get; set; } = string.Empty;
+        public List<IndustryTemplate> Templates { get; set; } = new();
+    }
+
+    public class IndustryTemplate
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    .strategy-selector-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .selector-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .selector-header h2 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+
+    .selector-description {
+        color: #666;
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Strategy Comparison Table */
+    .strategy-overview {
+        margin-bottom: 3rem;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .comparison-table-container {
+        overflow-x: auto;
+    }
+
+    .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+    .comparison-table th,
+    .comparison-table td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .comparison-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .comparison-table th[scope="col"]:first-child {
+        width: 200px;
+    }
+
+    .comparison-table th[scope="row"] {
+        background: #f8f9fa;
+        font-weight: 500;
+    }
+
+    .comparison-table td {
+        color: #666;
+    }
+
+    /* Strategy Cards */
+    .strategy-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        margin-bottom: 3rem;
+    }
+
+    .strategy-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .strategy-card:hover {
+        border-color: #007bff;
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.15);
+        transform: translateY(-2px);
+    }
+
+    .strategy-card.selected {
+        border-color: #007bff;
+        box-shadow: 0 8px 25px rgba(0, 123, 255, 0.25);
+    }
+
+    .strategy-card:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        position: relative;
+    }
+
+    .strategy-icon {
+        width: 48px;
+        height: 48px;
+        background: #007bff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .strategy-meta {
+        flex: 1;
+    }
+
+    .strategy-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .strategy-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .strategy-duration, .strategy-price {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .strategy-price {
+        font-weight: 600;
+        color: #28a745;
+    }
+
+    .selected-indicator {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        color: #28a745;
+        font-size: 1.5rem;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .strategy-description {
+        color: #666;
+        margin-bottom: 1.5rem;
+        line-height: 1.5;
+    }
+
+    .strategy-features h4,
+    .strategy-ideal-for h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.75rem;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1.5rem 0;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .feature-list li i {
+        color: #28a745;
+        font-size: 0.75rem;
+    }
+
+    .ideal-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .ideal-tag {
+        background: #e3f2fd;
+        color: #1976d2;
+        padding: 0.25rem 0.75rem;
+        border-radius: 16px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+
+    .preview-btn {
+        background: transparent;
+        border: 1px solid #007bff;
+        color: #007bff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .preview-btn:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .card-footer {
+        padding: 1rem 1.5rem;
+        background: #f8f9fa;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .confidence-indicator {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .confidence-label {
+        font-size: 0.875rem;
+        color: #666;
+        font-weight: 500;
+        min-width: 100px;
+    }
+
+    .confidence-bar {
+        flex: 1;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.3s ease;
+    }
+
+    .confidence-value {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #333;
+        min-width: 40px;
+        text-align: right;
+    }
+
+    /* Template Marketplace */
+    .template-marketplace {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 3rem;
+    }
+
+    .template-marketplace h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .templates-description {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .template-categories {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .template-category h4 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .template-items {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .template-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-align: left;
+    }
+
+    .template-item:hover {
+        border-color: #007bff;
+        background: #f0f8ff;
+    }
+
+    .template-icon {
+        width: 32px;
+        height: 32px;
+        background: #007bff;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .template-name {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 0.25rem;
+    }
+
+    .template-description {
+        font-size: 0.875rem;
+        color: #666;
+    }
+
+    /* Configuration Wizard */
+    .configuration-wizard {
+        background: white;
+        border: 2px solid #007bff;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    }
+
+    .configuration-wizard h3 {
+        color: #333;
+        margin-bottom: 1.5rem;
+    }
+
+    .config-options {
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .focus-options {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .form-check {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+
+    .form-check-label {
+        font-size: 0.95rem;
+        color: #333;
+        cursor: pointer;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    }
+
+    .config-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: flex-end;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 4px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #6c757d;
+        color: white;
+    }
+
+    /* Accessibility Helpers */
+    .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+    }
+
+    .text-success {
+        color: #28a745 !important;
+    }
+
+    .text-muted {
+        color: #6c757d !important;
+    }
+
+    /* Mobile Responsiveness */
+    @@media (max-width: 768px) {
+        .strategy-selector-container {
+            padding: 1rem;
+        }
+
+        .strategy-cards {
+            grid-template-columns: 1fr;
+        }
+
+        .comparison-table-container {
+            font-size: 0.875rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .card-header {
+            padding: 1rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .ideal-tags {
+            flex-direction: column;
+        }
+
+        .template-categories {
+            grid-template-columns: 1fr;
+        }
+
+        .focus-options {
+            grid-template-columns: 1fr;
+        }
+
+        .config-actions {
+            flex-direction: column;
+        }
+    }
+
+    /* Reduced Motion */
+    @@media (prefers-reduced-motion: reduce) {
+        .strategy-card,
+        .template-item,
+        .preview-btn,
+        .btn,
+        .confidence-fill {
+            transition: none;
+        }
+    }
+
+    /* High Contrast */
+    @@media (prefers-contrast: high) {
+        .strategy-card {
+            border-width: 3px;
+        }
+        
+        .strategy-card:focus {
+            box-shadow: 0 0 0 3px black;
+        }
+    }
+</style>

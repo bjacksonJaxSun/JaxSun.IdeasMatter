@@ -1,0 +1,282 @@
+@using Jackson.Ideas.Web.Components.Research.Progress
+
+<div class="multi-tier-dashboard" role="main" aria-label="AI Analysis Results">
+    <!-- Dashboard Navigation -->
+    <nav class="tier-navigation" role="tablist" aria-label="Analysis Detail Levels">
+        <button type="button" 
+                class="tier-tab @(CurrentTier == DashboardTier.Strategic ? "active" : "")"
+                role="tab"
+                aria-selected="@(CurrentTier == DashboardTier.Strategic)"
+                aria-controls="strategic-panel"
+                @onclick="() => SwitchTier(DashboardTier.Strategic)">
+            <i class="fas fa-binoculars" aria-hidden="true"></i>
+            <span>Strategic Overview</span>
+            <span class="tier-description">High-level insights</span>
+        </button>
+        
+        <button type="button" 
+                class="tier-tab @(CurrentTier == DashboardTier.Operational ? "active" : "")"
+                role="tab"
+                aria-selected="@(CurrentTier == DashboardTier.Operational)"
+                aria-controls="operational-panel"
+                @onclick="() => SwitchTier(DashboardTier.Operational)">
+            <i class="fas fa-chart-line" aria-hidden="true"></i>
+            <span>Operational Details</span>
+            <span class="tier-description">Performance metrics</span>
+        </button>
+        
+        <button type="button" 
+                class="tier-tab @(CurrentTier == DashboardTier.Analytical ? "active" : "")"
+                role="tab"
+                aria-selected="@(CurrentTier == DashboardTier.Analytical)"
+                aria-controls="analytical-panel"
+                @onclick="() => SwitchTier(DashboardTier.Analytical)">
+            <i class="fas fa-microscope" aria-hidden="true"></i>
+            <span>Deep Analysis</span>
+            <span class="tier-description">Detailed investigation</span>
+        </button>
+    </nav>
+
+    <!-- Content Panels -->
+    <div class="tier-content">
+        @if (CurrentTier == DashboardTier.Strategic)
+        {
+            <div id="strategic-panel" role="tabpanel" aria-labelledby="strategic-tab" class="tier-panel">
+                <div class="strategic-dashboard">
+                    <div class="dashboard-header">
+                        <h2>Strategic Overview</h2>
+                        <p class="header-description">
+                            High-level insights and conclusions for executive decision-making.
+                            Focus on key opportunities, risks, and strategic recommendations.
+                        </p>
+                    </div>
+                    <!-- Content will be added here -->
+                </div>
+            </div>
+        }
+        else if (CurrentTier == DashboardTier.Operational)
+        {
+            <div id="operational-panel" role="tabpanel" aria-labelledby="operational-tab" class="tier-panel">
+                <div class="operational-dashboard">
+                    <div class="dashboard-header">
+                        <h2>Operational Metrics</h2>
+                        <p class="header-description">
+                            Detailed performance metrics and operational insights.
+                        </p>
+                    </div>
+                    <!-- Content will be added here -->
+                </div>
+            </div>
+        }
+        else if (CurrentTier == DashboardTier.Analytical)
+        {
+            <div id="analytical-panel" role="tabpanel" aria-labelledby="analytical-tab" class="tier-panel">
+                <div class="analytical-dashboard">
+                    <div class="dashboard-header">
+                        <h2>Deep Analysis</h2>
+                        <p class="header-description">
+                            Comprehensive analytical data and research findings.
+                        </p>
+                    </div>
+                    <!-- Content will be added here -->
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Confidence Overlay (always visible) -->
+    <div class="confidence-overlay">
+        <ConfidenceVisualizer AnalysisResults="@GetCurrentTierResults()" 
+                            OnRetryAnalysis="@HandleRetryAnalysis" 
+                            OnShowAllInsights="@HandleShowAllInsights" />
+    </div>
+</div>
+
+@code {
+    [Parameter] public ResearchResultsModel Results { get; set; } = new();
+    [Parameter] public EventCallback<string> OnRetryAnalysis { get; set; }
+    [Parameter] public EventCallback<string> OnShowAllInsights { get; set; }
+    [Parameter] public EventCallback<string> OnDrillDown { get; set; }
+
+    private DashboardTier CurrentTier = DashboardTier.Strategic;
+
+    public enum DashboardTier
+    {
+        Strategic,
+        Operational,
+        Analytical
+    }
+
+    private void SwitchTier(DashboardTier tier)
+    {
+        CurrentTier = tier;
+        StateHasChanged();
+    }
+
+    private async Task HandleRetryAnalysis(string analysisId)
+    {
+        await OnRetryAnalysis.InvokeAsync(analysisId);
+    }
+
+    private async Task HandleShowAllInsights(string analysisId)
+    {
+        await OnShowAllInsights.InvokeAsync(analysisId);
+    }
+
+    private async Task HandleDrillDown(string section)
+    {
+        await OnDrillDown.InvokeAsync(section);
+    }
+
+    private List<ConfidenceVisualizer.AnalysisResultModel> GetCurrentTierResults()
+    {
+        return CurrentTier switch
+        {
+            DashboardTier.Strategic => Results.StrategicAnalyses,
+            DashboardTier.Operational => Results.OperationalAnalyses,
+            DashboardTier.Analytical => Results.AnalyticalAnalyses,
+            _ => new List<ConfidenceVisualizer.AnalysisResultModel>()
+        };
+    }
+    public class ResearchResultsModel
+    {
+        public MarketOpportunityModel MarketOpportunity { get; set; } = new();
+        public CompetitivePositionModel CompetitivePosition { get; set; } = new();
+        public RiskAssessmentModel RiskAssessment { get; set; } = new();
+        public List<RecommendationModel> StrategicRecommendations { get; set; } = new();
+        public List<TrendModel> MarketTrends { get; set; } = new();
+        public List<KpiModel> KeyPerformanceIndicators { get; set; } = new();
+        public MarketSizingModel MarketSizing { get; set; } = new();
+        public List<CompetitorModel> CompetitorAnalysis { get; set; } = new();
+        public List<InsightModel> OperationalInsights { get; set; } = new();
+        public List<MethodModel> AnalysisMethods { get; set; } = new();
+        public List<QualityMetricModel> DataQualityMetrics { get; set; } = new();
+        public List<FindingModel> DetailedFindings { get; set; } = new();
+        public List<ModelPerformanceModel> ModelPerformance { get; set; } = new();
+        public List<ConfidenceVisualizer.AnalysisResultModel> StrategicAnalyses { get; set; } = new();
+        public List<ConfidenceVisualizer.AnalysisResultModel> OperationalAnalyses { get; set; } = new();
+        public List<ConfidenceVisualizer.AnalysisResultModel> AnalyticalAnalyses { get; set; } = new();
+    }
+
+    public class MarketOpportunityModel
+    {
+        public int Score { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class CompetitivePositionModel
+    {
+        public int Score { get; set; }
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class RiskAssessmentModel
+    {
+        public string Level { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+
+    public class RecommendationModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Priority { get; set; } = string.Empty;
+        public int Confidence { get; set; }
+        public int ImpactScore { get; set; }
+    }
+
+    public class TrendModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Direction { get; set; } = string.Empty;
+        public int Impact { get; set; }
+        public string Timeframe { get; set; } = string.Empty;
+    }
+
+    public class KpiModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public double CurrentValue { get; set; }
+        public double TargetValue { get; set; }
+        public string Unit { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string Trend { get; set; } = string.Empty;
+        public int TrendPercentage { get; set; }
+    }
+
+    public class MarketSizingModel
+    {
+        public string TAM { get; set; } = string.Empty;
+        public string SAM { get; set; } = string.Empty;
+        public string SOM { get; set; } = string.Empty;
+    }
+
+    public class CompetitorModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public double MarketShare { get; set; }
+        public int StrengthScore { get; set; }
+    }
+
+    public class InsightModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public int Confidence { get; set; }
+        public string Impact { get; set; } = string.Empty;
+    }
+
+    public class MethodModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int ReliabilityScore { get; set; }
+        public List<string> DataSources { get; set; } = new();
+        public string SampleSize { get; set; } = string.Empty;
+        public string TimePeriod { get; set; } = string.Empty;
+    }
+
+    public class QualityMetricModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Score { get; set; }
+        public List<string> Issues { get; set; } = new();
+    }
+
+    public class FindingModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Significance { get; set; } = string.Empty;
+        public int Confidence { get; set; }
+        public List<DataPointModel> SupportingData { get; set; } = new();
+    }
+
+    public class DataPointModel
+    {
+        public string Label { get; set; } = string.Empty;
+        public string Value { get; set; } = string.Empty;
+        public string Source { get; set; } = string.Empty;
+    }
+
+    public class ModelPerformanceModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Version { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Accuracy { get; set; }
+        public int Precision { get; set; }
+        public int Recall { get; set; }
+        public int TrainingDataSize { get; set; }
+        public DateTime LastTrained { get; set; }
+    }
+}

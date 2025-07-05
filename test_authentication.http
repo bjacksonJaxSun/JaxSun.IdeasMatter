@@ -1,0 +1,49 @@
+# Test Authentication Endpoints
+# Use this file with VS Code REST Client extension or similar tools
+
+### Health Check
+GET https://localhost:7000/health
+
+### Register a new user
+POST https://localhost:7000/api/v1/auth/register
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "name": "Test User",
+  "password": "TestPassword123",
+  "confirmPassword": "TestPassword123"
+}
+
+### Login with the user
+POST https://localhost:7000/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "TestPassword123",
+  "rememberMe": false
+}
+
+### Test protected endpoint (should fail without token)
+GET https://localhost:7000/api/v1/researchsession
+
+### Test protected endpoint with token (replace YOUR_JWT_TOKEN with actual token from login response)
+GET https://localhost:7000/api/v1/researchsession
+Authorization: Bearer YOUR_JWT_TOKEN
+
+### Refresh token (replace YOUR_REFRESH_TOKEN with actual refresh token from login response)
+POST https://localhost:7000/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "YOUR_REFRESH_TOKEN"
+}
+
+### Logout (replace YOUR_REFRESH_TOKEN with actual refresh token)
+POST https://localhost:7000/api/v1/auth/logout
+Content-Type: application/json
+
+{
+  "refreshToken": "YOUR_REFRESH_TOKEN"
+}

@@ -1,0 +1,305 @@
+@using Jackson.Ideas.Core.DTOs.Research
+@using Jackson.Ideas.Core.Configuration
+@inject IJSRuntime JSRuntime
+
+@* 
+Enhanced Progress Tracker implementing UX Blueprint psychology principles.
+Features determinate progress indicators, multi-process management, and real-time feedback loops.
+Includes cancel/pause options and contextual information about processing stages.
+*@
+
+<div class="progress-tracker @CssClass" role="region" aria-label="Analysis Progress">
+    <div class="tracker-header">
+        <h3 class="tracker-title">@Title</h3>
+        
+        @if (ShowOverallProgress)
+        {
+            <div class="overall-progress">
+                <span class="progress-text">@OverallProgress% Complete</span>
+                @if (EstimatedTimeRemaining.HasValue && EstimatedTimeRemaining.Value > TimeSpan.Zero)
+                {
+                    <span class="time-remaining">@FormatTimeRemaining(EstimatedTimeRemaining.Value) remaining</span>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- Overall Progress Bar with Determinate Indicators -->
+    <div class="main-progress-container" 
+         role="progressbar" 
+         aria-valuenow="@OverallProgress" 
+         aria-valuemin="0" 
+         aria-valuemax="100"
+         aria-label="Overall analysis progress">
+        
+        <div class="progress-bar" style="width: @OverallProgress%">
+            <div class="progress-shine"></div>
+        </div>
+        
+        <!-- Milestone Markers -->
+        @if (Milestones?.Any() == true)
+        {
+            @foreach (var milestone in Milestones)
+            {
+                <div class="milestone-marker @(milestone.IsCompleted ? "completed" : "")" 
+                     style="left: @milestone.ProgressPercentage%"
+                     title="@milestone.Title">
+                    @if (milestone.IsCompleted)
+                    {
+                        <i class="milestone-icon completed" aria-label="Completed">✓</i>
+                    }
+                    else
+                    {
+                        <i class="milestone-icon pending" aria-label="Pending">○</i>
+                    }
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Phase-by-Phase Progress (Multi-Process Management) -->
+    @if (ProgressUpdates?.Any() == true)
+    {
+        <div class="phases-container">
+            <h4 class="phases-title">Analysis Phases</h4>
+            
+            @foreach (var update in ProgressUpdates.OrderBy(u => u.Timestamp))
+            {
+                <div class="phase-item @GetPhaseStatusClass(update)" 
+                     role="listitem"
+                     aria-label="@update.Phase progress">
+                    
+                    <div class="phase-header">
+                        <div class="phase-info">
+                            <i class="phase-icon @GetPhaseIconClass(update.Status)" aria-hidden="true"></i>
+                            <span class="phase-name">@update.Phase</span>
+                            
+                            @if (_demoOptions.ShowConfidenceIndicators && update.ConfidenceLevel > 0)
+                            {
+                                <span class="phase-confidence" title="Confidence Level">
+                                    @update.ConfidenceLevel%
+                                </span>
+                            }
+                        </div>
+                        
+                        <div class="phase-controls">
+                            @if (update.Status == "In Progress")
+                            {
+                                @if (update.CanPause)
+                                {
+                                    <button class="control-btn pause-btn" 
+                                            @onclick="() => PausePhase(update.Phase)"
+                                            aria-label="Pause @update.Phase">
+                                        ⏸️
+                                    </button>
+                                }
+                                
+                                @if (update.CanCancel)
+                                {
+                                    <button class="control-btn cancel-btn" 
+                                            @onclick="() => CancelPhase(update.Phase)"
+                                            aria-label="Cancel @update.Phase">
+                                        ❌
+                                    </button>
+                                }
+                                
+                                @if (update.EstimatedTimeRemaining > 0)
+                                {
+                                    <span class="phase-time">@FormatTimeRemaining(TimeSpan.FromMinutes(update.EstimatedTimeRemaining))</span>
+                                }
+                            }
+                            else if (update.Status == "Completed")
+                            {
+                                <span class="phase-duration">@FormatDuration(update.Timestamp)</span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <!-- Phase Progress Bar -->
+                    <div class="phase-progress-container">
+                        <div class="phase-progress-bar" 
+                             style="width: @update.ProgressPercentage%"
+                             role="progressbar"
+                             aria-valuenow="@update.ProgressPercentage"
+                             aria-valuemin="0"
+                             aria-valuemax="100">
+                        </div>
+                    </div>
+                    
+                    <!-- Phase Details with Progressive Disclosure -->
+                    @if (!string.IsNullOrEmpty(update.Details))
+                    {
+                        <div class="phase-details @(ShowPhaseDetails.Contains(update.Phase) ? "expanded" : "collapsed")">
+                            <button class="details-toggle" 
+                                    @onclick="() => TogglePhaseDetails(update.Phase)"
+                                    aria-expanded="@ShowPhaseDetails.Contains(update.Phase)"
+                                    aria-controls="details-@update.Phase">
+                                @(ShowPhaseDetails.Contains(update.Phase) ? "▼" : "▶") Details
+                            </button>
+                            
+                            <div id="details-@update.Phase" class="details-content">
+                                @update.Details
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="tracker-actions">
+        @if (CanPauseAll && HasActivePhases())
+        {
+            <button class="action-btn secondary" @onclick="PauseAll" disabled="@IsProcessingAction">
+                <i class="btn-icon">⏸️</i> Pause All
+            </button>
+        }
+        
+        @if (CanCancelAll)
+        {
+            <button class="action-btn danger" @onclick="CancelAll" disabled="@IsProcessingAction">
+                <i class="btn-icon">⏹️</i> Cancel Analysis
+            </button>
+        }
+        
+        @if (CanRestart && !HasActivePhases())
+        {
+            <button class="action-btn primary" @onclick="RestartAnalysis" disabled="@IsProcessingAction">
+                <i class="btn-icon">🔄</i> Restart Analysis
+            </button>
+        }
+    </div>
+
+    <!-- Live Preview Updates (Real-time Feedback Loop) -->
+    @if (LivePreview != null && ShowLivePreview)
+    {
+        <div class="live-preview" role="region" aria-label="Live Analysis Preview">
+            <h4 class="preview-title">Live Insights</h4>
+            <div class="preview-content">
+                @LivePreview
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Research Analysis";
+    [Parameter] public string CssClass { get; set; } = "";
+    [Parameter] public int OverallProgress { get; set; } = 0;
+    [Parameter] public bool ShowOverallProgress { get; set; } = true;
+    [Parameter] public TimeSpan? EstimatedTimeRemaining { get; set; }
+    [Parameter] public List<AnalysisProgressUpdate>? ProgressUpdates { get; set; }
+    [Parameter] public List<ProgressMilestone>? Milestones { get; set; }
+    [Parameter] public bool CanPauseAll { get; set; } = true;
+    [Parameter] public bool CanCancelAll { get; set; } = true;
+    [Parameter] public bool CanRestart { get; set; } = false;
+    [Parameter] public bool ShowLivePreview { get; set; } = false;
+    [Parameter] public RenderFragment? LivePreview { get; set; }
+    
+    [Parameter] public EventCallback<string> OnPhaseCancel { get; set; }
+    [Parameter] public EventCallback<string> OnPhasePause { get; set; }
+    [Parameter] public EventCallback OnPauseAll { get; set; }
+    [Parameter] public EventCallback OnCancelAll { get; set; }
+    [Parameter] public EventCallback OnRestart { get; set; }
+
+    private readonly HashSet<string> ShowPhaseDetails = new();
+    private bool IsProcessingAction = false;
+    private readonly DemoModeOptions _demoOptions = new() { ShowConfidenceIndicators = true };
+
+    private async Task PausePhase(string phase)
+    {
+        IsProcessingAction = true;
+        await OnPhasePause.InvokeAsync(phase);
+        IsProcessingAction = false;
+    }
+
+    private async Task CancelPhase(string phase)
+    {
+        IsProcessingAction = true;
+        await OnPhaseCancel.InvokeAsync(phase);
+        IsProcessingAction = false;
+    }
+
+    private async Task PauseAll()
+    {
+        IsProcessingAction = true;
+        await OnPauseAll.InvokeAsync();
+        IsProcessingAction = false;
+    }
+
+    private async Task CancelAll()
+    {
+        IsProcessingAction = true;
+        await OnCancelAll.InvokeAsync();
+        IsProcessingAction = false;
+    }
+
+    private async Task RestartAnalysis()
+    {
+        IsProcessingAction = true;
+        await OnRestart.InvokeAsync();
+        IsProcessingAction = false;
+    }
+
+    private void TogglePhaseDetails(string phase)
+    {
+        if (ShowPhaseDetails.Contains(phase))
+            ShowPhaseDetails.Remove(phase);
+        else
+            ShowPhaseDetails.Add(phase);
+    }
+
+    private bool HasActivePhases()
+    {
+        return ProgressUpdates?.Any(u => u.Status == "In Progress") == true;
+    }
+
+    private string GetPhaseStatusClass(AnalysisProgressUpdate update)
+    {
+        return update.Status.ToLower() switch
+        {
+            "completed" => "phase-completed",
+            "in progress" => "phase-active",
+            "paused" => "phase-paused",
+            "failed" => "phase-failed",
+            _ => "phase-pending"
+        };
+    }
+
+    private string GetPhaseIconClass(string status)
+    {
+        return status.ToLower() switch
+        {
+            "completed" => "icon-check",
+            "in progress" => "icon-spinner",
+            "paused" => "icon-pause",
+            "failed" => "icon-error",
+            _ => "icon-pending"
+        };
+    }
+
+    private string FormatTimeRemaining(TimeSpan time)
+    {
+        if (time.TotalMinutes < 1)
+            return $"{time.Seconds}s";
+        else if (time.TotalHours < 1)
+            return $"{time.Minutes}m {time.Seconds}s";
+        else
+            return $"{time.Hours}h {time.Minutes}m";
+    }
+
+    private string FormatDuration(DateTime timestamp)
+    {
+        var duration = DateTime.UtcNow - timestamp;
+        return FormatTimeRemaining(duration);
+    }
+
+    public class ProgressMilestone
+    {
+        public string Title { get; set; } = "";
+        public int ProgressPercentage { get; set; }
+        public bool IsCompleted { get; set; }
+        public DateTime? CompletedAt { get; set; }
+    }
+}

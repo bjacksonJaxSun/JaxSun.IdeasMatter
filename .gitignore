@@ -32,4 +32,4 @@ venv/
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.vs/

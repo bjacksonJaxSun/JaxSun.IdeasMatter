@@ -1,0 +1,997 @@
+@using System.ComponentModel.DataAnnotations
+
+<div class="confidence-visualizer" role="region" aria-label="AI Analysis Confidence Indicators">
+    @if (AnalysisResults.Any())
+    {
+        <div class="confidence-header">
+            <h3>AI Confidence Assessment</h3>
+            <p class="confidence-description">
+                Our confidence levels help you understand when to rely on AI insights versus applying your own judgment.
+                Higher confidence indicates more reliable predictions based on available data.
+            </p>
+        </div>
+
+        <div class="confidence-grid">
+            @foreach (var result in AnalysisResults)
+            {
+                <div class="confidence-card @GetConfidenceClass(result.ConfidenceLevel)">
+                    <div class="card-header">
+                        <div class="analysis-icon" aria-hidden="true">
+                            <i class="@result.IconClass"></i>
+                        </div>
+                        <div class="analysis-info">
+                            <h4>@result.AnalysisType</h4>
+                            <span class="analysis-status @GetStatusClass(result.Status)">
+                                @result.Status.ToString()
+                            </span>
+                        </div>
+                        <div class="confidence-score" 
+                             role="progressbar" 
+                             aria-valuenow="@result.ConfidenceLevel" 
+                             aria-valuemin="0" 
+                             aria-valuemax="100"
+                             aria-label="Confidence level: @result.ConfidenceLevel%">
+                            <span class="score-value">@result.ConfidenceLevel%</span>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        @if (result.Status == AnalysisStatus.Completed)
+                        {
+                            <!-- Confidence Visualization Bar -->
+                            <div class="confidence-bar-container">
+                                <div class="confidence-bar" 
+                                     style="background: @GetConfidenceGradient(result.ConfidenceLevel)">
+                                    <div class="confidence-fill" 
+                                         style="width: @result.ConfidenceLevel%"></div>
+                                </div>
+                                <div class="confidence-labels">
+                                    <span class="label-low">Low</span>
+                                    <span class="label-medium">Medium</span>
+                                    <span class="label-high">High</span>
+                                </div>
+                            </div>
+
+                            <!-- Confidence Explanation -->
+                            <div class="confidence-explanation">
+                                <button type="button" 
+                                        class="explanation-toggle"
+                                        @onclick="() => ToggleExplanation(result.Id)"
+                                        aria-expanded="@IsExplanationVisible(result.Id)"
+                                        aria-controls="explanation-@result.Id">
+                                    <i class="fas fa-info-circle" aria-hidden="true"></i>
+                                    How we calculated this confidence
+                                </button>
+                                
+                                @if (IsExplanationVisible(result.Id))
+                                {
+                                    <div id="explanation-@result.Id" class="explanation-content">
+                                        <h5>Confidence Factors:</h5>
+                                        <ul class="factor-list">
+                                            @foreach (var factor in result.ConfidenceFactors)
+                                            {
+                                                <li class="factor-item @GetFactorClass(factor.Impact)">
+                                                    <div class="factor-header">
+                                                        <span class="factor-name">@factor.Name</span>
+                                                        <span class="factor-weight">+@factor.Weight%</span>
+                                                    </div>
+                                                    <p class="factor-description">@factor.Description</p>
+                                                </li>
+                                            }
+                                        </ul>
+                                        
+                                        @if (result.LimitationFactors.Any())
+                                        {
+                                            <h5>Limitations:</h5>
+                                            <ul class="limitation-list">
+                                                @foreach (var limitation in result.LimitationFactors)
+                                                {
+                                                    <li class="limitation-item">
+                                                        <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                                                        @limitation
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                }
+                            </div>
+
+                            <!-- Key Insights with Confidence Indicators -->
+                            @if (result.KeyInsights.Any())
+                            {
+                                <div class="insights-section">
+                                    <h5>Key Insights</h5>
+                                    <div class="insights-list">
+                                        @foreach (var insight in result.KeyInsights.Take(3))
+                                        {
+                                            <div class="insight-item">
+                                                <div class="insight-confidence">
+                                                    <div class="mini-confidence-bar">
+                                                        <div class="mini-fill" 
+                                                             style="width: @insight.Confidence%; background: @GetMiniConfidenceColor(insight.Confidence)">
+                                                        </div>
+                                                    </div>
+                                                    <span class="mini-confidence-text">@insight.Confidence%</span>
+                                                </div>
+                                                <div class="insight-content">
+                                                    <p>@insight.Text</p>
+                                                    @if (!string.IsNullOrEmpty(insight.Source))
+                                                    {
+                                                        <span class="insight-source">Source: @insight.Source</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        }
+                                    </div>
+                                    
+                                    @if (result.KeyInsights.Count > 3)
+                                    {
+                                        <button type="button" 
+                                                class="show-more-insights"
+                                                @onclick="() => ShowAllInsights(result.Id)">
+                                            View @(result.KeyInsights.Count - 3) more insights
+                                        </button>
+                                    }
+                                </div>
+                            }
+
+                            <!-- Reliability Indicators -->
+                            <div class="reliability-section">
+                                <h5>Reliability Indicators</h5>
+                                <div class="reliability-grid">
+                                    <div class="reliability-item">
+                                        <span class="reliability-label">Data Quality</span>
+                                        <div class="reliability-indicator @GetReliabilityClass(result.DataQuality)">
+                                            @GetReliabilityText(result.DataQuality)
+                                        </div>
+                                    </div>
+                                    <div class="reliability-item">
+                                        <span class="reliability-label">Source Diversity</span>
+                                        <div class="reliability-indicator @GetReliabilityClass(result.SourceDiversity)">
+                                            @GetReliabilityText(result.SourceDiversity)
+                                        </div>
+                                    </div>
+                                    <div class="reliability-item">
+                                        <span class="reliability-label">Model Agreement</span>
+                                        <div class="reliability-indicator @GetReliabilityClass(result.ModelAgreement)">
+                                            @GetReliabilityText(result.ModelAgreement)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else if (result.Status == AnalysisStatus.InProgress)
+                        {
+                            <div class="analysis-progress">
+                                <div class="progress-info">
+                                    <span>Analyzing... @result.ProgressPercentage%</span>
+                                    <span class="estimated-time">~@result.EstimatedTimeRemaining remaining</span>
+                                </div>
+                                <div class="progress-bar-simple">
+                                    <div class="progress-fill" style="width: @result.ProgressPercentage%"></div>
+                                </div>
+                            </div>
+                        }
+                        else if (result.Status == AnalysisStatus.Failed)
+                        {
+                            <div class="analysis-error">
+                                <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+                                <div class="error-content">
+                                    <h5>Analysis Failed</h5>
+                                    <p>@result.ErrorMessage</p>
+                                    <button type="button" 
+                                            class="retry-button"
+                                            @onclick="() => RetryAnalysis(result.Id)">
+                                        <i class="fas fa-redo" aria-hidden="true"></i>
+                                        Retry Analysis
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Overall Confidence Summary -->
+        <div class="overall-confidence">
+            <h4>Overall Analysis Confidence</h4>
+            <div class="overall-score">
+                <div class="score-circle" style="background: conic-gradient(from 0deg, @GetOverallGradient())">
+                    <div class="score-inner">
+                        <span class="score-number">@GetOverallConfidence()%</span>
+                        <span class="score-label">Confidence</span>
+                    </div>
+                </div>
+                <div class="score-interpretation">
+                    <h5>@GetConfidenceInterpretation()</h5>
+                    <p>@GetConfidenceRecommendation()</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="no-results">
+            <div class="no-results-icon">
+                <i class="fas fa-chart-bar" aria-hidden="true"></i>
+            </div>
+            <h3>No Analysis Results Yet</h3>
+            <p>Start your research analysis to see AI confidence assessments here.</p>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public List<AnalysisResultModel> AnalysisResults { get; set; } = new();
+    [Parameter] public EventCallback<string> OnRetryAnalysis { get; set; }
+    [Parameter] public EventCallback<string> OnShowAllInsights { get; set; }
+
+    private HashSet<string> ExpandedExplanations = new();
+
+    public enum AnalysisStatus
+    {
+        Pending,
+        InProgress,
+        Completed,
+        Failed
+    }
+
+    public enum ReliabilityLevel
+    {
+        Low,
+        Medium,
+        High
+    }
+
+    public class AnalysisResultModel
+    {
+        public string Id { get; set; } = string.Empty;
+        public string AnalysisType { get; set; } = string.Empty;
+        public string IconClass { get; set; } = string.Empty;
+        public AnalysisStatus Status { get; set; }
+        public int ConfidenceLevel { get; set; }
+        public int ProgressPercentage { get; set; }
+        public string EstimatedTimeRemaining { get; set; } = string.Empty;
+        public string ErrorMessage { get; set; } = string.Empty;
+        public List<ConfidenceFactorModel> ConfidenceFactors { get; set; } = new();
+        public List<string> LimitationFactors { get; set; } = new();
+        public List<InsightModel> KeyInsights { get; set; } = new();
+        public ReliabilityLevel DataQuality { get; set; }
+        public ReliabilityLevel SourceDiversity { get; set; }
+        public ReliabilityLevel ModelAgreement { get; set; }
+    }
+
+    public class ConfidenceFactorModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Weight { get; set; }
+        public string Impact { get; set; } = string.Empty; // "positive", "neutral", "negative"
+    }
+
+    public class InsightModel
+    {
+        public string Text { get; set; } = string.Empty;
+        public int Confidence { get; set; }
+        public string Source { get; set; } = string.Empty;
+    }
+
+    private void ToggleExplanation(string resultId)
+    {
+        if (ExpandedExplanations.Contains(resultId))
+            ExpandedExplanations.Remove(resultId);
+        else
+            ExpandedExplanations.Add(resultId);
+        
+        StateHasChanged();
+    }
+
+    private bool IsExplanationVisible(string resultId)
+    {
+        return ExpandedExplanations.Contains(resultId);
+    }
+
+    private async Task RetryAnalysis(string resultId)
+    {
+        await OnRetryAnalysis.InvokeAsync(resultId);
+    }
+
+    private async Task ShowAllInsights(string resultId)
+    {
+        await OnShowAllInsights.InvokeAsync(resultId);
+    }
+
+    private string GetConfidenceClass(int confidence)
+    {
+        return confidence switch
+        {
+            >= 80 => "confidence-high",
+            >= 60 => "confidence-medium",
+            _ => "confidence-low"
+        };
+    }
+
+    private string GetStatusClass(AnalysisStatus status)
+    {
+        return status switch
+        {
+            AnalysisStatus.Completed => "status-completed",
+            AnalysisStatus.InProgress => "status-progress",
+            AnalysisStatus.Failed => "status-failed",
+            _ => "status-pending"
+        };
+    }
+
+    private string GetConfidenceGradient(int confidence)
+    {
+        return confidence switch
+        {
+            >= 80 => "linear-gradient(90deg, #d4edda 0%, #28a745 100%)",
+            >= 60 => "linear-gradient(90deg, #fff3cd 0%, #ffc107 100%)",
+            _ => "linear-gradient(90deg, #f8d7da 0%, #dc3545 100%)"
+        };
+    }
+
+    private string GetMiniConfidenceColor(int confidence)
+    {
+        return confidence switch
+        {
+            >= 80 => "#28a745",
+            >= 60 => "#ffc107",
+            _ => "#dc3545"
+        };
+    }
+
+    private string GetFactorClass(string impact)
+    {
+        return impact switch
+        {
+            "positive" => "factor-positive",
+            "negative" => "factor-negative",
+            _ => "factor-neutral"
+        };
+    }
+
+    private string GetReliabilityClass(ReliabilityLevel level)
+    {
+        return level switch
+        {
+            ReliabilityLevel.High => "reliability-high",
+            ReliabilityLevel.Medium => "reliability-medium",
+            _ => "reliability-low"
+        };
+    }
+
+    private string GetReliabilityText(ReliabilityLevel level)
+    {
+        return level switch
+        {
+            ReliabilityLevel.High => "High",
+            ReliabilityLevel.Medium => "Medium",
+            _ => "Low"
+        };
+    }
+
+    private int GetOverallConfidence()
+    {
+        var completedResults = AnalysisResults.Where(r => r.Status == AnalysisStatus.Completed).ToList();
+        return completedResults.Any() ? (int)completedResults.Average(r => r.ConfidenceLevel) : 0;
+    }
+
+    private string GetOverallGradient()
+    {
+        var confidence = GetOverallConfidence();
+        return confidence switch
+        {
+            >= 80 => "#28a745 0deg, #d4edda 360deg",
+            >= 60 => "#ffc107 0deg, #fff3cd 360deg",
+            _ => "#dc3545 0deg, #f8d7da 360deg"
+        };
+    }
+
+    private string GetConfidenceInterpretation()
+    {
+        var confidence = GetOverallConfidence();
+        return confidence switch
+        {
+            >= 80 => "High Confidence",
+            >= 60 => "Medium Confidence",
+            _ => "Low Confidence"
+        };
+    }
+
+    private string GetConfidenceRecommendation()
+    {
+        var confidence = GetOverallConfidence();
+        return confidence switch
+        {
+            >= 80 => "The analysis provides reliable insights you can confidently use for decision-making.",
+            >= 60 => "The analysis provides good insights, but consider additional validation for critical decisions.",
+            _ => "The analysis provides preliminary insights. We recommend gathering more data or expert consultation."
+        };
+    }
+}
+
+<style>
+    .confidence-visualizer {
+        background: white;
+        border-radius: 8px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .confidence-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .confidence-header h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .confidence-description {
+        color: #666;
+        max-width: 600px;
+        margin: 0 auto;
+        line-height: 1.5;
+    }
+
+    .confidence-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .confidence-card {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .confidence-card.confidence-high {
+        border-color: #28a745;
+    }
+
+    .confidence-card.confidence-medium {
+        border-color: #ffc107;
+    }
+
+    .confidence-card.confidence-low {
+        border-color: #dc3545;
+    }
+
+    .card-header {
+        padding: 1.5rem;
+        background: #f8f9fa;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .analysis-icon {
+        width: 48px;
+        height: 48px;
+        background: #007bff;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .analysis-info {
+        flex: 1;
+    }
+
+    .analysis-info h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+        font-size: 1.1rem;
+    }
+
+    .analysis-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        text-transform: uppercase;
+    }
+
+    .status-completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .status-progress {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .status-failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .confidence-score {
+        text-align: center;
+        min-width: 80px;
+    }
+
+    .score-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Confidence Bar */
+    .confidence-bar-container {
+        margin-bottom: 1.5rem;
+    }
+
+    .confidence-bar {
+        height: 12px;
+        border-radius: 6px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+    }
+
+    .confidence-fill {
+        height: 100%;
+        background: rgba(255, 255, 255, 0.3);
+        transition: width 0.5s ease;
+    }
+
+    .confidence-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        color: #666;
+    }
+
+    /* Explanation Toggle */
+    .explanation-toggle {
+        background: none;
+        border: 1px solid #007bff;
+        color: #007bff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+        margin-bottom: 1rem;
+    }
+
+    .explanation-toggle:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .explanation-content {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .explanation-content h5 {
+        color: #333;
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+    }
+
+    .factor-list,
+    .limitation-list {
+        list-style: none;
+        padding: 0;
+        margin: 0 0 1rem 0;
+    }
+
+    .factor-item {
+        padding: 0.75rem;
+        margin-bottom: 0.5rem;
+        border-radius: 4px;
+        border-left: 4px solid #007bff;
+    }
+
+    .factor-item.factor-positive {
+        background: #d4edda;
+        border-left-color: #28a745;
+    }
+
+    .factor-item.factor-negative {
+        background: #f8d7da;
+        border-left-color: #dc3545;
+    }
+
+    .factor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.25rem;
+    }
+
+    .factor-name {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .factor-weight {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #007bff;
+    }
+
+    .factor-description {
+        font-size: 0.85rem;
+        color: #666;
+        margin: 0;
+    }
+
+    .limitation-item {
+        padding: 0.5rem;
+        background: #fff3cd;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.85rem;
+        color: #856404;
+    }
+
+    /* Insights Section */
+    .insights-section {
+        margin-bottom: 1.5rem;
+    }
+
+    .insights-section h5 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .insight-item {
+        display: flex;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+    }
+
+    .insight-confidence {
+        min-width: 80px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .mini-confidence-bar {
+        width: 60px;
+        height: 6px;
+        background: #e9ecef;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .mini-fill {
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .mini-confidence-text {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .insight-content {
+        flex: 1;
+    }
+
+    .insight-content p {
+        margin: 0 0 0.25rem 0;
+        color: #333;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+
+    .insight-source {
+        font-size: 0.75rem;
+        color: #666;
+        font-style: italic;
+    }
+
+    .show-more-insights {
+        background: none;
+        border: 1px dashed #007bff;
+        color: #007bff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+    }
+
+    .show-more-insights:hover {
+        background: #f0f8ff;
+    }
+
+    /* Reliability Section */
+    .reliability-section h5 {
+        color: #333;
+        margin-bottom: 1rem;
+        font-size: 1rem;
+    }
+
+    .reliability-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .reliability-item {
+        text-align: center;
+    }
+
+    .reliability-label {
+        display: block;
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .reliability-indicator {
+        padding: 0.5rem;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .reliability-high {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .reliability-medium {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .reliability-low {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Progress State */
+    .analysis-progress {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .progress-info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .progress-bar-simple {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        transition: width 0.5s ease;
+    }
+
+    /* Error State */
+    .analysis-error {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        padding: 1.5rem;
+        background: #f8d7da;
+        border-radius: 6px;
+        color: #721c24;
+    }
+
+    .error-content h5 {
+        margin: 0 0 0.5rem 0;
+    }
+
+    .error-content p {
+        margin: 0 0 1rem 0;
+        font-size: 0.9rem;
+    }
+
+    .retry-button {
+        background: #dc3545;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background 0.2s ease;
+    }
+
+    .retry-button:hover {
+        background: #c82333;
+    }
+
+    /* Overall Confidence */
+    .overall-confidence {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .overall-confidence h4 {
+        color: #333;
+        margin-bottom: 2rem;
+    }
+
+    .overall-score {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .score-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .score-inner {
+        width: 90px;
+        height: 90px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .score-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .score-label {
+        font-size: 0.8rem;
+        color: #666;
+        text-transform: uppercase;
+    }
+
+    .score-interpretation {
+        text-align: left;
+        max-width: 300px;
+    }
+
+    .score-interpretation h5 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .score-interpretation p {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+        margin: 0;
+    }
+
+    /* No Results State */
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #666;
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+
+    .no-results h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Mobile Responsiveness */
+    @@media (max-width: 768px) {
+        .confidence-visualizer {
+            padding: 1rem;
+        }
+
+        .confidence-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+            gap: 0.5rem;
+        }
+
+        .overall-score {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .score-interpretation {
+            text-align: center;
+        }
+
+        .reliability-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .insight-item {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .insight-confidence {
+            flex-direction: row;
+            align-items: center;
+            min-width: auto;
+        }
+    }
+
+    /* Accessibility */
+    @@media (prefers-reduced-motion: reduce) {
+        .confidence-fill,
+        .progress-fill,
+        .mini-fill,
+        .confidence-card {
+            transition: none;
+        }
+    }
+
+    @@media (prefers-contrast: high) {
+        .confidence-card {
+            border-width: 3px;
+        }
+        
+        .explanation-toggle:focus {
+            box-shadow: 0 0 0 3px black;
+        }
+    }
+</style>
