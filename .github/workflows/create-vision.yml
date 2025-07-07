@@ -1,0 +1,205 @@
+name: Create Product Vision
+
+on:
+  workflow_dispatch:
+    inputs:
+      product_name:
+        description: 'Name of the product (e.g., "HR Portal", "Analytics Platform")'
+        required: true
+        type: string
+      vision_file_path:
+        description: 'Path to vision document file (relative to repository root)'
+        required: false
+        type: string
+      vision_content:
+        description: 'Vision content (if not providing file path)'
+        required: false
+        type: string
+      preview:
+        description: 'Preview mode - show what would be created without creating it'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-vision:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      projects: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install GitHub CLI
+      run: |
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
+    
+    - name: Validate inputs
+      run: |
+        if [ -z "${{ inputs.vision_file_path }}" ] && [ -z "${{ inputs.vision_content }}" ]; then
+          echo "Error: Either vision_file_path or vision_content must be provided"
+          exit 1
+        fi
+    
+    - name: Process vision document
+      id: process_vision
+      run: |
+        # Create product directory
+        PRODUCT_DIR="Commands/docs/visions/${{ inputs.product_name }}"
+        mkdir -p "$PRODUCT_DIR"
+        
+        # Get vision content
+        if [ -n "${{ inputs.vision_file_path }}" ]; then
+          if [ ! -f "${{ inputs.vision_file_path }}" ]; then
+            echo "Error: Vision file not found at ${{ inputs.vision_file_path }}"
+            exit 1
+          fi
+          VISION_CONTENT=$(cat "${{ inputs.vision_file_path }}")
+        else
+          VISION_CONTENT="${{ inputs.vision_content }}"
+        fi
+        
+        # Save vision document
+        echo "$VISION_CONTENT" > "$PRODUCT_DIR/vision.md"
+        
+        # Extract key information from vision
+        VISION_SUMMARY=$(echo "$VISION_CONTENT" | head -n 20 | tail -n 10)
+        
+        # Set outputs
+        echo "product_dir=$PRODUCT_DIR" >> $GITHUB_OUTPUT
+        echo "vision_file=$PRODUCT_DIR/vision.md" >> $GITHUB_OUTPUT
+        echo "vision_summary<<EOF" >> $GITHUB_OUTPUT
+        echo "$VISION_SUMMARY" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    
+    - name: Create vision issue
+      if: ${{ inputs.preview == false }}
+      id: create_issue
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create issue body
+        ISSUE_BODY=$(cat << 'EOF'
+        # Product Vision: ${{ inputs.product_name }}
+        
+        ## Vision Summary
+        ${{ steps.process_vision.outputs.vision_summary }}
+        
+        ## Full Vision Document
+        The complete vision document is available at: `${{ steps.process_vision.outputs.vision_file }}`
+        
+        ## Next Steps
+        1. Review and approve the vision
+        2. Create Vision Strategy using the `create-strategy` workflow
+        3. Break down into Epics, Features, and Stories
+        
+        ## Links
+        - [Vision Document](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/${{ steps.process_vision.outputs.vision_file }})
+        - [Create Strategy Workflow](${{ github.server_url }}/${{ github.repository }}/actions/workflows/create-strategy.yml)
+        
+        ---
+        *This vision was created via the GitHub Actions workflow*
+        EOF
+        )
+        
+        # Create the issue
+        ISSUE_URL=$(gh issue create \
+          --title "Vision: ${{ inputs.product_name }}" \
+          --body "$ISSUE_BODY" \
+          --label "vision" \
+          --assignee "${{ github.actor }}")
+        
+        echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
+        echo "issue_number=$(echo $ISSUE_URL | grep -oE '[0-9]+$')" >> $GITHUB_OUTPUT
+    
+    - name: Create GitHub Project
+      if: ${{ inputs.preview == false }}
+      id: create_project
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create project
+        PROJECT_ID=$(gh project create \
+          --owner "${{ github.repository_owner }}" \
+          --title "${{ inputs.product_name }} Development" \
+          --description "Development tracking for ${{ inputs.product_name }}" \
+          --format json | jq -r '.id')
+        
+        echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
+        
+        # Add vision issue to project
+        if [ -n "${{ steps.create_issue.outputs.issue_number }}" ]; then
+          gh project item-add "$PROJECT_ID" \
+            --owner "${{ github.repository_owner }}" \
+            --url "${{ steps.create_issue.outputs.issue_url }}"
+        fi
+    
+    - name: Create labels
+      if: ${{ inputs.preview == false }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create labels if they don't exist
+        gh label create "vision" --description "Product vision" --color "0052cc" || true
+        gh label create "strategy" --description "Vision strategy" --color "0066ff" || true
+        gh label create "epic" --description "Epic work item" --color "7B68EE" || true
+        gh label create "feature" --description "Feature work item" --color "32CD32" || true
+        gh label create "story" --description "User story" --color "FFD700" || true
+        gh label create "task" --description "Development task" --color "FFA500" || true
+        gh label create "test" --description "Test case" --color "DC143C" || true
+    
+    - name: Pin vision issue
+      if: ${{ inputs.preview == false && steps.create_issue.outputs.issue_number != '' }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue pin "${{ steps.create_issue.outputs.issue_number }}"
+    
+    - name: Commit vision document
+      if: ${{ inputs.preview == false }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add "${{ steps.process_vision.outputs.vision_file }}"
+        git commit -m "Add vision for ${{ inputs.product_name }}"
+        git push
+    
+    - name: Generate summary
+      run: |
+        if [ "${{ inputs.preview }}" == "true" ]; then
+          echo "# Preview Mode - No Changes Made" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "# Product Vision Created: ${{ inputs.product_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ inputs.preview }}" == "false" ]; then
+          echo "## Created Resources" >> $GITHUB_STEP_SUMMARY
+          echo "- **Vision Document**: ${{ steps.process_vision.outputs.vision_file }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Issue**: #${{ steps.create_issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Project**: Created for tracking" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review the vision document and issue" >> $GITHUB_STEP_SUMMARY
+          echo "2. Run the Create Strategy workflow with issue #${{ steps.create_issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "## What Would Be Created" >> $GITHUB_STEP_SUMMARY
+          echo "- Vision document at: ${{ steps.process_vision.outputs.vision_file }}" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Issue with vision summary" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Project for development tracking" >> $GITHUB_STEP_SUMMARY
+          echo "- Required labels for workflow" >> $GITHUB_STEP_SUMMARY
+        fi
