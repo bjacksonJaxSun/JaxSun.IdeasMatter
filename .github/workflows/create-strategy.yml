@@ -25,7 +25,6 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-      projects: write
     
     steps:
     - name: Checkout repository
@@ -340,23 +339,11 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
           -f due_on="${DUE_DATE}T00:00:00Z" \
           -f state="open"
     
-    - name: Update project
+    # Project update is disabled due to permissions
+    - name: Skip Project Update
       if: ${{ inputs.preview == false }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Find the project
-        PROJECT_ID=$(gh project list --owner "${{ github.repository_owner }}" \
-          --format json \
-          | jq -r '.projects[] | select(.title | contains("${{ steps.get_vision.outputs.product_name }}")) | .id' \
-          | head -1)
-        
-        if [ -n "$PROJECT_ID" ]; then
-          # Add strategy issue to project
-          gh project item-add "$PROJECT_ID" \
-            --owner "${{ github.repository_owner }}" \
-            --url "${{ steps.create_issue.outputs.issue_url }}"
-        fi
+        echo "Note: GitHub Project update is disabled due to permissions."
     
     - name: Commit strategy document
       if: ${{ inputs.preview == false }}

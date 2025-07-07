@@ -28,7 +28,6 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-      projects: write
     
     steps:
     - name: Checkout repository
@@ -124,27 +123,16 @@ jobs:
         echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
         echo "issue_number=$(echo $ISSUE_URL | grep -oE '[0-9]+$')" >> $GITHUB_OUTPUT
     
-    - name: Create GitHub Project
+    # Project creation is disabled due to permissions
+    # To create a project manually:
+    # 1. Go to https://github.com/${{ github.repository }}/projects
+    # 2. Click "New project"
+    # 3. Name it "${{ inputs.product_name }} Development"
+    - name: Skip Project Creation
       if: ${{ inputs.preview == false }}
-      id: create_project
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Create project
-        PROJECT_ID=$(gh project create \
-          --owner "${{ github.repository_owner }}" \
-          --title "${{ inputs.product_name }} Development" \
-          --description "Development tracking for ${{ inputs.product_name }}" \
-          --format json | jq -r '.id')
-        
-        echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
-        
-        # Add vision issue to project
-        if [ -n "${{ steps.create_issue.outputs.issue_number }}" ]; then
-          gh project item-add "$PROJECT_ID" \
-            --owner "${{ github.repository_owner }}" \
-            --url "${{ steps.create_issue.outputs.issue_url }}"
-        fi
+        echo "Note: GitHub Project creation is disabled due to permissions."
+        echo "Please create a project manually if needed."
     
     - name: Create labels
       if: ${{ inputs.preview == false }}
@@ -191,7 +179,7 @@ jobs:
           echo "## Created Resources" >> $GITHUB_STEP_SUMMARY
           echo "- **Vision Document**: ${{ steps.process_vision.outputs.vision_file }}" >> $GITHUB_STEP_SUMMARY
           echo "- **GitHub Issue**: #${{ steps.create_issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
-          echo "- **GitHub Project**: Created for tracking" >> $GITHUB_STEP_SUMMARY
+          echo "- **Labels**: Created for workflow tracking" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
           echo "1. Review the vision document and issue" >> $GITHUB_STEP_SUMMARY
@@ -200,6 +188,5 @@ jobs:
           echo "## What Would Be Created" >> $GITHUB_STEP_SUMMARY
           echo "- Vision document at: ${{ steps.process_vision.outputs.vision_file }}" >> $GITHUB_STEP_SUMMARY
           echo "- GitHub Issue with vision summary" >> $GITHUB_STEP_SUMMARY
-          echo "- GitHub Project for development tracking" >> $GITHUB_STEP_SUMMARY
           echo "- Required labels for workflow" >> $GITHUB_STEP_SUMMARY
         fi
