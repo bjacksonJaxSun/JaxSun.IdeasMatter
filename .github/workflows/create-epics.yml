@@ -238,6 +238,9 @@ jobs:
           CRITERIA=$(echo "$epic" | jq -r '.acceptance_criteria[]' | sed 's/^/- [ ] /')
           
           # Create issue body
+          STRATEGY_ISSUE_NUM="${{ inputs.strategy_issue_number }}"
+          VISION_ISSUE_NUM="${{ steps.get_strategy.outputs.vision_issue }}"
+          
           ISSUE_BODY=$(cat << EOF
 ## Epic Description
 $DESCRIPTION
@@ -252,8 +255,8 @@ $PRIORITY
 $CRITERIA
 
 ## Links
-- [Strategy Issue](#${{ inputs.strategy_issue_number }})
-- [Vision Issue](#${{ steps.get_strategy.outputs.vision_issue }})
+- [Strategy Issue](#$STRATEGY_ISSUE_NUM)
+- [Vision Issue](#$VISION_ISSUE_NUM)
 
 ## Next Steps
 1. Break down into features using the create-features workflow
@@ -261,7 +264,7 @@ $CRITERIA
 3. Define timeline and milestones
 
 ---
-*This epic was generated from Strategy #${{ inputs.strategy_issue_number }}*
+*This epic was generated from Strategy #$STRATEGY_ISSUE_NUM*
 EOF
           )
           
