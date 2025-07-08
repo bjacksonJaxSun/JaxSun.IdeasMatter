@@ -259,8 +259,8 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
         with open(strategy_path, 'w') as f:
             f.write(strategy_content)
         
-        print(f"::set-output name=strategy_path::{strategy_path}")
-        print(f"::set-output name=strategy_dir::{strategy_dir}")
+        print(f"strategy_path={strategy_path}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
+        print(f"strategy_dir={strategy_dir}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
         
         # Extract key phases for issue creation
         phases = [
@@ -291,7 +291,9 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
         This ${{ inputs.timeframe_months }}-month implementation strategy breaks down the vision into actionable phases.
         
         ## Strategic Phases
-        $(echo '${{ steps.generate_strategy.outputs.phases }}' | jq -r '.[] | "- **\(.name)** (\(.duration))"')
+        - **Foundation** (Months 1-6)
+        - **Growth** (Months 7-12)
+        - **Optimization** (Months 13-${{ inputs.timeframe_months }})
         
         ## Links
         - [Vision Issue](#${{ inputs.vision_issue_number }})
