@@ -89,21 +89,23 @@ jobs:
         ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       run: |
-        python3 << 'EOF'
-        import os
-        import json
-        from datetime import datetime
+        # Create strategy content using a simple template approach
+        TIMEFRAME="${{ inputs.timeframe_months }}"
+        PRODUCT_NAME="${{ steps.get_vision.outputs.product_name }}"
         
-        # Read vision content
-        with open('/tmp/vision_content.md', 'r') as f:
-            vision_content = f.read()
+        # Create strategy directory
+        STRATEGY_DIR="Commands/docs/strategies/$(echo "$PRODUCT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')"
+        mkdir -p "$STRATEGY_DIR"
+        STRATEGY_PATH="$STRATEGY_DIR/strategy.md"
         
-        # Create strategy template
-        timeframe = "${{ inputs.timeframe_months }}"
-        product_name = "${{ steps.get_vision.outputs.product_name }}"
-        
-        # Generate strategy content (template for now, AI integration can be added)
-        strategy_content = f"""# Vision Strategy - {product_name}
+        # Create the Python script
+        cat > /tmp/generate_strategy.py << 'EOF'
+import os
+timeframe = os.environ.get('TIMEFRAME', '18')
+product_name = os.environ.get('PRODUCT_NAME', 'Product')
+strategy_path = os.environ.get('STRATEGY_PATH', 'strategy.md')
+
+content = f'''# Vision Strategy - {product_name}
 
 ## Strategy Overview
 
@@ -112,43 +114,43 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
 ## Strategic Phases
 
 ### Phase 1: Foundation (Months 1-6)
-**Objective**: Establish core infrastructure and validate key assumptions
+**Objective** - Establish core infrastructure and validate key assumptions
 
-**Key Deliverables**:
+**Key Deliverables** -
 - Core platform architecture
 - Basic feature set implementation
 - Initial user feedback loops
 - MVP release to early adopters
 
-**Success Criteria**:
+**Success Criteria** -
 - Technical foundation supports planned scale
 - Early user feedback validates core value proposition
 - Development velocity established
 
 ### Phase 2: Growth (Months 7-12)
-**Objective**: Expand capabilities and user base
+**Objective** - Expand capabilities and user base
 
-**Key Deliverables**:
+**Key Deliverables** -
 - Enhanced feature set based on user feedback
 - Scalability improvements
 - Market expansion initiatives
 - Partnership framework
 
-**Success Criteria**:
+**Success Criteria** -
 - User growth targets achieved
 - Platform stability at scale
 - Strategic partnerships established
 
 ### Phase 3: Optimization (Months 13-{timeframe})
-**Objective**: Refine and optimize for market leadership
+**Objective** - Refine and optimize for market leadership
 
-**Key Deliverables**:
+**Key Deliverables** -
 - Advanced features and integrations
 - Performance optimizations
 - Market differentiation features
 - Expansion into new segments
 
-**Success Criteria**:
+**Success Criteria** -
 - Market position established
 - Revenue targets met
 - User satisfaction metrics achieved
@@ -212,16 +214,16 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
 ## Risk Management
 
 ### Technical Risks
-- **Risk**: Technology scalability challenges
-- **Mitigation**: Early stress testing and architecture reviews
+- **Risk** - Technology scalability challenges
+- **Mitigation** - Early stress testing and architecture reviews
 
 ### Market Risks
-- **Risk**: Competitive threats
-- **Mitigation**: Rapid innovation and strong differentiation
+- **Risk** - Competitive threats
+- **Mitigation** - Rapid innovation and strong differentiation
 
 ### Execution Risks
-- **Risk**: Resource constraints
-- **Mitigation**: Phased approach with clear priorities
+- **Risk** - Resource constraints
+- **Mitigation** - Phased approach with clear priorities
 
 ## Success Metrics
 
@@ -249,30 +251,17 @@ This {timeframe}-month strategy outlines the implementation approach for the {pr
 
 ---
 *This strategy is a living document and will be updated based on learnings and market changes.*
-"""
-        
-        # Save strategy
-        strategy_dir = f"Commands/docs/strategies/{product_name.lower().replace(' ', '-')}"
-        os.makedirs(strategy_dir, exist_ok=True)
-        
-        strategy_path = f"{strategy_dir}/strategy.md"
-        with open(strategy_path, 'w') as f:
-            f.write(strategy_content)
-        
-        print(f"strategy_path={strategy_path}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
-        print(f"strategy_dir={strategy_dir}", file=open(os.environ['GITHUB_OUTPUT'], 'a'))
-        
-        # Extract key phases for issue creation
-        phases = [
-            {"name": "Foundation", "duration": "Months 1-6"},
-            {"name": "Growth", "duration": "Months 7-12"},
-            {"name": "Optimization", "duration": f"Months 13-{timeframe}"}
-        ]
-        
-        with open('/tmp/phases.json', 'w') as f:
-            json.dump(phases, f)
-        
-        EOF
+'''
+
+with open(strategy_path, 'w') as f:
+    f.write(content)
+EOF
+
+        # Run the Python script
+        TIMEFRAME="$TIMEFRAME" PRODUCT_NAME="$PRODUCT_NAME" STRATEGY_PATH="$STRATEGY_PATH" python3 /tmp/generate_strategy.py
+
+        echo "strategy_path=$STRATEGY_PATH" >> $GITHUB_OUTPUT
+        echo "strategy_dir=$STRATEGY_DIR" >> $GITHUB_OUTPUT
     
     - name: Create strategy issue
       if: ${{ inputs.preview == false }}
