@@ -83,6 +83,20 @@ jobs:
         echo "$VISION_SUMMARY" >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     
+    - name: Create labels
+      if: ${{ inputs.preview == false }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Create labels if they don't exist
+        gh label create "vision" --description "Product vision" --color "0052cc" || true
+        gh label create "strategy" --description "Vision strategy" --color "0066ff" || true
+        gh label create "epic" --description "Epic work item" --color "7B68EE" || true
+        gh label create "feature" --description "Feature work item" --color "32CD32" || true
+        gh label create "story" --description "User story" --color "FFD700" || true
+        gh label create "task" --description "Development task" --color "FFA500" || true
+        gh label create "test" --description "Test case" --color "DC143C" || true
+    
     - name: Create vision issue
       if: ${{ inputs.preview == false }}
       id: create_issue
@@ -133,20 +147,6 @@ jobs:
       run: |
         echo "Note: GitHub Project creation is disabled due to permissions."
         echo "Please create a project manually if needed."
-    
-    - name: Create labels
-      if: ${{ inputs.preview == false }}
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        # Create labels if they don't exist
-        gh label create "vision" --description "Product vision" --color "0052cc" || true
-        gh label create "strategy" --description "Vision strategy" --color "0066ff" || true
-        gh label create "epic" --description "Epic work item" --color "7B68EE" || true
-        gh label create "feature" --description "Feature work item" --color "32CD32" || true
-        gh label create "story" --description "User story" --color "FFD700" || true
-        gh label create "task" --description "Development task" --color "FFA500" || true
-        gh label create "test" --description "Test case" --color "DC143C" || true
     
     - name: Pin vision issue
       if: ${{ inputs.preview == false && steps.create_issue.outputs.issue_number != '' }}
