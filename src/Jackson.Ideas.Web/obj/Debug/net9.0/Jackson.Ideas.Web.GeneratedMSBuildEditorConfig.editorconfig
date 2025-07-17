@@ -119,3 +119,11 @@ build_metadata.AdditionalFiles.CssScope = b-664rujv73v
 [C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-v7jdkc7mi3
+
+[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/Shared/_Layout.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU2hhcmVkXF9MYXlvdXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
