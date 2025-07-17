@@ -12,14 +12,17 @@ app.UseStaticFiles();
 // Add routing
 app.UseRouting();
 
-// Configure routing - Render platform only allows /health route
+// Configure routing - Render requires health check at /app
 app.MapRazorPages();
-app.MapBlazorHub("/health/blazorhub");
+app.MapBlazorHub("/app/blazorhub");
 
-// Map Blazor application to /health route (only working route on Render)
-app.MapFallbackToPage("/health", "/_Host");
+// Map Blazor application to /app route (Render health check endpoint)
+app.MapFallbackToPage("/app", "/_Host");
 
-// Root redirect to /health for user convenience  
-app.MapGet("/", () => Results.Redirect("/health"));
+// Root redirect to /app for user convenience  
+app.MapGet("/", () => Results.Redirect("/app"));
+
+// Traditional health endpoint for monitoring
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
