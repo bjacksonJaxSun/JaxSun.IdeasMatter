@@ -170,28 +170,32 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+// Temporarily disabled for debugging
+// app.MapRazorPages();
+// app.MapBlazorHub();
+// app.MapFallbackToPage("/_Host");
 
 // Add health check endpoint for Render deployment
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-// Debug endpoint to check file system
-app.MapGet("/debug/files", () =>
-{
-    var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-    var files = Directory.Exists(wwwrootPath) 
-        ? Directory.GetFiles(wwwrootPath, "*", SearchOption.AllDirectories)
-            .Select(f => f.Replace(Directory.GetCurrentDirectory(), ""))
-            .ToList()
-        : new List<string> { "wwwroot directory not found" };
-    
-    return Results.Ok(new { 
-        currentDirectory = Directory.GetCurrentDirectory(),
-        wwwrootExists = Directory.Exists(wwwrootPath),
-        files = files.Take(20).ToList()
-    });
-});
+// Simple test endpoint
+app.MapGet("/test", () => "Simple test endpoint works!");
+
+// Serve a minimal HTML page for root
+app.MapGet("/", () => Results.Content(@"
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ideas Matter</title>
+    <meta charset='utf-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+</head>
+<body>
+    <h1>Ideas Matter - Application Starting</h1>
+    <p>Health check: <a href='/health'>/health</a></p>
+    <p>Test endpoint: <a href='/test'>/test</a></p>
+    <p>Debug: Minimal API routing working.</p>
+</body>
+</html>", "text/html"));
 
 app.Run();
