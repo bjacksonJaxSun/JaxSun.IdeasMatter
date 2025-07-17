@@ -158,13 +158,9 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=300");
-    }
-});
+// Configure static files with explicit options
+app.UseDefaultFiles();
+app.UseStaticFiles();
 app.UseAntiforgery();
 
 // Add authentication middleware
@@ -176,5 +172,22 @@ app.MapRazorComponents<App>()
 
 // Add health check endpoint for Render deployment
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
+// Debug endpoint to check file system
+app.MapGet("/debug/files", () =>
+{
+    var wwwrootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+    var files = Directory.Exists(wwwrootPath) 
+        ? Directory.GetFiles(wwwrootPath, "*", SearchOption.AllDirectories)
+            .Select(f => f.Replace(Directory.GetCurrentDirectory(), ""))
+            .ToList()
+        : new List<string> { "wwwroot directory not found" };
+    
+    return Results.Ok(new { 
+        currentDirectory = Directory.GetCurrentDirectory(),
+        wwwrootExists = Directory.Exists(wwwrootPath),
+        files = files.Take(20).ToList()
+    });
+});
 
 app.Run();
