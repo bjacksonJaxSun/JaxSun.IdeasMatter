@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="wwwroot/**/*" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
