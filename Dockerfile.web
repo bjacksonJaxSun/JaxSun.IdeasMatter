@@ -25,9 +25,24 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
+# Install SQLite
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
+
+# Create directory for SQLite database and ensure it's writable
+RUN mkdir -p /app/data && chmod 777 /app/data
+RUN mkdir -p /app && chmod 777 /app
+
 # Set environment variables
 ENV ASPNETCORE_URLS=http://+:8080
 ENV ASPNETCORE_ENVIRONMENT=Production
 
+# Use PORT environment variable from Render
+ENV PORT=8080
+
 EXPOSE 8080
-ENTRYPOINT ["dotnet", "Jackson.Ideas.Web.dll"]
+
+# Create a startup script to handle port binding
+RUN echo '#!/bin/bash\nexport ASPNETCORE_URLS="http://+:${PORT:-8080}"\nexec dotnet Jackson.Ideas.Web.dll' > /app/start.sh
+RUN chmod +x /app/start.sh
+
+ENTRYPOINT ["/app/start.sh"]

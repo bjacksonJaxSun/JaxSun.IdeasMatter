@@ -155,7 +155,9 @@
       "Bash(/home/owner/.dotnet/dotnet build src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj)",
       "Bash(/home/owner/.dotnet/dotnet build src/Jackson.Ideas.Api/Jackson.Ideas.Api.csproj)",
       "Bash(/home/owner/.dotnet/dotnet clean src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj)",
-      "Bash(/home/owner/.dotnet/dotnet build Jackson.Ideas.Main.sln)"
+      "Bash(/home/owner/.dotnet/dotnet build Jackson.Ideas.Main.sln)",
+      "Bash(gh repo view:*)",
+      "Bash(./deploy-to-render.sh:*)"
     ],
     "deny": []
   }
