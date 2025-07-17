@@ -169,13 +169,6 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 app.MapBlazorHub();
-
-// Add explicit root mapping
-app.MapGet("/", async context =>
-{
-    context.Response.Redirect("/_Host");
-});
-
 app.MapFallbackToPage("/_Host");
 
 // Add health check endpoint for Render deployment
