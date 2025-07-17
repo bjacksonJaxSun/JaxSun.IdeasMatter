@@ -1,27 +1,25 @@
 services:
-  # Main Web Application (UI + API combined)
+  # Ideas Matter Web Application
   - type: web
     name: jaxsun-ideasmatter
     runtime: docker
-    dockerfilePath: Dockerfile.web
+    dockerfilePath: Dockerfile.render
     dockerContext: .
     envVars:
       - key: ASPNETCORE_ENVIRONMENT
         value: Production
       - key: ASPNETCORE_URLS
-        value: http://+:8080
+        value: http://+:10000
       - key: PORT
-        value: 8080
+        value: 10000
       - key: ConnectionStrings__DefaultConnection
         value: Data Source=/app/jackson_ideas.db
+      - key: UseMockAuthentication
+        value: true
       - key: Jwt__SecretKey
         generateValue: true
       - key: Jwt__Issuer
         value: https://jaxsun-ideasmatter.onrender.com
       - key: Jwt__Audience
         value: https://jaxsun-ideasmatter.onrender.com
-      - key: UseMockAuthentication
-        value: true
     healthCheckPath: /health
-    buildCommand: echo "Using Docker build"
-    startCommand: dotnet Jackson.Ideas.Web.dll

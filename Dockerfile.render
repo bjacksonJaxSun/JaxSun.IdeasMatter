@@ -1,0 +1,43 @@
+# Render-specific Dockerfile for Web Application
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy project files
+COPY ["src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj", "Jackson.Ideas.Web/"]
+COPY ["src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj", "Jackson.Ideas.Application/"]
+COPY ["src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj", "Jackson.Ideas.Core/"]
+COPY ["src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj", "Jackson.Ideas.Infrastructure/"]
+COPY ["src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj", "Jackson.Ideas.Shared/"]
+
+# Restore dependencies
+RUN dotnet restore "Jackson.Ideas.Web/Jackson.Ideas.Web.csproj"
+
+# Copy source code
+COPY src/ .
+
+# Build Web application
+WORKDIR "/src/Jackson.Ideas.Web"
+RUN dotnet publish "Jackson.Ideas.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+COPY --from=build /src/Jackson.Ideas.Web/obj/Debug/net9.0 ./debug/
+COPY --from=build /app/publish .
+
+# Install SQLite
+RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
+
+# Create database directory
+RUN mkdir -p /app/data && chmod 777 /app/data
+
+# Set environment variables for Web app
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:10000
+ENV PORT=10000
+ENV UseMockAuthentication=true
+
+EXPOSE 10000
+
+# Start Web application
+ENTRYPOINT ["dotnet", "Jackson.Ideas.Web.dll"]
