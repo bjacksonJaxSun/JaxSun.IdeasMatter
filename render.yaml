@@ -13,8 +13,14 @@ services:
       - key: PORT
         value: 10000
       - key: ConnectionStrings__DefaultConnection
-        value: Data Source=/app/jackson_ideas.db
+        value: Data Source=/app/data/jackson_ideas.db
       - key: UseMockAuthentication
+        value: true
+      - key: DemoMode__Enabled
+        value: true
+      - key: DemoMode__UseRealAI
+        value: false
+      - key: DemoMode__SimulateProcessingDelays
         value: true
       - key: Jwt__SecretKey
         generateValue: true

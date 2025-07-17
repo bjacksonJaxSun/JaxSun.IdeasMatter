@@ -2,6 +2,7 @@ using Jackson.Ideas.Web.Components;
 using Jackson.Ideas.Web.Services;
 using Jackson.Ideas.Application.Extensions;
 using Jackson.Ideas.Infrastructure.Data;
+using Jackson.Ideas.Core.Configuration;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,10 @@ else
 builder.Services.AddDbContext<JacksonIdeasDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? 
                      "Data Source=jackson_ideas.db"));
+
+// Configure demo mode options
+builder.Services.Configure<DemoModeOptions>(
+    builder.Configuration.GetSection(DemoModeOptions.SectionName));
 
 // Add application services
 builder.Services.AddApplicationServices();
@@ -123,6 +128,21 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
+
+// Initialize database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<JacksonIdeasDbContext>();
+    try
+    {
+        dbContext.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while initializing the database");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -32,7 +32,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.AuthProvider).HasMaxLength(50).HasDefaultValue("local");
             entity.Property(e => e.Role).HasConversion<string>();
             entity.Property(e => e.Permissions).HasDefaultValue("[]");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             
             // Configure relationships
             entity.HasMany(u => u.Researches)
@@ -66,7 +66,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.ResearchType).HasMaxLength(50).HasDefaultValue("comprehensive");
             entity.Property(e => e.AIProvider).HasMaxLength(50);
             entity.Property(e => e.CurrentStep).HasMaxLength(500);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             entity.Property(e => e.EstimatedCost).HasPrecision(10, 4);
             
             // Configure JSON columns
@@ -107,7 +107,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.TargetAudience).HasMaxLength(500);
             entity.Property(e => e.GeographicScope).HasMaxLength(100);
             entity.Property(e => e.Industry).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             
             // Configure JSON columns
             entity.Property(e => e.CompetitiveLandscapeJson).HasColumnName("CompetitiveLandscape");
@@ -145,7 +145,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.Type).HasConversion<string>();
             entity.Property(e => e.EncryptedApiKey).IsRequired();
             entity.Property(e => e.ConfigJson).HasColumnName("Config").HasDefaultValue("{}");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             entity.Property(e => e.CostPerToken).HasPrecision(10, 8);
             
             // Ignore computed properties
@@ -174,7 +174,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.CurrentPhase).HasMaxLength(50);
             entity.Property(e => e.ErrorMessage).HasMaxLength(1000);
             entity.Property(e => e.NextSteps).HasDefaultValue("[]");
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             
             // Configure relationships
             entity.HasOne<ApplicationUser>(rs => rs.User)
@@ -206,7 +206,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.ConfidenceScore).HasPrecision(3, 2);
             entity.Property(e => e.Metadata).HasDefaultValue("{}");
             entity.Property(e => e.InsightType).HasMaxLength(100);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             
             // Configure relationships
             entity.HasOne(ri => ri.ResearchSession)
@@ -238,7 +238,7 @@ public class JacksonIdeasDbContext : IdentityDbContext<ApplicationUser>
             entity.Property(e => e.SuccessMetrics).HasDefaultValue("[]");
             entity.Property(e => e.SwotAnalysis).HasDefaultValue("{}");
             entity.Property(e => e.CompetitivePositioning).HasMaxLength(1000);
-            entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("datetime('now')");
             
             // Configure relationships
             entity.HasOne(ro => ro.ResearchSession)
