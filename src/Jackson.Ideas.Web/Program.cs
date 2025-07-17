@@ -161,22 +161,19 @@ if (app.Environment.IsDevelopment())
 // Configure static files with explicit options
 app.UseDefaultFiles();
 app.UseStaticFiles();
-app.UseAntiforgery();
+// app.UseAntiforgery(); // Temporarily disabled for debugging
 
 // Add routing middleware
 app.UseRouting();
 
-// Add authentication middleware
-app.UseAuthentication();
-app.UseAuthorization();
+// Temporarily disable authentication middleware for debugging
+// app.UseAuthentication();
+// app.UseAuthorization();
 
 // Temporarily disabled for debugging
 // app.MapRazorPages();
 // app.MapBlazorHub();
 // app.MapFallbackToPage("/_Host");
-
-// Add health check endpoint for Render deployment
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 // Simple test endpoint
 app.MapGet("/test", () => "Simple test endpoint works!");
@@ -197,5 +194,8 @@ app.MapGet("/", () => Results.Content(@"
     <p>Debug: Minimal API routing working.</p>
 </body>
 </html>", "text/html"));
+
+// Add health check endpoint for Render deployment (moved to end)
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
