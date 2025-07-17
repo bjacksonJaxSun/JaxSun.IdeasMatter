@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Deploy to Render script
-echo "🚀 Deploying Jackson.Ideas to Render..."
+echo "🚀 Deploying JaxSun.IdeasMatter to Render..."
 
 # Export GitHub CLI path
 export PATH="$HOME/.local/bin:$PATH"
@@ -38,7 +38,7 @@ fi
 
 # Push to GitHub
 echo "📤 Pushing changes to GitHub..."
-git push origin master
+git push origin main
 
 # Check if push was successful
 if [ $? -eq 0 ]; then
@@ -46,8 +46,8 @@ if [ $? -eq 0 ]; then
     echo "🔄 Render will automatically detect the changes and start deployment"
     echo ""
     echo "📋 Deployment Status:"
-    echo "- Repository: https://github.com/bjackson071968/Jackson.Ideas"
-    echo "- Branch: master"
+    echo "- Repository: https://github.com/bjacksonJaxSun/JaxSun.IdeasMatter"
+    echo "- Branch: main"
     echo "- Render should detect changes and start building automatically"
     echo ""
     echo "🔗 Next Steps:"

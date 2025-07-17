@@ -1,7 +1,7 @@
 services:
   # API Service
   - type: web
-    name: jackson-ideas-api
+    name: jaxsun-ideasmatter-api
     runtime: docker
     dockerfilePath: Dockerfile.api.render
     dockerContext: .
@@ -17,11 +17,11 @@ services:
       - key: Jwt__SecretKey
         generateValue: true
       - key: Jwt__Issuer
-        value: https://jackson-ideas-api.onrender.com
+        value: https://jaxsun-ideasmatter-api.onrender.com
       - key: Jwt__Audience  
-        value: https://jackson-ideas-web.onrender.com
+        value: https://jaxsun-ideasmatter-web.onrender.com
       - key: Cors__AllowedOrigins__0
-        value: https://jackson-ideas-web.onrender.com
+        value: https://jaxsun-ideasmatter-web.onrender.com
       - key: Cors__AllowedOrigins__1
         value: http://localhost:4000
     healthCheckPath: /health
@@ -30,7 +30,7 @@ services:
 
   # Web Service
   - type: web
-    name: jackson-ideas-web
+    name: jaxsun-ideasmatter-web
     runtime: docker
     dockerfilePath: Dockerfile.web
     dockerContext: .
@@ -44,13 +44,13 @@ services:
       - key: ConnectionStrings__DefaultConnection
         value: Data Source=/app/jackson_ideas.db
       - key: ApiBaseUrl
-        value: https://jackson-ideas-api.onrender.com
+        value: https://jaxsun-ideasmatter-api.onrender.com
       - key: Jwt__SecretKey
         generateValue: true
       - key: Jwt__Issuer
-        value: https://jackson-ideas-api.onrender.com
+        value: https://jaxsun-ideasmatter-api.onrender.com
       - key: Jwt__Audience
-        value: https://jackson-ideas-web.onrender.com
+        value: https://jaxsun-ideasmatter-web.onrender.com
       - key: UseMockAuthentication
         value: "false"
     healthCheckPath: /health

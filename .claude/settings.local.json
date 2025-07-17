@@ -157,7 +157,10 @@
       "Bash(/home/owner/.dotnet/dotnet clean src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj)",
       "Bash(/home/owner/.dotnet/dotnet build Jackson.Ideas.Main.sln)",
       "Bash(gh repo view:*)",
-      "Bash(./deploy-to-render.sh:*)"
+      "Bash(./deploy-to-render.sh:*)",
+      "Bash(git branch:*)",
+      "Bash(gh repo set-default:*)",
+      "Bash(git remote set-url:*)"
     ],
     "deny": []
   }
