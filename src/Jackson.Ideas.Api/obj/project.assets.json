@@ -10378,49 +10378,41 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Owner\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "/home/owner/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Api\\Jackson.Ideas.Api.csproj",
+      "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Api/Jackson.Ideas.Api.csproj",
       "projectName": "Jackson.Ideas.Api",
-      "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Api\\Jackson.Ideas.Api.csproj",
-      "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
-      "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Api\\obj\\",
+      "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Api/Jackson.Ideas.Api.csproj",
+      "packagesPath": "/home/owner/.nuget/packages/",
+      "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Api/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/owner/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj": {
-              "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj"
+            "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj": {
+              "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj"
             },
-            "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
-              "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj"
+            "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
+              "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj"
             },
-            "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj": {
-              "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj"
+            "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj": {
+              "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj"
             },
-            "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj": {
-              "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj"
+            "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj": {
+              "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj"
             }
           }
         }
@@ -10489,7 +10481,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

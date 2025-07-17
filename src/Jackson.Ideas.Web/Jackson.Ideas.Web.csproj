@@ -23,8 +23,5 @@
     <ProjectReference Include="../Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="wwwroot/**/*" CopyToPublishDirectory="PreserveNewest" />
-  </ItemGroup>
 
 </Project>

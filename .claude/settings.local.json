@@ -161,7 +161,12 @@
       "Bash(git branch:*)",
       "Bash(gh repo set-default:*)",
       "Bash(git remote set-url:*)",
-      "WebFetch(domain:jaxsun-ideasmatter.onrender.com)"
+      "WebFetch(domain:jaxsun-ideasmatter.onrender.com)",
+      "Bash(docker:*)",
+      "Bash(sudo sh:*)",
+      "Bash(apt list:*)",
+      "Bash(snap install:*)",
+      "Bash(./dotnet-install.sh:*)"
     ],
     "deny": []
   }
