@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
 
 // Add HttpContextAccessor for JWT authentication
 builder.Services.AddHttpContextAccessor();
@@ -171,9 +171,8 @@ app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorPages();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 // Add health check endpoint for Render deployment
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));

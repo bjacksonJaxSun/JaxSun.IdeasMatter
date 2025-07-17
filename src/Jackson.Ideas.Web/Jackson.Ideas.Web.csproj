@@ -4,6 +4,8 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateStaticWebAssetsManifest>true</GenerateStaticWebAssetsManifest>
+    <StaticWebAssetsEnabled>true</StaticWebAssetsEnabled>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +21,10 @@
     <ProjectReference Include="../Jackson.Ideas.Application/Jackson.Ideas.Application.csproj" />
     <ProjectReference Include="../Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj" />
     <ProjectReference Include="../Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="wwwroot\**\*" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
