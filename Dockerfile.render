@@ -24,6 +24,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
 
+# Manually copy wwwroot files (Plan B)
+COPY --from=build /src/Jackson.Ideas.Web/wwwroot ./wwwroot
+
 # Install SQLite
 RUN apt-get update && apt-get install -y sqlite3 && rm -rf /var/lib/apt/lists/*
 
