@@ -1,5 +1,7 @@
 using Jackson.Ideas.Core.DTOs.Research;
+using Jackson.Ideas.Core.DTOs.MarketAnalysis;
 using Jackson.Ideas.Core.Interfaces.Services;
+using Jackson.Ideas.Core.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -7,7 +9,7 @@ using System.Collections.Concurrent;
 
 namespace Jackson.Ideas.Application.Services;
 
-public class ResearchBackgroundService : BackgroundService
+public class ResearchBackgroundService : BackgroundService, IResearchBackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<ResearchBackgroundService> _logger;
@@ -68,6 +70,126 @@ public class ResearchBackgroundService : BackgroundService
             status.Status = "Cancelled";
             status.CompletedAt = DateTime.UtcNow;
             _logger.LogInformation("Research task {TaskId} cancelled", taskId);
+        }
+    }
+
+    public async Task<List<string>> EnqueueResearchWorkflowAsync(string sessionId, string ideaDescription, string researchType, string userGoals)
+    {
+        _logger.LogInformation("Enqueuing research workflow for session {SessionId} with type {ResearchType}", sessionId, researchType);
+        
+        var taskIds = new List<string>();
+        var parameters = new Dictionary<string, object>
+        {
+            ["ideaDescription"] = ideaDescription,
+            ["researchType"] = researchType,
+            ["userGoals"] = userGoals,
+            ["sessionId"] = sessionId
+        };
+
+        // Start with updating session status to InProgress
+        await UpdateSessionStatusAsync(sessionId, ResearchStatus.InProgress);
+
+        // Determine workflow based on research type
+        var workflow = GetWorkflowTasks(researchType);
+        
+        foreach (var taskType in workflow)
+        {
+            var taskId = EnqueueTask(taskType, sessionId, parameters);
+            taskIds.Add(taskId);
+            
+            // Add small delay between tasks to prevent overwhelming
+            await Task.Delay(100);
+        }
+
+        _logger.LogInformation("Enqueued {TaskCount} tasks for research workflow in session {SessionId}", taskIds.Count, sessionId);
+        return taskIds;
+    }
+
+    private List<ResearchTaskType> GetWorkflowTasks(string researchType)
+    {
+        return researchType.ToLower() switch
+        {
+            "quick validation" or "quick-validation" => new List<ResearchTaskType>
+            {
+                ResearchTaskType.MarketAnalysis,
+                ResearchTaskType.CompetitiveAnalysis,
+                ResearchTaskType.SwotAnalysis
+            },
+            "market deep-dive" or "market-deep-dive" => new List<ResearchTaskType>
+            {
+                ResearchTaskType.MarketAnalysis,
+                ResearchTaskType.CompetitiveAnalysis,
+                ResearchTaskType.CustomerSegmentation,
+                ResearchTaskType.SwotAnalysis,
+                ResearchTaskType.EnhancedSwotAnalysis
+            },
+            "launch strategy" or "launch-strategy" => new List<ResearchTaskType>
+            {
+                ResearchTaskType.MarketAnalysis,
+                ResearchTaskType.CompetitiveAnalysis,
+                ResearchTaskType.CustomerSegmentation,
+                ResearchTaskType.SwotAnalysis,
+                ResearchTaskType.EnhancedSwotAnalysis,
+                ResearchTaskType.StrategicImplications
+            },
+            _ => new List<ResearchTaskType>
+            {
+                ResearchTaskType.MarketAnalysis,
+                ResearchTaskType.CompetitiveAnalysis,
+                ResearchTaskType.SwotAnalysis
+            }
+        };
+    }
+
+    private async Task UpdateSessionStatusAsync(string sessionId, ResearchStatus status)
+    {
+        try
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var sessionService = scope.ServiceProvider.GetService<IResearchSessionService>();
+            
+            if (sessionService != null && Guid.TryParse(sessionId, out var sessionGuid))
+            {
+                await sessionService.UpdateStatusAsync(sessionGuid, new UpdateStatusRequest 
+                { 
+                    Status = status.ToString() 
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to update session status for session {SessionId}", sessionId);
+        }
+    }
+
+    private async Task CheckAndCompleteSessionIfAllTasksDone(string sessionId)
+    {
+        try
+        {
+            // Get all tasks for this session
+            var sessionTasks = _taskStatuses.Values
+                .Where(t => t.TaskId.Contains(sessionId) || 
+                           _taskQueue.Any(q => q.SessionId == sessionId && q.TaskId == t.TaskId))
+                .ToList();
+
+            // Check if all tasks are completed
+            var allCompleted = sessionTasks.All(t => t.Status == "Completed" || t.Status == "Failed");
+            var hasAnyCompleted = sessionTasks.Any(t => t.Status == "Completed");
+
+            if (allCompleted && hasAnyCompleted)
+            {
+                _logger.LogInformation("All research tasks completed for session {SessionId}, marking session as completed", sessionId);
+                await UpdateSessionStatusAsync(sessionId, ResearchStatus.Completed);
+            }
+            else if (sessionTasks.Any(t => t.Status == "Failed") && !sessionTasks.Any(t => t.Status == "Processing"))
+            {
+                _logger.LogWarning("Some research tasks failed for session {SessionId}, marking session as failed", sessionId);
+                await UpdateSessionStatusAsync(sessionId, ResearchStatus.Failed);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to check session completion status for session {SessionId}", sessionId);
         }
     }
 
@@ -146,6 +268,9 @@ public class ResearchBackgroundService : BackgroundService
             // Send completion notification
             await NotifyTaskCompleted(taskId, result);
 
+            // Check if all tasks for this session are completed
+            await CheckAndCompleteSessionIfAllTasksDone(taskItem.SessionId);
+
             _logger.LogInformation("Research task {TaskId} completed successfully", taskId);
         }
         catch (OperationCanceledException)
@@ -177,6 +302,9 @@ public class ResearchBackgroundService : BackgroundService
         
         return taskItem.TaskType switch
         {
+            ResearchTaskType.MarketAnalysis => await ExecuteMarketAnalysisAsync(
+                serviceProvider, ideaDescription, taskItem.Parameters, cancellationToken),
+                
             ResearchTaskType.CompetitiveAnalysis => await ExecuteCompetitiveAnalysisAsync(
                 serviceProvider, ideaDescription, taskItem.Parameters, cancellationToken),
             
@@ -194,6 +322,47 @@ public class ResearchBackgroundService : BackgroundService
             
             _ => throw new ArgumentException($"Unknown task type: {taskItem.TaskType}")
         };
+    }
+
+    private async Task<object> ExecuteMarketAnalysisAsync(
+        IServiceProvider serviceProvider,
+        string ideaDescription,
+        Dictionary<string, object> parameters,
+        CancellationToken cancellationToken)
+    {
+        var service = serviceProvider.GetRequiredService<IMarketAnalysisService>();
+        var sessionId = parameters.GetValueOrDefault("sessionId")?.ToString() ?? string.Empty;
+        var ideaTitle = parameters.GetValueOrDefault("ideaTitle")?.ToString() ?? "Market Analysis";
+        
+        // Execute market analysis and save results to session
+        ComprehensiveMarketAnalysisDto analysis;
+        if (Guid.TryParse(sessionId, out var sessionGuid))
+        {
+            // Try to convert Guid to int for the service (use hash code as fallback)
+            var sessionIdInt = Math.Abs(sessionGuid.GetHashCode());
+            analysis = await service.GenerateComprehensiveMarketAnalysisAsync(sessionIdInt, ideaTitle, ideaDescription, cancellationToken);
+            
+            // Convert to research insight format and save to session
+            var sessionService = serviceProvider.GetRequiredService<IResearchSessionService>();
+            var insight = new Core.Entities.ResearchInsight
+            {
+                Title = "Market Analysis",
+                Content = analysis.ExecutiveSummary ?? "Comprehensive market analysis completed",
+                Category = "Market Research",
+                Priority = "High",
+                Phase = "market_context",
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            await sessionService.AddInsightToSessionAsync(sessionGuid, insight);
+        }
+        else
+        {
+            // Fallback if session ID parsing fails
+            analysis = await service.GenerateComprehensiveMarketAnalysisAsync(0, ideaTitle, ideaDescription, cancellationToken);
+        }
+        
+        return analysis;
     }
 
     private async Task<CompetitiveAnalysisResult> ExecuteCompetitiveAnalysisAsync(

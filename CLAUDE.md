@@ -29,18 +29,31 @@ dotnet run --project src/Jackson.Ideas.Web
 dotnet test
 ```
 
-### Build Error Resolution Protocol
-**CRITICAL**: Always check for and resolve build errors before completing any task.
+### Build Error Resolution Protocol - GOLDEN RULE
+**CRITICAL**: Before completing a set of tasks, run build, fix, build cycle until all errors are resolved.
+
+**The Golden Rule Process:**
+1. **Complete all planned code changes** in a task set
+2. **Before marking tasks complete** → Run `dotnet build`
+3. **If build fails** → Fix compilation errors immediately
+4. **Repeat** → Run `dotnet build` again
+5. **Continue** → Until clean build with zero errors
+6. **Only then** → Mark task set as complete
 
 ```bash
-# Always run build check after making changes
+# At the END of a task set, run build check
 dotnet build
 
 # Fix any compilation errors before proceeding
 # Check for missing using statements
 # Verify correct package versions
 # Ensure all dependencies are referenced
+
+# REPEAT until clean build
+dotnet build  # Must show "Build succeeded" with 0 errors
 ```
+
+**The Golden Rule applies before completing task sets, not after every individual change.**
 
 ### Testing Commands
 ```bash
@@ -111,21 +124,27 @@ Once user approves the technical design:
    - Add comprehensive logging and monitoring
    - Follow .NET coding conventions and best practices
 
-3. **Quality Assurance:**
-   - Build solution until all compilation errors are resolved
+3. **Quality Assurance & Golden Rule Compliance:**
+   - Complete all implementation work for the phase
+   - **MANDATORY**: Apply Golden Rule before phase completion
+   - Run `dotnet build` after completing all code changes in the phase
+   - Fix ALL compilation errors before proceeding
+   - Continue build-fix cycle until clean build achieved
    - Run all tests until 100% pass rate achieved
    - Fix any failing tests and implementation issues
    - Verify integration points work correctly
    - Validate against phase acceptance criteria
+   - **FINAL BUILD CHECK**: Ensure `dotnet build` succeeds before marking phase complete
 
 #### 3. Completion Criteria
 A phase is considered complete when:
-- ✅ Clean build with zero errors or warnings
+- ✅ **GOLDEN RULE SATISFIED**: Clean build with zero errors or warnings (`dotnet build` succeeds)
 - ✅ All tests passing (100% success rate)
 - ✅ Code coverage meets 80% threshold
 - ✅ All phase requirements implemented
 - ✅ Integration tests validate end-to-end functionality
 - ✅ Documentation updated for new features
+- ✅ **FINAL VERIFICATION**: One more `dotnet build` to confirm clean state
 
 ### Phase-Specific Guidelines
 
@@ -224,12 +243,33 @@ dotnet ef database drop --project src/Jackson.Ideas.Infrastructure
 
 ## Important Notes
 
+- **GOLDEN RULE**: Always run `dotnet build` after code changes and fix all errors before proceeding
 - Always run `dotnet build` before committing code
 - Ensure all tests pass before submitting pull requests
 - Follow semantic versioning for releases
 - Update documentation for any architectural changes
 - Use feature flags for experimental functionality
 - Implement proper security practices for all endpoints
+
+## Task Management Golden Rule
+
+**MANDATORY BEFORE COMPLETING TASK SETS:**
+
+1. **Complete all planned code changes** in the task set
+2. **Run `dotnet build`** before marking tasks complete
+3. **If errors exist** → Fix them immediately
+4. **Run `dotnet build` again**
+5. **Repeat until clean build**
+6. **Only then mark task set complete**
+
+**This rule applies before completing:**
+- Phase implementations
+- Feature sets
+- Bug fix batches
+- Refactoring sessions
+- Testing cycles
+
+**A task set is NOT complete until the build succeeds with zero errors.**
 
 ## Troubleshooting
 

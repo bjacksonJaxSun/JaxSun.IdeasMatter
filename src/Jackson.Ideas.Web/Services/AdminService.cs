@@ -10,7 +10,7 @@ public interface IAdminService
     Task<UserInfo?> GetUserByIdAsync(string id);
     Task<AuthResponse> UpdateUserRoleAsync(string id, string role);
     Task<AuthResponse> ToggleUserVerificationAsync(string id);
-    Task<AdminStatsResponse?> GetStatsAsync();
+    Task<Jackson.Ideas.Core.DTOs.Auth.AdminStatsResponse?> GetStatsAsync();
 }
 
 public class AdminService : IAdminService

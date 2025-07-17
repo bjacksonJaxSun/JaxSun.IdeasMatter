@@ -296,9 +296,9 @@ public class ResearchStrategyControllerTests
             CurrentPhase = "competitive_intelligence",
             ProgressPercentage = 65.0,
             EstimatedCompletionMinutes = 8,
-            PhaseDetails = "Analyzing competitive landscape and market positioning",
-            CompletedPhases = new List<string> { "market_context", "initial_analysis" },
-            RemainingPhases = new List<string> { "strategic_assessment", "recommendations" }
+            PhaseDetails = new string[] { "Analyzing competitive landscape and market positioning" },
+            CompletedPhases = new string[] { "market_context", "initial_analysis" },
+            RemainingPhases = new string[] { "strategic_assessment", "recommendations" }
         };
 
         _mockResearchStrategyService

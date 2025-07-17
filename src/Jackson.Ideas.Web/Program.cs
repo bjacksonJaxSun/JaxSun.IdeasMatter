@@ -14,15 +14,35 @@ builder.Services.AddRazorComponents()
 // Add HttpContextAccessor for JWT authentication
 builder.Services.AddHttpContextAccessor();
 
-// Add HttpClient for API calls
-builder.Services.AddHttpClient<IAuthenticationService, AuthenticationService>(client =>
+// Add authentication services - using mock for now
+var useMockAuth = builder.Configuration.GetValue<bool>("UseMockAuthentication", true);
+
+if (useMockAuth)
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
-});
-builder.Services.AddHttpClient<IAdminService, AdminService>(client =>
+    // Mock authentication - no HTTP clients needed
+    // Services will use mock implementations
+}
+else
 {
-    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
-});
+    // Register JWT handler for real authentication
+    builder.Services.AddTransient<JwtAuthenticationHandler>();
+    
+    // Add HttpClient for API calls
+    builder.Services.AddHttpClient<IAuthenticationService, AuthenticationService>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
+    });
+
+    builder.Services.AddHttpClient<IAdminService, AdminService>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
+    }).AddHttpMessageHandler<JwtAuthenticationHandler>();
+
+    builder.Services.AddHttpClient<IResearchSessionApiService, ResearchSessionApiService>(client =>
+    {
+        client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
+    }).AddHttpMessageHandler<JwtAuthenticationHandler>();
+}
 
 // Add Entity Framework context
 builder.Services.AddDbContext<JacksonIdeasDbContext>(options =>
@@ -32,15 +52,13 @@ builder.Services.AddDbContext<JacksonIdeasDbContext>(options =>
 // Add application services
 builder.Services.AddApplicationServices();
 
-// Add authentication services - using mock for now
-var useMockAuth = builder.Configuration.GetValue<bool>("UseMockAuthentication", true);
-
 if (useMockAuth)
 {
     // Use mock authentication (bypasses login)
     builder.Services.AddScoped<IAuthenticationService, MockAuthenticationService>();
     builder.Services.AddScoped<AuthenticationStateProvider, MockAuthenticationStateProvider>();
-    builder.Services.AddScoped<IAdminService, AdminService>();
+    builder.Services.AddScoped<IAdminService, MockAdminService>();
+    builder.Services.AddScoped<IResearchSessionApiService, MockResearchSessionApiService>();
 }
 else
 {
@@ -50,6 +68,7 @@ else
         provider.GetRequiredService<JwtAuthenticationStateProvider>());
     builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
     builder.Services.AddScoped<IAdminService, AdminService>();
+    builder.Services.AddScoped<IResearchSessionApiService, ResearchSessionApiService>();
 }
 
 // Add authentication and authorization
@@ -62,6 +81,12 @@ builder.Services.AddAuthentication(options =>
         options.DefaultAuthenticateScheme = "MockScheme";
         options.DefaultChallengeScheme = "MockScheme";
     }
+    else
+    {
+        options.DefaultAuthenticateScheme = "Cookies";
+        options.DefaultSignInScheme = "Cookies";
+        options.DefaultChallengeScheme = "Google";
+    }
 })
 .AddScheme<MockAuthenticationSchemeOptions, MockAuthenticationHandler>("MockScheme", null)
 .AddCookie(options =>
@@ -69,6 +94,13 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/login";
     options.LogoutPath = "/logout";
     options.AccessDeniedPath = "/access-denied";
+})
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Google:ClientId"] ?? string.Empty;
+    options.ClientSecret = builder.Configuration["Google:ClientSecret"] ?? string.Empty;
+    options.CallbackPath = "/signin-google";
+    options.SaveTokens = true;
 });
 
 // Configure authorization

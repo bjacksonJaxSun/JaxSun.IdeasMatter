@@ -3,6 +3,7 @@ using Jackson.Ideas.Core.DTOs.Auth;
 using Jackson.Ideas.Core.Entities;
 using Jackson.Ideas.Core.Interfaces;
 using Jackson.Ideas.Core.Interfaces.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -22,6 +23,8 @@ public class AuthControllerErrorDiagnosticTests
     private readonly Mock<IApplicationUserRepository> _mockUserRepository;
     private readonly Mock<IJwtService> _mockJwtService;
     private readonly Mock<ILogger<AuthController>> _mockLogger;
+    private readonly Mock<IPasswordHasher<ApplicationUser>> _mockPasswordHasher;
+    private readonly Mock<UserManager<ApplicationUser>> _mockUserManager;
     private readonly AuthController _controller;
 
     public AuthControllerErrorDiagnosticTests(ITestOutputHelper output)
@@ -30,11 +33,17 @@ public class AuthControllerErrorDiagnosticTests
         _mockUserRepository = new Mock<IApplicationUserRepository>();
         _mockJwtService = new Mock<IJwtService>();
         _mockLogger = new Mock<ILogger<AuthController>>();
+        _mockPasswordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
+        
+        var mockStore = new Mock<IUserStore<ApplicationUser>>();
+        _mockUserManager = new Mock<UserManager<ApplicationUser>>(mockStore.Object, null, null, null, null, null, null, null, null);
         
         _controller = new AuthController(
             _mockUserRepository.Object,
             _mockJwtService.Object,
-            _mockLogger.Object);
+            _mockLogger.Object,
+            _mockPasswordHasher.Object,
+            _mockUserManager.Object);
     }
 
     [Fact]

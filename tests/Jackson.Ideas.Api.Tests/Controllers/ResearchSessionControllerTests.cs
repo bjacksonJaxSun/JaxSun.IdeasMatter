@@ -15,6 +15,7 @@ namespace Jackson.Ideas.Api.Tests.Controllers;
 public class ResearchSessionControllerTests
 {
     private readonly Mock<IResearchSessionService> _mockResearchSessionService;
+    private readonly Mock<IResearchBackgroundService> _mockBackgroundService;
     private readonly Mock<ILogger<ResearchSessionController>> _mockLogger;
     private readonly ResearchSessionController _controller;
     private readonly string _testUserId = "123";
@@ -22,10 +23,12 @@ public class ResearchSessionControllerTests
     public ResearchSessionControllerTests()
     {
         _mockResearchSessionService = new Mock<IResearchSessionService>();
+        _mockBackgroundService = new Mock<IResearchBackgroundService>();
         _mockLogger = new Mock<ILogger<ResearchSessionController>>();
         
         _controller = new ResearchSessionController(
             _mockResearchSessionService.Object,
+            _mockBackgroundService.Object,
             _mockLogger.Object);
 
         // Setup user context for authorization
@@ -66,7 +69,7 @@ public class ResearchSessionControllerTests
         };
 
         _mockResearchSessionService
-            .Setup(x => x.CreateSessionAsync(_testUserId, request.IdeaDescription, request.Goals))
+            .Setup(x => x.CreateSessionAsync(It.IsAny<CreateSessionRequest>()))
             .ReturnsAsync(expectedSession);
 
         // Act
@@ -83,7 +86,7 @@ public class ResearchSessionControllerTests
         
         // Verify service was called with correct parameters
         _mockResearchSessionService.Verify(
-            x => x.CreateSessionAsync(_testUserId, request.IdeaDescription, request.Goals),
+            x => x.CreateSessionAsync(It.IsAny<CreateSessionRequest>()),
             Times.Once);
     }
 
@@ -98,7 +101,7 @@ public class ResearchSessionControllerTests
         };
 
         _mockResearchSessionService
-            .Setup(x => x.CreateSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.CreateSessionAsync(It.IsAny<CreateSessionRequest>()))
             .ThrowsAsync(new ArgumentException("Idea description is required"));
 
         // Act
@@ -275,7 +278,7 @@ public class ResearchSessionControllerTests
             .ReturnsAsync(existingSession);
 
         _mockResearchSessionService
-            .Setup(x => x.UpdateSessionAsync(It.IsAny<ResearchSession>()))
+            .Setup(x => x.UpdateSessionAsync(It.IsAny<Guid>(), It.IsAny<UpdateSessionRequest>()))
             .ReturnsAsync(updatedSession);
 
         // Act
@@ -290,7 +293,7 @@ public class ResearchSessionControllerTests
         
         // Verify service methods were called
         _mockResearchSessionService.Verify(x => x.GetSessionAsync(sessionId), Times.Once);
-        _mockResearchSessionService.Verify(x => x.UpdateSessionAsync(It.IsAny<ResearchSession>()), Times.Once);
+        _mockResearchSessionService.Verify(x => x.UpdateSessionAsync(It.IsAny<Guid>(), It.IsAny<UpdateSessionRequest>()), Times.Once);
     }
 
     [Fact]
@@ -312,7 +315,7 @@ public class ResearchSessionControllerTests
 
         _mockResearchSessionService
             .Setup(x => x.DeleteSessionAsync(sessionId))
-            .Returns(Task.CompletedTask);
+            .ReturnsAsync(true);
 
         // Act
         var result = await _controller.DeleteSessionAsync(sessionId);
@@ -452,7 +455,7 @@ public class ResearchSessionControllerTests
     }
 
     [Fact]
-    public async Task UpdateSessionStatusAsync_WithValidRequest_ShouldReturnUpdatedSession()
+    public async Task UpdateStatusAsync_WithValidRequest_ShouldReturnUpdatedSession()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -478,13 +481,15 @@ public class ResearchSessionControllerTests
             UpdatedAt = DateTime.UtcNow
         };
 
+        // Setup the first call to GetSessionAsync (for validation)
         _mockResearchSessionService
-            .Setup(x => x.GetSessionAsync(sessionId))
-            .ReturnsAsync(existingSession);
+            .SetupSequence(x => x.GetSessionAsync(sessionId))
+            .ReturnsAsync(existingSession)
+            .ReturnsAsync(updatedSession);
 
         _mockResearchSessionService
-            .Setup(x => x.UpdateSessionStatusAsync(sessionId, statusRequest.Status))
-            .ReturnsAsync(updatedSession);
+            .Setup(x => x.UpdateStatusAsync(sessionId, It.IsAny<UpdateStatusRequest>()))
+            .ReturnsAsync(true);
 
         // Act
         var result = await _controller.UpdateSessionStatusAsync(sessionId, statusRequest);
@@ -497,8 +502,8 @@ public class ResearchSessionControllerTests
         Assert.NotNull(session.UpdatedAt);
         
         // Verify service methods were called
-        _mockResearchSessionService.Verify(x => x.GetSessionAsync(sessionId), Times.Once);
-        _mockResearchSessionService.Verify(x => x.UpdateSessionStatusAsync(sessionId, statusRequest.Status), Times.Once);
+        _mockResearchSessionService.Verify(x => x.GetSessionAsync(sessionId), Times.Exactly(2));
+        _mockResearchSessionService.Verify(x => x.UpdateStatusAsync(sessionId, It.IsAny<UpdateStatusRequest>()), Times.Once);
     }
 
     [Fact]
@@ -512,7 +517,7 @@ public class ResearchSessionControllerTests
         };
 
         _mockResearchSessionService
-            .Setup(x => x.CreateSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.CreateSessionAsync(It.IsAny<CreateSessionRequest>()))
             .ThrowsAsync(new InvalidOperationException("Database connection failed"));
 
         // Act
@@ -541,7 +546,7 @@ public class ResearchSessionControllerTests
         };
 
         _mockResearchSessionService
-            .Setup(x => x.CreateSessionAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(x => x.CreateSessionAsync(It.IsAny<CreateSessionRequest>()))
             .ThrowsAsync(new ArgumentException("Idea description is required"));
 
         // Act

@@ -1,0 +1,141 @@
+name: Product Vision
+description: Create a new product vision
+title: "Vision: [Product Name]"
+labels: ["vision"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Product Vision Template
+        Use this template to create a comprehensive product vision.
+  
+  - type: input
+    id: product_name
+    attributes:
+      label: Product Name
+      description: Name of the product or system
+      placeholder: e.g., HR Portal, Analytics Platform
+    validations:
+      required: true
+  
+  - type: textarea
+    id: vision_statement
+    attributes:
+      label: Vision Statement
+      description: A concise statement describing the product's ultimate goal
+      placeholder: |
+        In [timeframe], [product name] will [key achievement] by [approach],
+        enabling [target users] to [key benefit].
+    validations:
+      required: true
+  
+  - type: textarea
+    id: target_market
+    attributes:
+      label: Target Market
+      description: Who are the primary users and customers?
+      placeholder: |
+        - Primary Users: [description]
+        - Secondary Users: [description]
+        - Market Size: [estimation]
+        - Industry/Sector: [details]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: key_problems
+    attributes:
+      label: Key Problems
+      description: What problems does this product solve?
+      placeholder: |
+        1. Problem: [description]
+           Impact: [consequences of not solving]
+        
+        2. Problem: [description]
+           Impact: [consequences of not solving]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: strategic_themes
+    attributes:
+      label: Strategic Themes
+      description: High-level capabilities or themes the product will deliver
+      placeholder: |
+        1. **[Theme Name]**: [Description of capability]
+        2. **[Theme Name]**: [Description of capability]
+        3. **[Theme Name]**: [Description of capability]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: success_metrics
+    attributes:
+      label: Success Metrics
+      description: How will we measure success?
+      placeholder: |
+        - Business Metrics:
+          - [Metric]: [Target]
+          - [Metric]: [Target]
+        
+        - User Metrics:
+          - [Metric]: [Target]
+          - [Metric]: [Target]
+        
+        - Technical Metrics:
+          - [Metric]: [Target]
+          - [Metric]: [Target]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: key_differentiators
+    attributes:
+      label: Key Differentiators
+      description: What makes this product unique?
+      placeholder: |
+        1. [Differentiator]: [Why it matters]
+        2. [Differentiator]: [Why it matters]
+        3. [Differentiator]: [Why it matters]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: constraints_assumptions
+    attributes:
+      label: Constraints and Assumptions
+      description: What limitations or assumptions are we working with?
+      placeholder: |
+        Constraints:
+        - [Technical/Business/Resource constraint]
+        
+        Assumptions:
+        - [Market/User/Technical assumption]
+    validations:
+      required: false
+  
+  - type: textarea
+    id: high_level_roadmap
+    attributes:
+      label: High-Level Roadmap
+      description: Major phases or milestones
+      placeholder: |
+        - Phase 1 (Months 1-3): [Key deliverables]
+        - Phase 2 (Months 4-6): [Key deliverables]
+        - Phase 3 (Months 7-12): [Key deliverables]
+    validations:
+      required: false
+  
+  - type: textarea
+    id: risks_mitigations
+    attributes:
+      label: Risks and Mitigations
+      description: Key risks and how to address them
+      placeholder: |
+        1. Risk: [Description]
+           Mitigation: [Strategy]
+        
+        2. Risk: [Description]
+           Mitigation: [Strategy]
+    validations:
+      required: false

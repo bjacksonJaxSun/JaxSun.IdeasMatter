@@ -1,0 +1,153 @@
+name: Vision Strategy
+description: Create a strategy for implementing a product vision
+title: "Strategy: [Product Name]"
+labels: ["strategy"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Vision Strategy Template
+        Use this template to create an implementation strategy for a product vision.
+  
+  - type: input
+    id: vision_reference
+    attributes:
+      label: Vision Issue Reference
+      description: Link to the vision issue this strategy implements
+      placeholder: "#123"
+    validations:
+      required: true
+  
+  - type: input
+    id: timeframe
+    attributes:
+      label: Implementation Timeframe
+      description: Total duration for strategy implementation
+      placeholder: "18 months"
+    validations:
+      required: true
+  
+  - type: textarea
+    id: strategy_overview
+    attributes:
+      label: Strategy Overview
+      description: High-level summary of the implementation approach
+      placeholder: |
+        This strategy outlines how we will transform the vision into reality over [timeframe].
+        Key focus areas include...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: phase_1
+    attributes:
+      label: Phase 1 - Foundation
+      description: Initial phase focusing on core infrastructure
+      placeholder: |
+        **Duration**: Months 1-6
+        **Objective**: [Primary goal]
+        
+        **Key Deliverables**:
+        - [Deliverable 1]
+        - [Deliverable 2]
+        
+        **Success Criteria**:
+        - [Metric 1]
+        - [Metric 2]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: phase_2
+    attributes:
+      label: Phase 2 - Growth
+      description: Expansion phase building on foundation
+      placeholder: |
+        **Duration**: Months 7-12
+        **Objective**: [Primary goal]
+        
+        **Key Deliverables**:
+        - [Deliverable 1]
+        - [Deliverable 2]
+        
+        **Success Criteria**:
+        - [Metric 1]
+        - [Metric 2]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: phase_3
+    attributes:
+      label: Phase 3 - Optimization
+      description: Final phase focusing on refinement and scale
+      placeholder: |
+        **Duration**: Months 13+
+        **Objective**: [Primary goal]
+        
+        **Key Deliverables**:
+        - [Deliverable 1]
+        - [Deliverable 2]
+        
+        **Success Criteria**:
+        - [Metric 1]
+        - [Metric 2]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: key_initiatives
+    attributes:
+      label: Key Strategic Initiatives
+      description: Major initiatives that span phases
+      placeholder: |
+        1. **[Initiative Name]**: [Description and importance]
+        2. **[Initiative Name]**: [Description and importance]
+        3. **[Initiative Name]**: [Description and importance]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: resource_requirements
+    attributes:
+      label: Resource Requirements
+      description: Team, budget, and infrastructure needs
+      placeholder: |
+        **Team Structure**:
+        - Engineering: [percentage/headcount]
+        - Product: [percentage/headcount]
+        - Other: [details]
+        
+        **Budget Allocation**:
+        - Development: [percentage]
+        - Infrastructure: [percentage]
+        - Marketing: [percentage]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: risk_management
+    attributes:
+      label: Risk Management
+      description: Key risks and mitigation strategies
+      placeholder: |
+        1. **Risk**: [Description]
+           **Mitigation**: [Strategy]
+        
+        2. **Risk**: [Description]
+           **Mitigation**: [Strategy]
+    validations:
+      required: true
+  
+  - type: textarea
+    id: success_metrics
+    attributes:
+      label: Overall Success Metrics
+      description: How we measure strategy success
+      placeholder: |
+        - **Phase 1**: [Key metrics]
+        - **Phase 2**: [Key metrics]
+        - **Phase 3**: [Key metrics]
+        - **Overall**: [End state metrics]
+    validations:
+      required: true

@@ -10,13 +10,16 @@ namespace Jackson.Ideas.Application.Services;
 public class ResearchSessionService : IResearchSessionService
 {
     private readonly IResearchRepository _researchRepository;
+    private readonly IResearchBackgroundService _backgroundService;
     private readonly ILogger<ResearchSessionService> _logger;
 
     public ResearchSessionService(
         IResearchRepository researchRepository,
+        IResearchBackgroundService backgroundService,
         ILogger<ResearchSessionService> logger)
     {
         _researchRepository = researchRepository;
+        _backgroundService = backgroundService;
         _logger = logger;
     }
 
@@ -37,6 +40,8 @@ public class ResearchSessionService : IResearchSessionService
             Title = request.Title ?? request.Description,
             Description = request.Description,
             Status = ResearchStatus.Pending,
+            ResearchType = request.ResearchType,
+            Goals = request.Goals,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             ResearchInsights = new List<ResearchInsight>(),
@@ -47,6 +52,27 @@ public class ResearchSessionService : IResearchSessionService
         
         _logger.LogInformation("Research session {SessionId} created successfully for user {UserId}", 
             createdSession.Id, request.UserId);
+
+        // Trigger background research workflow
+        try
+        {
+            var researchType = request.ResearchType ?? "Market Deep-Dive";
+            var userGoals = request.Goals ?? "Comprehensive market analysis";
+            
+            var taskIds = await _backgroundService.EnqueueResearchWorkflowAsync(
+                createdSession.Id.ToString(),
+                request.Description,
+                researchType,
+                userGoals);
+                
+            _logger.LogInformation("Triggered research workflow for session {SessionId} with {TaskCount} tasks", 
+                createdSession.Id, taskIds.Count);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to trigger research workflow for session {SessionId}", createdSession.Id);
+            // Don't fail the session creation, just log the error
+        }
 
         return createdSession;
     }

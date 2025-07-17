@@ -46,9 +46,6 @@
                 case 3:
                     @RenderStrategySelectionStep()
                     break;
-                case 4:
-                    @RenderReviewStep()
-                    break;
             }
         </div>
 
@@ -63,18 +60,16 @@
                 Previous
             </button>
 
-            @if (CurrentStep < FormSteps.Count - 1)
-            {
-                <button type="button" 
-                        class="btn btn-primary"
-                        @onclick="NextStep"
-                        disabled="@(!CanProceedToNext())"
-                        aria-label="Go to next step">
-                    Next
-                    <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                </button>
-            }
-            else
+            <button type="button" 
+                    class="btn btn-primary"
+                    @onclick="NextStep"
+                    disabled="@(!CanProceedToNext())"
+                    aria-label="Go to next step">
+                Next
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+            
+            @if (CurrentStep == FormSteps.Count - 1)
             {
                 <button type="submit" 
                         class="btn btn-success"
@@ -147,8 +142,7 @@
             new() { Title = "Basic Info", Description = "Tell us about your idea", IsRequired = true },
             new() { Title = "Idea Details", Description = "Provide comprehensive details", IsRequired = true },
             new() { Title = "Research Goals", Description = "Define what you want to learn", IsRequired = false },
-            new() { Title = "Strategy Selection", Description = "Choose your research approach", IsRequired = true },
-            new() { Title = "Review & Submit", Description = "Review and start research", IsRequired = true }
+            new() { Title = "Strategy Selection", Description = "Choose your research approach", IsRequired = true }
         };
     }
 
@@ -383,34 +377,6 @@
         </div>
     };
 
-    private RenderFragment RenderReviewStep() => __builder =>
-    {
-        <div class="form-step">
-            <div class="step-header">
-                <h2>Review Your Submission</h2>
-                <p class="step-description">Review your information before starting the AI research.</p>
-            </div>
-
-            <div class="review-summary">
-                <div class="review-item">
-                    <h3>Idea Title</h3>
-                    <p>@Model.Title</p>
-                </div>
-                <div class="review-item">
-                    <h3>Brief Description</h3>
-                    <p>@Model.BriefDescription</p>
-                </div>
-                <div class="review-item">
-                    <h3>Target Audience</h3>
-                    <p>@(Model.TargetAudience ?? "Not specified")</p>
-                </div>
-                <div class="review-item">
-                    <h3>Industry</h3>
-                    <p>@(Model.Industry ?? "Not specified")</p>
-                </div>
-            </div>
-        </div>
-    };
 
     private void NavigateToStep(int stepIndex)
     {
@@ -459,7 +425,6 @@
             1 => !string.IsNullOrWhiteSpace(Model.DetailedDescription),
             2 => true, // Optional step
             3 => !string.IsNullOrEmpty(selectedStrategyId), // Strategy selection required
-            4 => true, // Review step
             _ => false
         };
     }

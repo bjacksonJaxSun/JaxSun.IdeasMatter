@@ -1,0 +1,18 @@
+# Minimal test Dockerfile
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+WORKDIR /app
+
+# Create a minimal test application
+RUN echo 'using Microsoft.AspNetCore.Builder; using Microsoft.AspNetCore.Http; var builder = WebApplication.CreateBuilder(args); var app = builder.Build(); app.MapGet("/", () => "Hello from Jackson Ideas API!"); app.MapGet("/health", () => Results.Ok(new { status = "healthy" })); app.Run();' > Program.cs
+
+# Create project file
+RUN echo '<Project Sdk="Microsoft.NET.Sdk.Web"><PropertyGroup><TargetFramework>net9.0</TargetFramework></PropertyGroup></Project>' > test.csproj
+
+# Build and run
+RUN dotnet publish -c Release -o out
+WORKDIR /app/out
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+CMD ["dotnet", "test.dll"]

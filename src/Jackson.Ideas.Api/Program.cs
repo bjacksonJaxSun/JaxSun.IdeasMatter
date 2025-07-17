@@ -114,7 +114,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4000", "http://localhost:3000")
+        policy.WithOrigins(
+                "http://localhost:4000", 
+                "http://localhost:3000",
+                "https://localhost:7119",  // Blazor Web HTTPS
+                "http://localhost:5247"   // Blazor Web HTTP
+              )
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
@@ -142,11 +147,14 @@ app.MapControllers();
 // Health check endpoint
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-// Ensure database is created
+// Ensure database is created and seeded
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<JacksonIdeasDbContext>();
     context.Database.EnsureCreated();
+    
+    // Seed database with initial data (only if empty)
+    await app.Services.SeedDatabaseIfEmptyAsync();
 }
 
 app.Run();

@@ -55,7 +55,7 @@ public class ResearchStrategyServiceTests
     public async Task InitiateResearchStrategyAsync_ShouldCreateValidStrategy()
     {
         // Arrange
-        var sessionId = 1;
+        var sessionId = Guid.NewGuid();
         var ideaTitle = "Test Idea";
         var ideaDescription = "Test Description";
         var approach = ResearchApproach.QuickValidation;
@@ -79,15 +79,15 @@ public class ResearchStrategyServiceTests
         // Arrange
         var strategy = new ResearchSession
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             ResearchApproach = ResearchApproach.QuickValidation.ToString(),
             Status = ResearchStatus.Pending
         };
         var ideaTitle = "Test Idea";
         var ideaDescription = "Test Description";
-        var progressUpdates = new List<(int strategyId, string phase, double progress)>();
+        var progressUpdates = new List<(Guid strategyId, string phase, double progress)>();
 
-        Task ProgressCallback(int id, string phase, double progress)
+        Task ProgressCallback(Guid id, string phase, double progress)
         {
             progressUpdates.Add((id, phase, progress));
             return Task.CompletedTask;
@@ -111,13 +111,13 @@ public class ResearchStrategyServiceTests
         // Arrange
         var strategy = new ResearchSession
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             ResearchApproach = ResearchApproach.QuickValidation.ToString(),
             Status = ResearchStatus.Pending
         };
         var phases = new List<string>();
 
-        Task ProgressCallback(int id, string phase, double progress)
+        Task ProgressCallback(Guid id, string phase, double progress)
         {
             if (!phases.Contains(phase))
                 phases.Add(phase);
@@ -141,13 +141,13 @@ public class ResearchStrategyServiceTests
         // Arrange
         var strategy = new ResearchSession
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             ResearchApproach = ResearchApproach.MarketDeepDive.ToString(),
             Status = ResearchStatus.Pending
         };
         var phases = new List<string>();
 
-        Task ProgressCallback(int id, string phase, double progress)
+        Task ProgressCallback(Guid id, string phase, double progress)
         {
             if (!phases.Contains(phase))
                 phases.Add(phase);
@@ -172,7 +172,7 @@ public class ResearchStrategyServiceTests
         // Arrange
         var strategy = new ResearchSession
         {
-            Id = 1,
+            Id = Guid.NewGuid(),
             ResearchApproach = approach.ToString(),
             Status = ResearchStatus.Pending
         };
@@ -192,7 +192,7 @@ public class ResearchStrategyServiceTests
     public async Task GetProgressAsync_ShouldReturnValidProgressUpdate()
     {
         // Arrange
-        var strategyId = 1;
+        var strategyId = Guid.NewGuid();
 
         // Act
         var progress = await _service.GetProgressAsync(strategyId);
@@ -209,7 +209,7 @@ public class ResearchStrategyServiceTests
     public async Task GetSessionStrategiesAsync_ShouldReturnEmptyListForNonExistentSession()
     {
         // Arrange
-        var sessionId = 999;
+        var sessionId = Guid.NewGuid();
 
         // Act
         var strategies = await _service.GetSessionStrategiesAsync(sessionId);

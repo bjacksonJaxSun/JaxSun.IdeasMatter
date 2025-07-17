@@ -13,13 +13,16 @@ namespace Jackson.Ideas.Api.Controllers;
 public class ResearchSessionController : ControllerBase
 {
     private readonly IResearchSessionService _researchSessionService;
+    private readonly IResearchBackgroundService _backgroundService;
     private readonly ILogger<ResearchSessionController> _logger;
 
     public ResearchSessionController(
         IResearchSessionService researchSessionService,
+        IResearchBackgroundService backgroundService,
         ILogger<ResearchSessionController> logger)
     {
         _researchSessionService = researchSessionService;
+        _backgroundService = backgroundService;
         _logger = logger;
     }
 
@@ -316,6 +319,88 @@ public class ResearchSessionController : ControllerBase
         {
             _logger.LogError(ex, "Error updating session status {SessionId}", sessionId);
             return StatusCode(500, new { error = "An error occurred while updating session status" });
+        }
+    }
+
+    [HttpPost("{sessionId}/execute")]
+    public async Task<ActionResult<object>> ExecuteResearchAsync(
+        Guid sessionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var session = await _researchSessionService.GetSessionAsync(sessionId);
+            if (session == null)
+            {
+                return NotFound(new { error = "Session not found" });
+            }
+
+            // Verify the session belongs to the current user
+            var userId = GetCurrentUserId();
+            if (session.UserId != userId)
+            {
+                return Forbid();
+            }
+
+            _logger.LogInformation("Starting research execution for session {SessionId}", sessionId);
+
+            // Trigger the research workflow
+            var taskIds = await _backgroundService.EnqueueResearchWorkflowAsync(
+                sessionId.ToString(),
+                session.Description,
+                session.ResearchType ?? "Market Deep-Dive",
+                session.Goals ?? "Comprehensive market analysis");
+
+            return Ok(new
+            {
+                message = "Research execution started",
+                sessionId = sessionId,
+                taskIds = taskIds,
+                estimatedDuration = "30-60 minutes"
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error starting research execution for session {SessionId}", sessionId);
+            return StatusCode(500, new { error = "An error occurred while starting research execution" });
+        }
+    }
+
+    [HttpGet("{sessionId}/progress")]
+    public async Task<ActionResult<object>> GetResearchProgressAsync(
+        Guid sessionId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var session = await _researchSessionService.GetSessionAsync(sessionId);
+            if (session == null)
+            {
+                return NotFound(new { error = "Session not found" });
+            }
+
+            // Verify the session belongs to the current user
+            var userId = GetCurrentUserId();
+            if (session.UserId != userId)
+            {
+                return Forbid();
+            }
+
+            return Ok(new
+            {
+                sessionId = sessionId,
+                status = session.Status.ToString(),
+                progress = session.ProgressPercentage,
+                currentPhase = session.CurrentPhase,
+                insightsCount = session.ResearchInsights?.Count ?? 0,
+                optionsCount = session.ResearchOptions?.Count ?? 0,
+                lastUpdated = session.UpdatedAt
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting research progress for session {SessionId}", sessionId);
+            return StatusCode(500, new { error = "An error occurred while getting research progress" });
         }
     }
 

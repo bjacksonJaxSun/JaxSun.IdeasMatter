@@ -98,167 +98,51 @@ jobs:
         mkdir -p "$STRATEGY_DIR"
         STRATEGY_PATH="$STRATEGY_DIR/strategy.md"
         
-        # Create the Python script
-        cat > /tmp/generate_strategy.py << 'EOF'
-import os
-timeframe = os.environ.get('TIMEFRAME', '18')
-product_name = os.environ.get('PRODUCT_NAME', 'Product')
-strategy_path = os.environ.get('STRATEGY_PATH', 'strategy.md')
-
-content = f'''# Vision Strategy - {product_name}
+        # Create simple strategy document with bash
+        cat > "$STRATEGY_PATH" << 'EOF'
+# Vision Strategy - PLACEHOLDER_PRODUCT_NAME
 
 ## Strategy Overview
 
-This {timeframe}-month strategy outlines the implementation approach for the {product_name} vision, breaking down the journey into actionable phases with clear deliverables and success criteria.
+This PLACEHOLDER_TIMEFRAME-month strategy outlines the implementation approach for the PLACEHOLDER_PRODUCT_NAME vision, breaking down the journey into actionable phases with clear deliverables and success criteria.
 
 ## Strategic Phases
 
-### Phase 1: Foundation (Months 1-6)
-**Objective** - Establish core infrastructure and validate key assumptions
-
-**Key Deliverables** -
+### Phase 1 - Foundation (Months 1-6)
+- Establish core infrastructure and validate key assumptions
 - Core platform architecture
 - Basic feature set implementation
 - Initial user feedback loops
 - MVP release to early adopters
 
-**Success Criteria** -
-- Technical foundation supports planned scale
-- Early user feedback validates core value proposition
-- Development velocity established
-
-### Phase 2: Growth (Months 7-12)
-**Objective** - Expand capabilities and user base
-
-**Key Deliverables** -
+### Phase 2 - Growth (Months 7-12)  
+- Expand capabilities and user base
 - Enhanced feature set based on user feedback
 - Scalability improvements
 - Market expansion initiatives
 - Partnership framework
 
-**Success Criteria** -
-- User growth targets achieved
-- Platform stability at scale
-- Strategic partnerships established
-
-### Phase 3: Optimization (Months 13-{timeframe})
-**Objective** - Refine and optimize for market leadership
-
-**Key Deliverables** -
+### Phase 3 - Optimization (Months 13-PLACEHOLDER_TIMEFRAME)
+- Refine and optimize for market leadership
 - Advanced features and integrations
 - Performance optimizations
 - Market differentiation features
 - Expansion into new segments
 
-**Success Criteria** -
-- Market position established
-- Revenue targets met
-- User satisfaction metrics achieved
-
-## Implementation Roadmap
-
-### Quarter 1-2: Foundation Building
-- Set up development infrastructure
-- Build core team
-- Develop MVP features
-- Establish testing frameworks
-
-### Quarter 3-4: Market Validation
-- Launch beta program
-- Gather user feedback
-- Iterate on core features
-- Refine go-to-market strategy
-
-### Quarter 5-6: Scale Preparation
-- Enhance platform capabilities
-- Build operational excellence
-- Expand team and partnerships
-- Prepare for growth phase
-
-## Key Initiatives
-
-1. **Technical Excellence**
-   - Establish robust architecture
-   - Implement best practices
-   - Build for scale from day one
-
-2. **User-Centric Development**
-   - Continuous user feedback loops
-   - Rapid iteration cycles
-   - Focus on user value
-
-3. **Market Positioning**
-   - Clear differentiation strategy
-   - Thought leadership content
-   - Strategic partnerships
-
-4. **Operational Efficiency**
-   - Automated processes
-   - Data-driven decisions
-   - Lean operations
-
-## Resource Requirements
-
-### Team Structure
-- Engineering: 60% of resources
-- Product/Design: 20% of resources
-- Marketing/Sales: 15% of resources
-- Operations: 5% of resources
-
-### Budget Allocation
-- Development: 50%
-- Infrastructure: 20%
-- Marketing: 20%
-- Operations: 10%
-
-## Risk Management
-
-### Technical Risks
-- **Risk** - Technology scalability challenges
-- **Mitigation** - Early stress testing and architecture reviews
-
-### Market Risks
-- **Risk** - Competitive threats
-- **Mitigation** - Rapid innovation and strong differentiation
-
-### Execution Risks
-- **Risk** - Resource constraints
-- **Mitigation** - Phased approach with clear priorities
-
-## Success Metrics
-
-### Phase 1 Metrics
-- MVP launched on schedule
-- 100+ beta users acquired
-- Core features operational
-
-### Phase 2 Metrics
-- 1,000+ active users
-- 90% uptime achieved
-- Key partnerships established
-
-### Phase 3 Metrics
-- Market targets achieved
-- Revenue goals met
-- Industry recognition gained
-
 ## Next Steps
 
 1. Break down Phase 1 into detailed epics
-2. Assign ownership and timelines
+2. Assign ownership and timelines  
 3. Establish tracking mechanisms
 4. Begin execution
 
 ---
 *This strategy is a living document and will be updated based on learnings and market changes.*
-'''
-
-with open(strategy_path, 'w') as f:
-    f.write(content)
 EOF
 
-        # Run the Python script
-        TIMEFRAME="$TIMEFRAME" PRODUCT_NAME="$PRODUCT_NAME" STRATEGY_PATH="$STRATEGY_PATH" python3 /tmp/generate_strategy.py
+        # Replace placeholders
+        sed -i "s/PLACEHOLDER_PRODUCT_NAME/$PRODUCT_NAME/g" "$STRATEGY_PATH"
+        sed -i "s/PLACEHOLDER_TIMEFRAME/$TIMEFRAME/g" "$STRATEGY_PATH"
 
         echo "strategy_path=$STRATEGY_PATH" >> $GITHUB_OUTPUT
         echo "strategy_dir=$STRATEGY_DIR" >> $GITHUB_OUTPUT

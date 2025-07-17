@@ -32,6 +32,12 @@ public class ResearchSession
     [StringLength(50)]
     public string ResearchApproach { get; set; } = string.Empty;
     
+    [StringLength(100)]
+    public string? ResearchType { get; set; }
+    
+    [StringLength(1000)]
+    public string? Goals { get; set; }
+    
     public int EstimatedDurationMinutes { get; set; }
     
     public double ProgressPercentage { get; set; } = 0.0;

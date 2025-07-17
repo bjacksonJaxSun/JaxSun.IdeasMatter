@@ -27,5 +27,7 @@ public enum ResearchTaskType
     SwotAnalysis,
     CustomerSegmentation,
     EnhancedSwotAnalysis,
-    StrategicImplications
+    StrategicImplications,
+    MarketAnalysis,
+    ResearchWorkflow
 }

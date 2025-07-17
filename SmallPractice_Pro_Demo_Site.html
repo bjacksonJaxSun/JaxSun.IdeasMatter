@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmallPractice Pro - Healthcare Management Made Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8fafc;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo::before {
+            content: "🏥";
+            margin-right: 10px;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .cta-button {
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s;
+        }
+
+        .cta-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #2d3748;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            border: 1px solid #e2e8f0;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .feature-card p {
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+        /* Demo Section */
+        .demo-section {
+            padding: 4rem 0;
+            background: #f7fafc;
+        }
+
+        .demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .demo-mockup {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 8px solid #e2e8f0;
+        }
+
+        .mockup-header {
+            background: #4a5568;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mockup-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e0;
+        }
+
+        .mockup-content {
+            padding: 2rem;
+        }
+
+        .appointment-card {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .appointment-time {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .appointment-patient {
+            color: #4a5568;
+        }
+
+        .appointment-type {
+            background: #e6fffa;
+            color: #065f46;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-top: 0.5rem;
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.popular {
+            border-color: #4CAF50;
+            transform: scale(1.05);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 1rem;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            color: #4a5568;
+            font-weight: normal;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .pricing-features li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* Interactive Elements */
+        .tab-container {
+            margin-top: 2rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-button.active {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .booking-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .time-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .time-slot {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            background: #f7fafc;
+        }
+
+        .time-slot.selected {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">SmallPractice Pro</div>
+                <nav>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#demo">Demo</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#contact" class="cta-button">Start Free Trial</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Healthcare Management Made Simple</h1>
+            <p>Streamline appointments, reduce no-shows, and delight patients with our easy-to-use practice management system designed specifically for small medical practices.</p>
+            <div class="hero-buttons">
+                <a href="#demo" class="btn btn-primary">Try Live Demo</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>70%</h3>
+                    <p>Reduction in Phone Calls</p>
+                </div>
+                <div class="stat-card">
+                    <h3>40%</h3>
+                    <p>Fewer No-Shows</p>
+                </div>
+                <div class="stat-card">
+                    <h3>15hrs</h3>
+                    <p>Saved Per Week</p>
+                </div>
+                <div class="stat-card">
+                    <h3>2min</h3>
+                    <p>Average Booking Time</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Everything Your Practice Needs</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>Online Appointment Booking</h3>
+                    <p>Let patients book appointments 24/7 through your professional booking page. Real-time availability, instant confirmations, and automatic calendar sync.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Automated Reminders</h3>
+                    <p>Reduce no-shows by 40% with automated SMS and email reminders. Patients can confirm, reschedule, or cancel with one click.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📞</div>
+                    <h3>Smart Call Management</h3>
+                    <p>Reduce phone volume by 70% with online booking. When patients do call, our system helps your staff book appointments quickly and efficiently.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3>Patient Management</h3>
+                    <p>Simple patient profiles with contact information, appointment history, and preferences. Everything your staff needs in one place.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Practice Analytics</h3>
+                    <p>Track key metrics like no-show rates, booking trends, and patient satisfaction. Make data-driven decisions to improve your practice.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Bilingual Support</h3>
+                    <p>Serve your diverse patient population with full English and Spanish support. Automatic language detection and culturally appropriate communications.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <h2 class="section-title">See SmallPractice Pro in Action</h2>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" onclick="showTab('patient-booking')">Patient Booking</button>
+                    <button class="tab-button" onclick="showTab('practice-dashboard')">Practice Dashboard</button>
+                    <button class="tab-button" onclick="showTab('appointment-management')">Appointment Management</button>
+                </div>
+
+                <div class="tab-content active" id="patient-booking">
+                    <div class="demo-container">
+                        <div>
+                            <h3>Patient Online Booking</h3>
+                            <p>Patients can easily book appointments online without calling your office. The system shows real-time availability and sends automatic confirmations.</p>
+                            <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+                                <li>No account required for patients</li>
+                                <li>Mobile-friendly booking process</li>
+                                <li>Automatic confirmation emails</li>
+                                <li>Calendar integration</li>
+                            </ul>
+                        </div>
+                        <div class="demo-mockup">
+                            <div class="mockup-header">
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                            </div>
+                            <div class="mockup-content">
+                                <div class="booking-form">
+                                    <h4>Book Your Appointment</h4>
+                                    <div class="form-group">
+                                        <label>Select Service</label>
+                                        <select>
+                                            <option>General Consultation</option>
+                                            <option>Follow-up Visit</option>
+                                            <option>Preventive Care</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Select Date</label>
+                                        <input type="date" value="2025-07-15">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Available Times</label>
+                                        <div class="time-slots">
+                                            <div class="time-slot">9:00 AM</div>
+                                            <div class="time-slot selected">10:30 AM</div>
+                                            <div class="time-slot">2:00 PM</div>
+                                            <div class="time-slot">3:30 PM</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;" onclick="showSuccess()">Book Appointment</button>
+                                    <div class="success-message" id="success-msg">
+                                        ✓ Appointment booked successfully! Confirmation sent to your email.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="practice-dashboard">
+                    <div class="demo-container">
+                        <div>
+                            <h3>Practice Dashboard</h3>
+                            <p>Get a complete overview of your practice with real-time metrics and insights. Track appointments, patient flow, and key performance indicators.</p>
+                            <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+                                <li>Real-time appointment monitoring</li>
+                                <li>No-show tracking and trends</li>
+                                <li>Revenue and booking analytics</li>
+                                <li>Staff productivity metrics</li>
+                            </ul>
+                        </div>
+                        <div class="demo-mockup">
+                            <div class="mockup-header">
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                            </div>
+                            <div class="mockup-content">
+                                <h4>Today's Overview</h4>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="background: #e6fffa; padding: 1rem; border-radius: 8px; text-align: center;">
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #065f46;">24</div>
+                                        <div style="color: #065f46;">Appointments</div>
+                                    </div>
+                                    <div style="background: #fff5f5; padding: 1rem; border-radius: 8px; text-align: center;">
+                                        <div style="font-size: 1.5rem; font-weight: bold; color: #c53030;">2</div>
+                                        <div style="color: #c53030;">No-Shows</div>
+                                    </div>
+                                </div>
+                                <h5>Recent Activity</h5>
+                                <div style="background: #f7fafc; padding: 0.5rem; border-radius: 5px; margin-bottom: 0.5rem;">
+                                    📅 New appointment booked - Maria Rodriguez
+                                </div>
+                                <div style="background: #f7fafc; padding: 0.5rem; border-radius: 5px; margin-bottom: 0.5rem;">
+                                    📱 Reminder sent - John Smith (2:00 PM)
+                                </div>
+                                <div style="background: #f7fafc; padding: 0.5rem; border-radius: 5px;">
+                                    ✅ Appointment confirmed - Ana Martinez
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="appointment-management">
+                    <div class="demo-container">
+                        <div>
+                            <h3>Appointment Management</h3>
+                            <p>Efficiently manage your daily schedule with drag-and-drop functionality, patient information, and automated workflows.</p>
+                            <ul style="margin-top: 1rem; padding-left: 1.5rem;">
+                                <li>Drag-and-drop scheduling</li>
+                                <li>Patient history and notes</li>
+                                <li>Automated reminder system</li>
+                                <li>Waitlist management</li>
+                            </ul>
+                        </div>
+                        <div class="demo-mockup">
+                            <div class="mockup-header">
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                                <div class="mockup-dot"></div>
+                            </div>
+                            <div class="mockup-content">
+                                <h4>Today's Schedule - Dr. Martinez</h4>
+                                <div class="appointment-card">
+                                    <div class="appointment-time">9:00 AM - 9:30 AM</div>
+                                    <div class="appointment-patient">Maria Rodriguez</div>
+                                    <div class="appointment-type">General Consultation</div>
+                                </div>
+                                <div class="appointment-card">
+                                    <div class="appointment-time">10:30 AM - 11:00 AM</div>
+                                    <div class="appointment-patient">John Smith</div>
+                                    <div class="appointment-type">Follow-up</div>
+                                </div>
+                                <div class="appointment-card">
+                                    <div class="appointment-time">2:00 PM - 2:30 PM</div>
+                                    <div class="appointment-patient">Ana Martinez</div>
+                                    <div class="appointment-type">Preventive Care</div>
+                                </div>
+                                <div style="text-align: center; margin-top: 1rem;">
+                                    <button class="btn btn-primary" style="font-size: 0.9rem; padding: 0.5rem 1rem;">Add New Appointment</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple, Affordable Pricing</h2>
+            <p style="text-align: center; font-size: 1.1rem; color: #4a5568; margin-bottom: 2rem;">Choose the plan that fits your practice. No setup fees, no long-term contracts.</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Starter</h3>
+                    <div class="price">$97<span class="price-period">/month</span></div>
+                    <ul class="pricing-features">
+                        <li>1-2 providers</li>
+                        <li>500 appointments/month</li>
+                        <li>Online booking</li>
+                        <li>SMS & email reminders</li>
+                        <li>Basic analytics</li>
+                        <li>Email support</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Start Free Trial</button>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <h3>Professional</h3>
+                    <div class="price">$197<span class="price-period">/month</span></div>
+                    <ul class="pricing-features">
+                        <li>3-5 providers</li>
+                        <li>1,500 appointments/month</li>
+                        <li>Online booking & payments</li>
+                        <li>Advanced reminders</li>
+                        <li>Full analytics suite</li>
+                        <li>Priority support</li>
+                        <li>Bilingual support</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Start Free Trial</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Enterprise</h3>
+                    <div class="price">$397<span class="price-period">/month</span></div>
+                    <ul class="pricing-features">
+                        <li>5+ providers</li>
+                        <li>Unlimited appointments</li>
+                        <li>Advanced automation</li>
+                        <li>EHR integration</li>
+                        <li>Custom branding</li>
+                        <li>Dedicated support</li>
+                        <li>Advanced reporting</li>
+                    </ul>
+                    <button class="btn btn-primary" style="width: 100%;">Contact Sales</button>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <p style="color: #4a5568;">All plans include a 30-day free trial. No credit card required.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 SmallPractice Pro. Healthcare management made simple for small practices.</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">Designed specifically for small medical practices in Puerto Rico and beyond.</p>
+        </div>
+    </footer>
+
+    <script>
+        function showTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabId).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+        
+        function showSuccess() {
+            document.getElementById('success-msg').style.display = 'block';
+        }
+        
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Interactive time slot selection
+        document.querySelectorAll('.time-slot').forEach(slot => {
+            slot.addEventListener('click', function() {
+                document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+name: Create Vision Strategy
+
+on:
+  workflow_dispatch:
+    inputs:
+      vision_issue_number:
+        description: 'Vision issue number (e.g., 123)'
+        required: true
+        type: string
+      timeframe_months:
+        description: 'Strategy timeframe in months'
+        required: false
+        type: string
+        default: '18'
+      preview:
+        description: 'Preview mode - show what would be created without creating it'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  create-strategy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      projects: write
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install PyGithub openai anthropic
+    
+    - name: Get vision details
+      id: get_vision
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Get issue details
+        ISSUE_DETAILS=$(gh issue view ${{ inputs.vision_issue_number }} --json title,body,labels)
+        
+        # Check if it's a vision issue
+        if ! echo "$ISSUE_DETAILS" | jq -r '.labels[].name' | grep -q "vision"; then
+          echo "Error: Issue #${{ inputs.vision_issue_number }} is not labeled as a vision"
+          exit 1
+        fi
+        
+        # Extract product name from title
+        PRODUCT_NAME=$(echo "$ISSUE_DETAILS" | jq -r '.title' | sed 's/Vision: //')
+        echo "product_name=$PRODUCT_NAME" >> $GITHUB_OUTPUT
+        
+        # Extract vision file path from body
+        VISION_PATH=$(echo "$ISSUE_DETAILS" | jq -r '.body' | grep -oP 'docs/visions/[^/]+/vision\.md' | head -1)
+        if [ -z "$VISION_PATH" ]; then
+          VISION_PATH="Commands/docs/visions/$(echo "$PRODUCT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-')/vision.md"
+        fi
+        echo "vision_path=$VISION_PATH" >> $GITHUB_OUTPUT
+        
+        # Save issue body for strategy generation
+        echo "$ISSUE_DETAILS" | jq -r '.body' > /tmp/vision_issue.md
+    
+    - name: Read vision document
+      id: read_vision
+      run: |
+        if [ ! -f "${{ steps.get_vision.outputs.vision_path }}" ]; then
+          echo "Error: Vision file not found at ${{ steps.get_vision.outputs.vision_path }}"
+          exit 1
+        fi
+        
+        # Read vision content
+        VISION_CONTENT=$(cat "${{ steps.get_vision.outputs.vision_path }}")
+        
+        # Save for next steps
+        cat "${{ steps.get_vision.outputs.vision_path }}" > /tmp/vision_content.md
+        
+        echo "Vision document loaded successfully"
+    
+    - name: Generate strategy with AI
+      id: generate_strategy
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        python3 << 'EOF'
+        import os
+        import json
+        from datetime import datetime
+        
+        # Read vision content
+        with open('/tmp/vision_content.md', 'r') as f:
+            vision_content = f.read()
+        
+        # Create strategy template
+        timeframe = "${{ inputs.timeframe_months }}"
+        product_name = "${{ steps.get_vision.outputs.product_name }}"
+        
+        # Generate strategy content (template for now, AI integration can be added)
+        strategy_content = f"""# Vision Strategy - {product_name}
+
+## Strategy Overview
+
+This {timeframe}-month strategy outlines the implementation approach for the {product_name} vision, breaking down the journey into actionable phases with clear deliverables and success criteria.
+
+## Strategic Phases
+
+### Phase 1: Foundation (Months 1-6)
+**Objective**: Establish core infrastructure and validate key assumptions
+
+**Key Deliverables**:
+- Core platform architecture
+- Basic feature set implementation
+- Initial user feedback loops
+- MVP release to early adopters
+
+**Success Criteria**:
+- Technical foundation supports planned scale
+- Early user feedback validates core value proposition
+- Development velocity established
+
+### Phase 2: Growth (Months 7-12)
+**Objective**: Expand capabilities and user base
+
+**Key Deliverables**:
+- Enhanced feature set based on user feedback
+- Scalability improvements
+- Market expansion initiatives
+- Partnership framework
+
+**Success Criteria**:
+- User growth targets achieved
+- Platform stability at scale
+- Strategic partnerships established
+
+### Phase 3: Optimization (Months 13-{timeframe})
+**Objective**: Refine and optimize for market leadership
+
+**Key Deliverables**:
+- Advanced features and integrations
+- Performance optimizations
+- Market differentiation features
+- Expansion into new segments
+
+**Success Criteria**:
+- Market position established
+- Revenue targets met
+- User satisfaction metrics achieved
+
+## Implementation Roadmap
+
+### Quarter 1-2: Foundation Building
+- Set up development infrastructure
+- Build core team
+- Develop MVP features
+- Establish testing frameworks
+
+### Quarter 3-4: Market Validation
+- Launch beta program
+- Gather user feedback
+- Iterate on core features
+- Refine go-to-market strategy
+
+### Quarter 5-6: Scale Preparation
+- Enhance platform capabilities
+- Build operational excellence
+- Expand team and partnerships
+- Prepare for growth phase
+
+## Key Initiatives
+
+1. **Technical Excellence**
+   - Establish robust architecture
+   - Implement best practices
+   - Build for scale from day one
+
+2. **User-Centric Development**
+   - Continuous user feedback loops
+   - Rapid iteration cycles
+   - Focus on user value
+
+3. **Market Positioning**
+   - Clear differentiation strategy
+   - Thought leadership content
+   - Strategic partnerships
+
+4. **Operational Efficiency**
+   - Automated processes
+   - Data-driven decisions
+   - Lean operations
+
+## Resource Requirements
+
+### Team Structure
+- Engineering: 60% of resources
+- Product/Design: 20% of resources
+- Marketing/Sales: 15% of resources
+- Operations: 5% of resources
+
+### Budget Allocation
+- Development: 50%
+- Infrastructure: 20%
+- Marketing: 20%
+- Operations: 10%
+
+## Risk Management
+
+### Technical Risks
+- **Risk**: Technology scalability challenges
+- **Mitigation**: Early stress testing and architecture reviews
+
+### Market Risks
+- **Risk**: Competitive threats
+- **Mitigation**: Rapid innovation and strong differentiation
+
+### Execution Risks
+- **Risk**: Resource constraints
+- **Mitigation**: Phased approach with clear priorities
+
+## Success Metrics
+
+### Phase 1 Metrics
+- MVP launched on schedule
+- 100+ beta users acquired
+- Core features operational
+
+### Phase 2 Metrics
+- 1,000+ active users
+- 90% uptime achieved
+- Key partnerships established
+
+### Phase 3 Metrics
+- Market targets achieved
+- Revenue goals met
+- Industry recognition gained
+
+## Next Steps
+
+1. Break down Phase 1 into detailed epics
+2. Assign ownership and timelines
+3. Establish tracking mechanisms
+4. Begin execution
+
+---
+*This strategy is a living document and will be updated based on learnings and market changes.*
+"""
+        
+        # Save strategy
+        strategy_dir = f"Commands/docs/strategies/{product_name.lower().replace(' ', '-')}"
+        os.makedirs(strategy_dir, exist_ok=True)
+        
+        strategy_path = f"{strategy_dir}/strategy.md"
+        with open(strategy_path, 'w') as f:
+            f.write(strategy_content)
+        
+        print(f"::set-output name=strategy_path::{strategy_path}")
+        print(f"::set-output name=strategy_dir::{strategy_dir}")
+        
+        # Extract key phases for issue creation
+        phases = [
+            {"name": "Foundation", "duration": "Months 1-6"},
+            {"name": "Growth", "duration": "Months 7-12"},
+            {"name": "Optimization", "duration": f"Months 13-{timeframe}"}
+        ]
+        
+        with open('/tmp/phases.json', 'w') as f:
+            json.dump(phases, f)
+        
+        EOF
+    
+    - name: Create strategy issue
+      if: ${{ inputs.preview == false }}
+      id: create_issue
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Read phases
+        PHASES=$(cat /tmp/phases.json)
+        
+        # Create issue body
+        ISSUE_BODY=$(cat << 'EOF'
+        # Vision Strategy: ${{ steps.get_vision.outputs.product_name }}
+        
+        ## Strategy Summary
+        This ${{ inputs.timeframe_months }}-month implementation strategy breaks down the vision into actionable phases.
+        
+        ## Strategic Phases
+        $(echo '${{ steps.generate_strategy.outputs.phases }}' | jq -r '.[] | "- **\(.name)** (\(.duration))"')
+        
+        ## Links
+        - [Vision Issue](#${{ inputs.vision_issue_number }})
+        - [Strategy Document](${{ github.server_url }}/${{ github.repository }}/blob/${{ github.ref_name }}/${{ steps.generate_strategy.outputs.strategy_path }})
+        - [Create Epics Workflow](${{ github.server_url }}/${{ github.repository }}/actions/workflows/create-epics.yml)
+        
+        ## Next Steps
+        1. Review and approve the strategy
+        2. Create implementation epics using the `create-epics` workflow
+        3. Break down epics into features and stories
+        
+        ---
+        *This strategy was created from Vision #${{ inputs.vision_issue_number }}*
+        EOF
+        )
+        
+        # Create the issue
+        ISSUE_URL=$(gh issue create \
+          --title "Strategy: ${{ steps.get_vision.outputs.product_name }}" \
+          --body "$ISSUE_BODY" \
+          --label "strategy" \
+          --assignee "${{ github.actor }}")
+        
+        echo "issue_url=$ISSUE_URL" >> $GITHUB_OUTPUT
+        echo "issue_number=$(echo $ISSUE_URL | grep -oE '[0-9]+$')" >> $GITHUB_OUTPUT
+        
+        # Link to vision issue
+        gh issue comment ${{ inputs.vision_issue_number }} \
+          --body "🎯 Strategy created: #$(echo $ISSUE_URL | grep -oE '[0-9]+$')"
+    
+    - name: Create milestone
+      if: ${{ inputs.preview == false }}
+      id: create_milestone
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Calculate due date
+        DUE_DATE=$(date -d "+${{ inputs.timeframe_months }} months" +%Y-%m-%d)
+        
+        # Create milestone
+        gh api repos/${{ github.repository }}/milestones \
+          -X POST \
+          -f title="${{ steps.get_vision.outputs.product_name }} Strategy" \
+          -f description="Implementation timeline for ${{ steps.get_vision.outputs.product_name }}" \
+          -f due_on="${DUE_DATE}T00:00:00Z" \
+          -f state="open"
+    
+    - name: Update project
+      if: ${{ inputs.preview == false }}
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Find the project
+        PROJECT_ID=$(gh project list --owner "${{ github.repository_owner }}" \
+          --format json \
+          | jq -r '.projects[] | select(.title | contains("${{ steps.get_vision.outputs.product_name }}")) | .id' \
+          | head -1)
+        
+        if [ -n "$PROJECT_ID" ]; then
+          # Add strategy issue to project
+          gh project item-add "$PROJECT_ID" \
+            --owner "${{ github.repository_owner }}" \
+            --url "${{ steps.create_issue.outputs.issue_url }}"
+        fi
+    
+    - name: Commit strategy document
+      if: ${{ inputs.preview == false }}
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add "${{ steps.generate_strategy.outputs.strategy_path }}"
+        git commit -m "Add strategy for ${{ steps.get_vision.outputs.product_name }}"
+        git push
+    
+    - name: Generate summary
+      run: |
+        if [ "${{ inputs.preview }}" == "true" ]; then
+          echo "# Preview Mode - No Changes Made" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "# Vision Strategy Created: ${{ steps.get_vision.outputs.product_name }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        
+        if [ "${{ inputs.preview }}" == "false" ]; then
+          echo "## Created Resources" >> $GITHUB_STEP_SUMMARY
+          echo "- **Strategy Document**: ${{ steps.generate_strategy.outputs.strategy_path }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Issue**: #${{ steps.create_issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **GitHub Milestone**: ${{ inputs.timeframe_months }}-month timeline" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Review the strategy document" >> $GITHUB_STEP_SUMMARY
+          echo "2. Run the Create Epics workflow with strategy issue #${{ steps.create_issue.outputs.issue_number }}" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "## What Would Be Created" >> $GITHUB_STEP_SUMMARY
+          echo "- Strategy document at: Commands/docs/strategies/..." >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Issue with strategy summary" >> $GITHUB_STEP_SUMMARY
+          echo "- GitHub Milestone for timeline tracking" >> $GITHUB_STEP_SUMMARY
+          echo "- Link back to vision issue" >> $GITHUB_STEP_SUMMARY
+        fi

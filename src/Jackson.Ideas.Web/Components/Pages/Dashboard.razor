@@ -3,12 +3,15 @@
 @using Jackson.Ideas.Core.DTOs.Research
 @using Jackson.Ideas.Core.DTOs.Auth
 @using Jackson.Ideas.Core.Entities
+@using Jackson.Ideas.Core.Enums
+@using Jackson.Ideas.Web.Services
 @using System.Text.Json
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IAuthenticationService AuthService
+@inject IResearchSessionApiService ResearchService
 @inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Dashboard - Ideas Matter</PageTitle>
@@ -33,6 +36,58 @@
             Logout
         </button>
     </div>
+
+    @if (researchSessions != null)
+    {
+        <div class="dashboard-stats">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@researchSessions.Count</div>
+                            <div class="stat-label">Total Ideas</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon completed">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@completedCount</div>
+                            <div class="stat-label">Completed</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon progress">
+                            <i class="fas fa-spinner"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@inProgressCount</div>
+                            <div class="stat-label">In Progress</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-card">
+                        <div class="stat-icon pending">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-number">@pendingCount</div>
+                            <div class="stat-label">Pending</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     @if (isLoading)
     {
@@ -60,15 +115,48 @@
                             </div>
                             <div class="session-content">
                                 <p class="session-description">@TruncateDescription(session.Description, 100)</p>
+                                
+                                @if (session.Status == ResearchStatus.InProgress || session.Status == ResearchStatus.Completed)
+                                {
+                                    <div class="session-progress">
+                                        <div class="progress-label">
+                                            <span>Progress: @session.ProgressPercentage.ToString("F0")%</span>
+                                            @if (session.AnalysisConfidence.HasValue)
+                                            {
+                                                <span class="confidence-badge">@session.AnalysisConfidence.Value.ToString("F0")% confidence</span>
+                                            }
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: @session.ProgressPercentage%"></div>
+                                        </div>
+                                    </div>
+                                }
+                                
                                 <div class="session-meta">
-                                    <small class="text-muted">
-                                        Created: @session.CreatedAt.ToString("MMM dd, yyyy")
-                                    </small>
+                                    <div class="meta-item">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>@session.CreatedAt.ToString("MMM dd, yyyy")</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(session.ResearchType))
+                                    {
+                                        <div class="meta-item">
+                                            <i class="fas fa-tag"></i>
+                                            <span>@session.ResearchType</span>
+                                        </div>
+                                    }
+                                    @if (session.EstimatedDurationMinutes > 0)
+                                    {
+                                        <div class="meta-item">
+                                            <i class="fas fa-clock"></i>
+                                            <span>@session.EstimatedDurationMinutes min</span>
+                                        </div>
+                                    }
                                     @if (session.ResearchInsights?.Any() == true)
                                     {
-                                        <small class="text-success">
-                                            <i class="fas fa-lightbulb"></i> @session.ResearchInsights.Count insights
-                                        </small>
+                                        <div class="meta-item insights">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span>@session.ResearchInsights.Count insights</span>
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -76,6 +164,12 @@
                                 <button class="btn btn-sm btn-primary" @onclick="() => ViewSession(session.Id)">
                                     <i class="fas fa-eye"></i> View
                                 </button>
+                                @if (session.Status == ResearchStatus.Pending || session.Status == ResearchStatus.Failed)
+                                {
+                                    <button class="btn btn-sm btn-success" @onclick="() => StartSession(session.Id)">
+                                        <i class="fas fa-play"></i> Start
+                                    </button>
+                                }
                                 <button class="btn btn-sm btn-outline-secondary" @onclick="() => EditSession(session.Id)">
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
@@ -114,6 +208,12 @@
     private List<ResearchSession>? researchSessions;
     private bool isLoading = true;
     private string errorMessage = string.Empty;
+    
+    // Dashboard statistics
+    private int completedCount => researchSessions?.Count(s => s.Status == ResearchStatus.Completed) ?? 0;
+    private int inProgressCount => researchSessions?.Count(s => s.Status == ResearchStatus.InProgress) ?? 0;
+    private int pendingCount => researchSessions?.Count(s => s.Status == ResearchStatus.Pending) ?? 0;
+    private int failedCount => researchSessions?.Count(s => s.Status == ResearchStatus.Failed) ?? 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -153,58 +253,8 @@
     {
         try
         {
-            // In mock mode, create demo sessions directly
-            researchSessions = new List<ResearchSession>
-            {
-                new ResearchSession
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "AI-Powered Task Management App",
-                    Description = "A smart task management application that uses AI to prioritize tasks and optimize workflows",
-                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.InProgress,
-                    CreatedAt = DateTime.Now.AddDays(-2),
-                    UpdatedAt = DateTime.Now.AddDays(-1),
-                    UserId = currentUser?.Id ?? string.Empty,
-                    ProgressPercentage = 65,
-                    EstimatedCompletionTime = 15
-                },
-                new ResearchSession
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Sustainable Fashion Marketplace",
-                    Description = "An online marketplace connecting sustainable fashion brands with eco-conscious consumers",
-                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Completed,
-                    CreatedAt = DateTime.Now.AddDays(-7),
-                    UpdatedAt = DateTime.Now.AddDays(-7).AddHours(1.5),
-                    UserId = currentUser?.Id ?? string.Empty,
-                    ProgressPercentage = 100,
-                    CompletedAt = DateTime.Now.AddDays(-7).AddHours(1.5)
-                },
-                new ResearchSession
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Virtual Reality Fitness Platform",
-                    Description = "An immersive VR platform that gamifies workout routines and connects users globally",
-                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Completed,
-                    CreatedAt = DateTime.Now.AddDays(-14),
-                    UpdatedAt = DateTime.Now.AddDays(-14).AddHours(0.75),
-                    UserId = currentUser?.Id ?? string.Empty,
-                    ProgressPercentage = 100,
-                    CompletedAt = DateTime.Now.AddDays(-14).AddHours(0.75)
-                },
-                new ResearchSession
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Smart Home Energy Optimizer",
-                    Description = "AI-driven system that learns household patterns to reduce energy consumption and costs",
-                    Status = Jackson.Ideas.Core.Enums.ResearchStatus.Failed,
-                    CreatedAt = DateTime.Now.AddDays(-3),
-                    UpdatedAt = DateTime.Now.AddDays(-3).AddMinutes(30),
-                    UserId = currentUser?.Id ?? string.Empty,
-                    ProgressPercentage = 35,
-                    ErrorMessage = "Unable to gather sufficient market data"
-                }
-            };
+            // Load real research sessions from API
+            researchSessions = await ResearchService.GetUserSessionsAsync();
             
             // Clear any error message
             errorMessage = string.Empty;
@@ -240,6 +290,26 @@
     private void EditSession(Guid sessionId)
     {
         Navigation.NavigateTo($"/session/{sessionId}/edit");
+    }
+
+    private async Task StartSession(Guid sessionId)
+    {
+        try
+        {
+            // Start the research session
+            await ResearchService.StartResearchExecutionAsync(sessionId);
+            
+            // Refresh the sessions list
+            await LoadResearchSessions();
+            
+            // Navigate to the session details page
+            Navigation.NavigateTo($"/session/{sessionId}");
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Failed to start research session: {ex.Message}";
+            StateHasChanged();
+        }
     }
 
     private async Task Logout()
@@ -287,6 +357,70 @@
         justify-content: center;
         gap: 15px;
         margin-bottom: 40px;
+    }
+
+    .dashboard-stats {
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        margin-bottom: 20px;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+    }
+
+    .stat-icon.completed {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .stat-icon.progress {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .stat-icon.pending {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .stat-content {
+        flex: 1;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        font-weight: 500;
+        letter-spacing: 0.5px;
     }
 
     .btn-new-idea {
@@ -422,11 +556,68 @@
         line-height: 1.5;
     }
 
-    .session-meta {
+    .session-progress {
+        margin-bottom: 15px;
+    }
+
+    .progress-label {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
+        font-size: 0.85rem;
+        color: #4b5563;
+    }
+
+    .confidence-badge {
+        background: #e0f2fe;
+        color: #0277bd;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: #e5e7eb;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s ease;
+    }
+
+    .session-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.85rem;
+        color: #6b7280;
+    }
+
+    .meta-item i {
+        width: 14px;
+        text-align: center;
+        color: #9ca3af;
+    }
+
+    .meta-item.insights {
+        color: #059669;
+    }
+
+    .meta-item.insights i {
+        color: #10b981;
     }
 
     .session-actions {

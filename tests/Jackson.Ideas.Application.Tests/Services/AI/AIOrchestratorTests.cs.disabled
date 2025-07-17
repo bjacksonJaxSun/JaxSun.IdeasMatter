@@ -45,7 +45,7 @@ public class AIOrchestratorTests
             MarketSize = "Global task management software market size was $2.8 billion in 2022",
             GrowthRate = "13.7% CAGR from 2023 to 2030",
             CompetitiveLandscape = new[] { "Todoist", "Asana", "Monday.com", "Notion" },
-            KeyTrends = new[] { "AI integration", "Remote work growth", "Mobile-first design" }
+            KeyTrends = new List<string> { "AI integration", "Remote work growth", "Mobile-first design" }
         };
 
         _mockProviderManager.Setup(x => x.GetProviderAsync(It.IsAny<AIProviderType>(), It.IsAny<CancellationToken>()))
@@ -130,10 +130,10 @@ public class AIOrchestratorTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.NotEmpty(result.Strengths);
-        Assert.NotEmpty(result.Weaknesses);
-        Assert.NotEmpty(result.Opportunities);
-        Assert.NotEmpty(result.Threats);
+        Assert.NotEmpty((string[])result.Strengths);
+        Assert.NotEmpty((string[])result.Weaknesses);
+        Assert.NotEmpty((string[])result.Opportunities);
+        Assert.NotEmpty((string[])result.Threats);
     }
 
     [Fact]
@@ -145,10 +145,18 @@ public class AIOrchestratorTests
         
         var expectedAnalysis = new CompetitiveAnalysisResult
         {
-            DirectCompetitors = new[] { "Todoist", "Any.do" },
-            IndirectCompetitors = new[] { "Google Calendar", "Apple Reminders" },
+            DirectCompetitors = new List<CompetitorProfile> 
+            { 
+                new CompetitorProfile { Name = "Todoist" }, 
+                new CompetitorProfile { Name = "Any.do" } 
+            },
+            IndirectCompetitors = new List<CompetitorProfile> 
+            { 
+                new CompetitorProfile { Name = "Google Calendar" }, 
+                new CompetitorProfile { Name = "Apple Reminders" } 
+            },
             SubstituteProducts = new[] { "Paper planners", "Spreadsheets" },
-            CompetitiveAdvantages = new[] { "AI prioritization", "Smart scheduling" },
+            CompetitiveAdvantages = new List<string> { "AI prioritization", "Smart scheduling" },
             MarketGaps = new[] { "Lack of AI integration", "Poor mobile UX" }
         };
 
@@ -184,9 +192,8 @@ public class AIOrchestratorTests
                 {
                     Name = "Busy Professionals",
                     Size = "45M users",
-                    Characteristics = new[] { "High income", "Tech-savvy", "Time-constrained" },
-                    PainPoints = new[] { "Information overload", "Poor time management" },
-                    ValueProposition = "AI-powered task prioritization saves 2+ hours daily"
+                    PainPoints = new List<string> { "Information overload", "Poor time management" },
+                    ValuePropositions = new List<string> { "AI-powered task prioritization saves 2+ hours daily" }
                 }
             },
             SecondarySegments = new[]
@@ -195,9 +202,8 @@ public class AIOrchestratorTests
                 {
                     Name = "Students",
                     Size = "12M users",
-                    Characteristics = new[] { "Budget-conscious", "Mobile-first", "Collaborative" },
-                    PainPoints = new[] { "Procrastination", "Deadline management" },
-                    ValueProposition = "Smart deadlines and study scheduling"
+                    PainPoints = new List<string> { "Procrastination", "Deadline management" },
+                    ValuePropositions = new List<string> { "Smart deadlines and study scheduling" }
                 }
             }
         };

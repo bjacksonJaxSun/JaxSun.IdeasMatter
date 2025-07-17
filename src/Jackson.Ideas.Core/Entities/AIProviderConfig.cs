@@ -13,10 +13,30 @@ public class AIProviderConfig : BaseEntity
     
     public AIProviderType Type { get; set; }
     
+    // Legacy property for backward compatibility
+    public AIProviderType ProviderType 
+    { 
+        get => Type; 
+        set => Type = value; 
+    }
+    
     [Required]
     public string EncryptedApiKey { get; set; } = string.Empty;
     
+    // Legacy property for backward compatibility
+    public string ApiKey 
+    { 
+        get => EncryptedApiKey; 
+        set => EncryptedApiKey = value; 
+    }
+    
     public string ConfigJson { get; set; } = "{}";
+    
+    [StringLength(500)]
+    public string? BaseUrl { get; set; }
+    
+    [StringLength(200)]
+    public string? ModelName { get; set; }
     
     public bool IsActive { get; set; } = true;
     

@@ -1,9 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6457e7b6-ba4a-4e82-8405-acaf95cdefe8</UserSecretsId>
   </PropertyGroup>
 
   <!-- Make Program class accessible for integration tests -->

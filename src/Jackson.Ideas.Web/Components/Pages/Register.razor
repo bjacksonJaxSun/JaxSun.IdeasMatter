@@ -1,4 +1,5 @@
 @page "/register"
+@rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Auth
 @using System.ComponentModel.DataAnnotations
 @inject IAuthenticationService AuthService
@@ -14,8 +15,16 @@
             <p>Create your account to start transforming ideas into reality</p>
         </div>
 
-        <EditForm Model="registerModel" OnValidSubmit="HandleRegister" FormName="register-form">
+        <EditForm Model="registerModel" OnValidSubmit="HandleRegister" OnInvalidSubmit="HandleInvalidSubmit">
             <DataAnnotationsValidator />
+            <ValidationSummary />
+            
+            @if (!string.IsNullOrEmpty(debugMessage))
+            {
+                <div class="alert alert-info mt-3">
+                    <strong>Debug Info:</strong> @debugMessage
+                </div>
+            }
             
             <div class="form-group">
                 <label for="name">Full Name</label>
@@ -70,6 +79,22 @@
             </div>
         }
 
+        <div class="oauth-section">
+            <div class="divider">
+                <span>or</span>
+            </div>
+            
+            <a href="/auth/google" class="btn btn-google">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                Continue with Google
+            </a>
+        </div>
+
         <div class="register-footer">
             <p>Already have an account? <a href="/login">Sign in here</a></p>
         </div>
@@ -81,6 +106,7 @@
     private bool isLoading = false;
     private string errorMessage = string.Empty;
     private string successMessage = string.Empty;
+    private string debugMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -97,10 +123,15 @@
         isLoading = true;
         errorMessage = string.Empty;
         successMessage = string.Empty;
+        debugMessage = string.Empty;
         StateHasChanged();
 
         try
         {
+            // Add debugging information
+            Console.WriteLine($"HandleRegister called with: Name={registerModel.Name}, Email={registerModel.Email}, Password.Length={registerModel.Password.Length}");
+            Console.WriteLine($"AuthService type: {AuthService.GetType().Name}");
+
             var registerRequest = new RegisterRequest
             {
                 Name = registerModel.Name,
@@ -111,9 +142,13 @@
 
             var authResponse = await AuthService.RegisterAsync(registerRequest);
             
+            Console.WriteLine($"AuthService response: IsSuccess={authResponse.IsSuccess}, Message={authResponse.Message}");
+            
             if (authResponse.IsSuccess)
             {
-                // Navigate to dashboard
+                successMessage = "Registration successful! Redirecting to dashboard...";
+                StateHasChanged();
+                await Task.Delay(1000); // Brief delay to show success message
                 Navigation.NavigateTo("/dashboard");
             }
             else
@@ -123,7 +158,8 @@
         }
         catch (Exception ex)
         {
-            errorMessage = "An error occurred during registration. Please try again.";
+            Console.WriteLine($"Exception in HandleRegister: {ex}");
+            errorMessage = $"An error occurred during registration: {ex.Message}";
         }
         finally
         {
@@ -132,14 +168,25 @@
         }
     }
 
+    private void HandleInvalidSubmit()
+    {
+        Console.WriteLine($"HandleInvalidSubmit called - validation failed");
+        Console.WriteLine($"Form data: Name='{registerModel.Name}', Email='{registerModel.Email}', Password.Length={registerModel.Password.Length}, ConfirmPassword.Length={registerModel.ConfirmPassword.Length}");
+        
+        debugMessage = $"Validation failed. Name: '{registerModel.Name}' ({registerModel.Name.Length} chars), Email: '{registerModel.Email}' ({registerModel.Email.Length} chars), Password: {registerModel.Password.Length} chars, ConfirmPassword: {registerModel.ConfirmPassword.Length} chars";
+        errorMessage = "Please fix the validation errors above.";
+        StateHasChanged();
+    }
+
     private class RegisterModel
     {
         [Required(ErrorMessage = "Name is required")]
-        [StringLength(100, ErrorMessage = "Name must be between 2 and 100 characters", MinimumLength = 2)]
+        [StringLength(255, ErrorMessage = "Name cannot exceed 255 characters")]
         public string Name { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Please enter a valid email address")]
+        [StringLength(255, ErrorMessage = "Email cannot exceed 255 characters")]
         public string Email { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "Password is required")]
@@ -269,6 +316,12 @@
         color: #155724;
     }
 
+    .alert-info {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        color: #0c5460;
+    }
+
     .spinner-border {
         width: 1rem;
         height: 1rem;
@@ -276,6 +329,69 @@
         border-right-color: transparent;
         border-radius: 50%;
         animation: spinner-border 0.75s linear infinite;
+    }
+
+    .oauth-section {
+        margin: 30px 0;
+    }
+
+    .divider {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    .divider::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background-color: #eee;
+    }
+
+    .divider span {
+        background-color: white;
+        padding: 0 15px;
+        color: #666;
+        font-size: 14px;
+    }
+
+    .btn-google {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        padding: 12px;
+        background-color: white;
+        border: 1px solid #dadce0;
+        border-radius: 6px;
+        color: #3c4043;
+        font-size: 16px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-google:hover {
+        background-color: #f8f9fa;
+        border-color: #dadce0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: #3c4043;
+    }
+
+    .btn-google:active {
+        background-color: #f1f3f4;
+    }
+
+    @@keyframes spinner-border {
+        to {
+            transform: rotate(360deg);
+        }
     }
 
 </style>

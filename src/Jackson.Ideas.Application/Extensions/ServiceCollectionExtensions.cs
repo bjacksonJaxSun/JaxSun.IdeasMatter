@@ -52,19 +52,24 @@ public static class ServiceCollectionExtensions
             return new DemoModeMarketAnalysisService(realService, mockService, demoOptions);
         });
         
+        // Register the real ResearchSessionService first
+        services.AddScoped<ResearchSessionService>();
+        
         services.AddScoped<IResearchSessionService>(provider =>
         {
             var demoOptions = provider.GetRequiredService<IOptions<DemoModeOptions>>();
             var mockService = provider.GetRequiredService<MockDataService>();
-            
-            // Create real service manually to avoid circular dependency
-            var researchRepo = provider.GetRequiredService<IResearchRepository>();
-            var logger = provider.GetRequiredService<ILogger<ResearchSessionService>>();
-            
-            var realService = new ResearchSessionService(researchRepo, logger);
+            var realService = provider.GetRequiredService<ResearchSessionService>();
             
             return new DemoModeResearchService(realService, mockService, demoOptions);
         });
+        
+        // Register background service as singleton (it's a hosted service)
+        services.AddSingleton<ResearchBackgroundService>();
+        services.AddSingleton<IResearchBackgroundService>(provider => 
+            provider.GetRequiredService<ResearchBackgroundService>());
+        services.AddHostedService<ResearchBackgroundService>(provider => 
+            provider.GetRequiredService<ResearchBackgroundService>());
         
         // Register other services normally
         services.AddScoped<IPdfService, PdfService>();

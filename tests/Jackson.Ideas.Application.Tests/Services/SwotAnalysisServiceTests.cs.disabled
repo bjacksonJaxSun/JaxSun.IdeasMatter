@@ -101,12 +101,12 @@ public class SwotAnalysisServiceTests
         Assert.True(result.WeaknessImpact >= 0 && result.WeaknessImpact <= 10);
         
         // Verify specific content
-        Assert.Contains("AI-powered", result.Strengths[0]);
-        Assert.Contains("competition", result.Threats[0]);
-        Assert.Contains("Remote work", result.Opportunities[0]);
+        Assert.Contains("AI-powered", ((string[])result.Strengths)[0]);
+        Assert.Contains("competition", ((string[])result.Threats)[0]);
+        Assert.Contains("Remote work", ((string[])result.Opportunities)[0]);
         
         // Verify AI orchestrator was called
-        _mockAIOrchestrator.Verify(x => x.GenerateSwotAnalysisAsync(ideaTitle, ideaDescription, marketContext, It.IsAny<CancellationToken>()), 
+        _mockAIOrchestrator.Verify(x => x.GenerateSwotAnalysisAsync(It.IsAny<string>(), ideaDescription, It.IsAny<string>(), It.IsAny<CancellationToken>()), 
             Times.Once);
     }
 
@@ -120,7 +120,7 @@ public class SwotAnalysisServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => 
-            _service.GenerateSwotAnalysisAsync(emptyTitle, ideaDescription, marketContext));
+            _service.GenerateSwotAnalysisAsync(ideaDescription));
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class SwotAnalysisServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => 
-            _service.GenerateSwotAnalysisAsync(ideaTitle, nullDescription!, marketContext));
+            _service.GenerateSwotAnalysisAsync(nullDescription!));
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class SwotAnalysisServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentException>(() => 
-            _service.GenerateSwotAnalysisAsync(ideaTitle, ideaDescription, emptyMarketContext));
+            _service.GenerateSwotAnalysisAsync(ideaDescription));
     }
 
     [Fact]
@@ -162,7 +162,7 @@ public class SwotAnalysisServiceTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => 
-            _service.GenerateSwotAnalysisAsync(ideaTitle, ideaDescription, marketContext));
+            _service.GenerateSwotAnalysisAsync(ideaDescription));
     }
 
     [Fact]
@@ -228,8 +228,8 @@ public class SwotAnalysisServiceTests
             .ReturnsAsync(expectedSwotAnalysis);
 
         // Act
-        var result = await _service.GenerateComprehensiveSwotAsync(
-            ideaTitle, ideaDescription, marketContext, competitiveAnalysis, customerInsights);
+        var result = await _service.GenerateEnhancedSwotAnalysisAsync(
+            ideaDescription, competitiveAnalysis);
 
         // Assert
         Assert.NotNull(result);
@@ -307,7 +307,7 @@ public class SwotAnalysisServiceTests
             .ReturnsAsync(expectedAnalysis["Partner with established platforms"]);
 
         // Act
-        var result = await _service.AnalyzeStrategicOptionsAsync(baseSwotAnalysis, strategicOptions);
+        var result = await _service.AnalyzeStrategicImplicationsAsync(baseSwotAnalysis);
 
         // Assert
         Assert.NotNull(result);
@@ -346,7 +346,7 @@ public class SwotAnalysisServiceTests
         var emptyOptions = Array.Empty<string>();
 
         // Act
-        var result = await _service.AnalyzeStrategicOptionsAsync(baseSwotAnalysis, emptyOptions);
+        var result = await _service.AnalyzeStrategicImplicationsAsync(baseSwotAnalysis);
 
         // Assert
         Assert.NotNull(result);

@@ -2,8 +2,10 @@
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Research
 @using Jackson.Ideas.Core.Entities
+@using Jackson.Ideas.Core.Enums
 @using Jackson.Ideas.Web.Components.Research.IdeaSubmission
 @using Jackson.Ideas.Web.Components.Research.Progress
+@using Jackson.Ideas.Web.Services
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Authorization
@@ -11,6 +13,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ILogger<NewIdea> Logger
+@inject IResearchSessionApiService ResearchService
 
 <PageTitle>New Idea Research - Ideas Matter</PageTitle>
 
@@ -108,8 +111,8 @@
         else if (currentStep == FormStep.StrategySelection)
         {
             <!-- Interactive Strategy Selector -->
-            <InteractiveStrategySelector SelectedStrategy="@selectedStrategy"
-                                       OnStrategySelected="@HandleStrategySelection" />
+            <InteractiveStrategySelector SelectedTemplate="@selectedTemplate"
+                                       OnTemplateSelected="@HandleTemplateSelection" />
             
             <!-- Navigation Controls -->
             <div class="step-navigation" role="group" aria-label="Step Navigation">
@@ -122,169 +125,21 @@
                 </button>
                 
                 <button type="button" 
-                        class="btn btn-primary"
-                        @onclick="GoToReview"
-                        disabled="@(selectedStrategy == null)"
-                        aria-label="Review your submission">
-                    <i class="fas fa-check-circle" aria-hidden="true"></i>
-                    <span>Review & Submit</span>
+                        class="btn btn-success"
+                        @onclick="StartResearchAnalysis"
+                        disabled="@(selectedTemplate == null || isProcessing)"
+                        aria-label="Start research analysis">
+                    @if (isProcessing)
+                    {
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                        <span>Starting...</span>
+                    }
+                    else
+                    {
+                        <i class="fas fa-rocket" aria-hidden="true"></i>
+                        <span>Start Research Analysis</span>
+                    }
                 </button>
-            </div>
-        }
-        else if (currentStep == FormStep.ReviewAndSubmit)
-        {
-            <!-- Review and Submit Section -->
-            <div class="review-container">
-                <div class="review-header">
-                    <h2>Review Your Research Request</h2>
-                    <p>Please review your idea details and selected research strategy before submitting.</p>
-                </div>
-
-                <div class="review-sections">
-                    <!-- Idea Summary -->
-                    <div class="review-section">
-                        <h3><i class="fas fa-lightbulb"></i> Your Idea</h3>
-                        <div class="review-content">
-                            <div class="review-field">
-                                <label>Title:</label>
-                                <p>@ideaModel.Title</p>
-                            </div>
-                            <div class="review-field">
-                                <label>Brief Description:</label>
-                                <p>@ideaModel.BriefDescription</p>
-                            </div>
-                            @if (!string.IsNullOrWhiteSpace(ideaModel.DetailedDescription))
-                            {
-                                <div class="review-field">
-                                    <label>Detailed Description:</label>
-                                    <p>@ideaModel.DetailedDescription</p>
-                                </div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(ideaModel.TargetAudience))
-                            {
-                                <div class="review-field">
-                                    <label>Target Audience:</label>
-                                    <p>@ideaModel.TargetAudience</p>
-                                </div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(ideaModel.Industry))
-                            {
-                                <div class="review-field">
-                                    <label>Industry:</label>
-                                    <p>@ideaModel.Industry</p>
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                    <!-- Research Goals -->
-                    @if (!string.IsNullOrWhiteSpace(ideaModel.ResearchGoals) || ideaModel.FocusAreas != null)
-                    {
-                        <div class="review-section">
-                            <h3><i class="fas fa-bullseye"></i> Research Goals</h3>
-                            <div class="review-content">
-                                @if (!string.IsNullOrWhiteSpace(ideaModel.ResearchGoals))
-                                {
-                                    <div class="review-field">
-                                        <label>Specific Goals:</label>
-                                        <p>@ideaModel.ResearchGoals</p>
-                                    </div>
-                                }
-                                @if (ideaModel.FocusAreas != null)
-                                {
-                                    <div class="review-field">
-                                        <label>Focus Areas:</label>
-                                        <ul class="focus-areas-list">
-                                            @if (ideaModel.FocusAreas.MarketSize)
-                                            {
-                                                <li><i class="fas fa-check text-success"></i> Market Size Analysis</li>
-                                            }
-                                            @if (ideaModel.FocusAreas.Competition)
-                                            {
-                                                <li><i class="fas fa-check text-success"></i> Competitive Analysis</li>
-                                            }
-                                            @if (ideaModel.FocusAreas.CustomerAnalysis)
-                                            {
-                                                <li><i class="fas fa-check text-success"></i> Customer Segmentation</li>
-                                            }
-                                            @if (ideaModel.FocusAreas.BusinessModel)
-                                            {
-                                                <li><i class="fas fa-check text-success"></i> Business Model Validation</li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-
-                    <!-- Selected Strategy -->
-                    @if (selectedStrategy != null)
-                    {
-                        <div class="review-section">
-                            <h3><i class="fas fa-chart-line"></i> Research Strategy</h3>
-                            <div class="review-content">
-                                <div class="strategy-summary">
-                                    <div class="strategy-icon">
-                                        <i class="@selectedStrategy.IconClass"></i>
-                                    </div>
-                                    <div class="strategy-details">
-                                        <h4>@selectedStrategy.Name</h4>
-                                        <p>@selectedStrategy.Description</p>
-                                        <div class="strategy-meta">
-                                            <span class="badge badge-info">
-                                                <i class="fas fa-clock"></i> @selectedStrategy.EstimatedDuration
-                                            </span>
-                                            <span class="badge badge-success">
-                                                <i class="fas fa-dollar-sign"></i> @selectedStrategy.Price
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                @if (selectedStrategy.Features.Any())
-                                {
-                                    <div class="strategy-features">
-                                        <label>What you'll receive:</label>
-                                        <ul>
-                                            @foreach (var feature in selectedStrategy.Features)
-                                            {
-                                                <li><i class="fas fa-check-circle text-primary"></i> @feature</li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-                    }
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="review-actions">
-                    <button type="button" 
-                            class="btn btn-outline-secondary"
-                            @onclick="GoBackToStrategySelection"
-                            aria-label="Go back to strategy selection">
-                        <i class="fas fa-arrow-left" aria-hidden="true"></i>
-                        Back to Strategy Selection
-                    </button>
-                    
-                    <button type="button" 
-                            class="btn btn-success btn-submit"
-                            @onclick="StartResearchAnalysis"
-                            disabled="@isProcessing"
-                            aria-label="Submit and start analysis">
-                        @if (isProcessing)
-                        {
-                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-                            <span>Submitting...</span>
-                        }
-                        else
-                        {
-                            <i class="fas fa-rocket" aria-hidden="true"></i>
-                            <span>Submit & Start Analysis</span>
-                        }
-                    </button>
-                </div>
             </div>
         }
         else if (currentStep == FormStep.Processing)
@@ -332,7 +187,7 @@
 @code {
     // UX-Enhanced State Management
     private ProgressiveIdeaForm.IdeaSubmissionModel ideaModel = new();
-    private InteractiveStrategySelector.ResearchStrategyModel? selectedStrategy;
+    private InteractiveStrategySelector.IndustryTemplate? selectedTemplate;
     private FormStep currentStep = FormStep.IdeaSubmission;
     private bool showHelp = false;
     private bool isProcessing = false;
@@ -345,7 +200,6 @@
     {
         IdeaSubmission,
         StrategySelection,
-        ReviewAndSubmit,
         Processing,
         Results
     }
@@ -397,24 +251,12 @@
             }
         };
 
-        // Pre-select a strategy
-        selectedStrategy = new InteractiveStrategySelector.ResearchStrategyModel
+        // Pre-select a template
+        selectedTemplate = new InteractiveStrategySelector.IndustryTemplate
         {
-            Id = "market-deep-dive",
-            Name = "Market Deep-Dive",
-            EstimatedDuration = "~45 minutes",
-            Description = "Comprehensive market analysis with detailed competitive intelligence and customer insights.",
-            IconClass = "fas fa-microscope",
-            Price = "$49",
-            Features = new List<string>
-            {
-                "Detailed market analysis (TAM/SAM/SOM)",
-                "Comprehensive competitor analysis",
-                "Customer segmentation",
-                "Market trends and opportunities",
-                "Business model options",
-                "Pricing strategy recommendations"
-            }
+            Name = "SaaS Platform",
+            Description = "Software as a Service",
+            IconClass = "fas fa-cloud"
         };
 
         // Show success message
@@ -438,9 +280,9 @@
         StateHasChanged();
     }
 
-    private async Task HandleStrategySelection(InteractiveStrategySelector.ResearchStrategyModel strategy)
+    private async Task HandleTemplateSelection(InteractiveStrategySelector.IndustryTemplate template)
     {
-        selectedStrategy = strategy;
+        selectedTemplate = template;
         await AutoSave();
         StateHasChanged();
     }
@@ -451,15 +293,6 @@
         StateHasChanged();
     }
 
-    private void GoToReview()
-    {
-        if (selectedStrategy != null)
-        {
-            currentStep = FormStep.ReviewAndSubmit;
-            StateHasChanged();
-        }
-    }
-
     private void GoBackToStrategySelection()
     {
         currentStep = FormStep.StrategySelection;
@@ -468,7 +301,7 @@
 
     private async Task StartResearchAnalysis()
     {
-        if (selectedStrategy == null) return;
+        if (selectedTemplate == null) return;
 
         isProcessing = true;
         currentStep = FormStep.Processing;
@@ -478,24 +311,44 @@
         {
             Logger.LogInformation("Starting research analysis for idea: {IdeaTitle}", ideaModel.Title);
 
-            // In mock mode, we'll show the progress tracker directly
-            successMessage = "Research session started successfully!";
+            // Create the research session request
+            var createRequest = new CreateSessionRequest
+            {
+                Title = ideaModel.Title,
+                Description = BuildComprehensiveDescription(),
+                ResearchType = selectedTemplate.Name + " Template",
+                Goals = BuildResearchGoals()
+            };
+
+            // Create the session via API
+            var session = await ResearchService.CreateSessionAsync(createRequest);
             
-            // Brief delay to show the submission
-            await Task.Delay(1000);
-            
-            // For now, stay on the processing page to show progress
-            // In a real implementation, this would create a session via API
-            isProcessing = false;
-            StateHasChanged();
+            if (session != null)
+            {
+                successMessage = "Research session created successfully!";
+                Logger.LogInformation("Research session created with ID: {SessionId}", session.Id);
+                
+                // Update the mock session ID for progress tracking
+                mockSessionId = session.Id.ToString();
+                
+                // Move to processing step to show progress
+                currentStep = FormStep.Processing;
+                StateHasChanged();
+                
+                // Start research execution immediately
+                await ResearchService.StartResearchExecutionAsync(session.Id);
+            }
+            else
+            {
+                errorMessage = "Failed to create research session. Please try again.";
+                currentStep = FormStep.StrategySelection;
+            }
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "Error starting research analysis");
             errorMessage = "Failed to start research analysis. Please try again.";
-            currentStep = FormStep.ReviewAndSubmit;
-            isProcessing = false;
-            StateHasChanged();
+            currentStep = FormStep.StrategySelection;
         }
         finally
         {
@@ -546,16 +399,11 @@
             goals.Add($"**User-Specified Goals:** {ideaModel.ResearchGoals}");
         }
 
-        // Add strategy-specific goals
-        if (selectedStrategy != null)
+        // Add template-specific goals
+        if (selectedTemplate != null)
         {
-            goals.Add($"**Research Strategy:** {selectedStrategy.Name} ({selectedStrategy.EstimatedDuration})");
-            goals.Add($"**Strategy Description:** {selectedStrategy.Description}");
-            
-            if (selectedStrategy.Features.Any())
-            {
-                goals.Add($"**Expected Deliverables:** {string.Join(", ", selectedStrategy.Features)}");
-            }
+            goals.Add($"**Industry Template:** {selectedTemplate.Name}");
+            goals.Add($"**Template Description:** {selectedTemplate.Description}");
         }
 
         // Add focus area goals
@@ -575,7 +423,7 @@
 
     private string GetEstimatedTime()
     {
-        return selectedStrategy?.EstimatedDuration ?? "45-90 minutes";
+        return "45-90 minutes";
     }
 
     private void ClearError()
@@ -609,6 +457,14 @@
         currentStep = FormStep.StrategySelection;
         errorMessage = "Analysis stopped. You can restart with different settings if needed.";
         StateHasChanged();
+    }
+
+    private async Task ViewSessionDetails()
+    {
+        if (Guid.TryParse(mockSessionId, out var sessionId))
+        {
+            Navigation.NavigateTo($"/session/{sessionId}");
+        }
     }
 }
 

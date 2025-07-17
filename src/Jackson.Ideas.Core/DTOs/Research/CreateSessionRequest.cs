@@ -28,6 +28,9 @@ public class CreateSessionRequest
     
     public string? ResearchApproach { get; set; }
     
+    [StringLength(100)]
+    public string? ResearchType { get; set; }
+    
     public int EstimatedDurationMinutes { get; set; } = 30;
     
     public Dictionary<string, object>? Parameters { get; set; }

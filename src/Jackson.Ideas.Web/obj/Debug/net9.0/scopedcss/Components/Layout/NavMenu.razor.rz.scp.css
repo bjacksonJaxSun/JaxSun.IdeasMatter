@@ -81,6 +81,21 @@
     color: white;
 }
 
+.nav-section-header[b-v7jdkc7mi3] {
+    padding: 1rem 0 0.5rem 0;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nav-section-title[b-v7jdkc7mi3] {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding-left: 1rem;
+}
+
 .nav-scrollable[b-v7jdkc7mi3] {
     display: none;
 }
