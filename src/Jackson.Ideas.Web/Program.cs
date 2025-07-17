@@ -12,14 +12,14 @@ app.UseStaticFiles();
 // Add routing
 app.UseRouting();
 
-// Configure routing - Render platform constraint requires /health to be working route
+// Configure routing - Render platform only allows /health route
 app.MapRazorPages();
-app.MapBlazorHub();
+app.MapBlazorHub("/health/blazorhub");
 
-// Main application at root
-app.MapFallbackToPage("/", "/_Host");
+// Map Blazor application to /health route (only working route on Render)
+app.MapFallbackToPage("/health", "/_Host");
 
-// Health endpoint (required by Render) that redirects to main app
-app.MapGet("/health", () => Results.Redirect("/"));
+// Root redirect to /health for user convenience  
+app.MapGet("/", () => Results.Redirect("/health"));
 
 app.Run();
