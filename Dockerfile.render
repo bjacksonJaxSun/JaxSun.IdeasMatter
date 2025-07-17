@@ -22,7 +22,6 @@ RUN dotnet publish "Jackson.Ideas.Web.csproj" -c Release -o /app/publish /p:UseA
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
-COPY --from=build /src/Jackson.Ideas.Web/obj/Debug/net9.0 ./debug/
 COPY --from=build /app/publish .
 
 # Install SQLite

@@ -160,7 +160,8 @@
       "Bash(./deploy-to-render.sh:*)",
       "Bash(git branch:*)",
       "Bash(gh repo set-default:*)",
-      "Bash(git remote set-url:*)"
+      "Bash(git remote set-url:*)",
+      "WebFetch(domain:jaxsun-ideasmatter.onrender.com)"
     ],
     "deny": []
   }
