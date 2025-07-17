@@ -9,121 +9,125 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Jackson.Ideas.Web
 build_property.RootNamespace = Jackson.Ideas.Web
-build_property.ProjectDir = C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\
+build_property.ProjectDir = /mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 9.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web
+build_property.MSBuildProjectDirectory = /mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/App.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBcHAucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/App.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Auth/RedirectToLogin.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBdXRoXFJlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Auth/RedirectToLogin.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BdXRoL1JlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Admin/SystemSettings.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxTeXN0ZW1TZXR0aW5ncy5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Admin/SystemSettings.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BZG1pbi9TeXN0ZW1TZXR0aW5ncy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Admin/UserManagement.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xBZG1pblxVc2VyTWFuYWdlbWVudC5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Admin/UserManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BZG1pbi9Vc2VyTWFuYWdlbWVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Counter.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xDb3VudGVyLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Db3VudGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Dashboard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xEYXNoYm9hcmQucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Dashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9EYXNoYm9hcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFcnJvci5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Login.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xMb2dpbi5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/NewIdea.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOZXdJZGVhLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/NewIdea.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9OZXdJZGVhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Profile.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcm9maWxlLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Profile.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Qcm9maWxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Register.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xSZWdpc3Rlci5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9SZWdpc3Rlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/SessionDetails.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTZXNzaW9uRGV0YWlscy5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/SessionDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TZXNzaW9uRGV0YWlscy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Weather.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xXZWF0aGVyLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Weather.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9XZWF0aGVyLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/IdeaSubmission/InteractiveStrategySelector.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxJZGVhU3VibWlzc2lvblxJbnRlcmFjdGl2ZVN0cmF0ZWd5U2VsZWN0b3IucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/IdeaSubmission/InteractiveStrategySelector.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9JZGVhU3VibWlzc2lvbi9JbnRlcmFjdGl2ZVN0cmF0ZWd5U2VsZWN0b3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/IdeaSubmission/ProgressiveIdeaForm.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxJZGVhU3VibWlzc2lvblxQcm9ncmVzc2l2ZUlkZWFGb3JtLnJhem9y
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/IdeaSubmission/ProgressiveIdeaForm.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9JZGVhU3VibWlzc2lvbi9Qcm9ncmVzc2l2ZUlkZWFGb3JtLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/ConfidenceVisualizer.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxQcm9ncmVzc1xDb25maWRlbmNlVmlzdWFsaXplci5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/ConfidenceVisualizer.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9Qcm9ncmVzcy9Db25maWRlbmNlVmlzdWFsaXplci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/EnhancedProgressTracker.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxQcm9ncmVzc1xFbmhhbmNlZFByb2dyZXNzVHJhY2tlci5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/EnhancedProgressTracker.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9Qcm9ncmVzcy9FbmhhbmNlZFByb2dyZXNzVHJhY2tlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/PsychologyBasedProgressTracker.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxQcm9ncmVzc1xQc3ljaG9sb2d5QmFzZWRQcm9ncmVzc1RyYWNrZXIucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Progress/PsychologyBasedProgressTracker.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9Qcm9ncmVzcy9Qc3ljaG9sb2d5QmFzZWRQcm9ncmVzc1RyYWNrZXIucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Results/MultiTierDashboard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxSZXN1bHRzXE11bHRpVGllckRhc2hib2FyZC5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Results/MultiTierDashboard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9SZXN1bHRzL011bHRpVGllckRhc2hib2FyZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Visualization/ConfidenceIndicator.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSZXNlYXJjaFxWaXN1YWxpemF0aW9uXENvbmZpZGVuY2VJbmRpY2F0b3IucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Research/Visualization/ConfidenceIndicator.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9SZXNlYXJjaC9WaXN1YWxpemF0aW9uL0NvbmZpZGVuY2VJbmRpY2F0b3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Routes.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xSb3V0ZXMucmF6b3I=
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Routes.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9Sb3V0ZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/_Imports.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xfSW1wb3J0cy5yYXpvcg==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9fSW1wb3J0cy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Layout/MainLayout.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTWFpbkxheW91dC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-664rujv73v
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTWFpbkxheW91dC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-4kbb3egs47
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Layout/NavMenu.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = b-v7jdkc7mi3
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-7y57ootnwu
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/_Host.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX0hvc3QuY3NodG1s
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/_ViewImports.cshtml]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/_Host.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX0hvc3QuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Pages/_ViewImports.cshtml]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
