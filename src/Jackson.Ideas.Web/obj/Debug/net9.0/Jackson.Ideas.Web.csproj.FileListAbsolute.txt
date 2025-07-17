@@ -446,3 +446,4 @@ C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Idea
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\ref\Jackson.Ideas.Web.dll
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.RazorAssemblyInfo.cache
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.RazorAssemblyInfo.cs
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\yu89fifir5-z90t1r7i1b.gz
