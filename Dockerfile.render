@@ -17,10 +17,7 @@ COPY src/ .
 
 # Build Web application
 WORKDIR "/src/Jackson.Ideas.Web"
-RUN ls -la wwwroot/
-RUN dotnet publish "Jackson.Ideas.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false
-RUN ls -la /app/publish/
-RUN ls -la /app/publish/wwwroot/
+RUN dotnet publish "Jackson.Ideas.Web.csproj" -c Release -o /app/publish /p:UseAppHost=false /p:PublishSingleFile=false
 
 # Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
