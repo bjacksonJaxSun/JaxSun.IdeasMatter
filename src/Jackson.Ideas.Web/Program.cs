@@ -163,6 +163,9 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+// Add routing middleware
+app.UseRouting();
+
 // Add authentication middleware
 app.UseAuthentication();
 app.UseAuthorization();
