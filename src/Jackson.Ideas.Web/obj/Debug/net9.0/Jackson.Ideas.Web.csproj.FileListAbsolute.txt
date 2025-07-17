@@ -444,3 +444,5 @@ C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\refint\Jacks
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.pdb
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.genruntimeconfig.cache
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\ref\Jackson.Ideas.Web.dll
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.RazorAssemblyInfo.cache
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\Jackson.Ideas.Web.RazorAssemblyInfo.cs
