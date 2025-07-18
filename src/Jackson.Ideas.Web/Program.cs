@@ -21,7 +21,7 @@ builder.Services.AddAuthorizationBuilder()
 
 // Application Services  
 builder.Services.AddHttpClient();
-builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IAuthenticationService, MockAuthenticationService>();
 builder.Services.AddScoped<IResearchSessionApiService, MockResearchSessionApiService>();
 
 // Add navigation state service
