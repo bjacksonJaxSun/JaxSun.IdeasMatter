@@ -49,4 +49,7 @@ app.MapFallbackToPage("/health", "/_Host");
 // Root redirect to /health for user convenience  
 app.MapGet("/", () => Results.Redirect("/health"));
 
+// Explicit health check endpoint for Render platform
+app.MapGet("/healthz", () => Results.Json(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
 app.Run();
