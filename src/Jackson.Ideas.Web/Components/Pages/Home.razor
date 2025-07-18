@@ -1,5 +1,4 @@
-﻿@page "/"
-@inject NavigationManager Navigation
+﻿@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Ideas Matter - Transform Your Ideas Into Reality</PageTitle>
@@ -71,19 +70,19 @@
     private void GetStarted()
     {
         // With mock auth, go directly to dashboard
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 
     private void LearnMore()
     {
         // For now, redirect to dashboard for demo
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 
     private void SignUp()
     {
         // With mock auth, go directly to dashboard
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 }
 

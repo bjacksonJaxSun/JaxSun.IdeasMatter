@@ -1,52 +1,8 @@
 ﻿@inject IConfiguration Configuration
 
-<CascadingAuthenticationState>
-    <Router AppAssembly="typeof(Program).Assembly">
-        <Found Context="routeData">
-            @if (Configuration.GetValue<bool>("UseMockAuthentication", true))
-            {
-                <!-- In mock auth mode, always show the route -->
-                <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-            }
-            else
-            {
-                <!-- Use normal authorization when not in mock mode -->
-                <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
-                    <NotAuthorized>
-                        @if (context.User.Identity?.IsAuthenticated != true)
-                        {
-                            <RedirectToLogin />
-                        }
-                        else
-                        {
-                            <div class="alert alert-danger">
-                                <h4>Access Denied</h4>
-                                <p>You are not authorized to access this resource.</p>
-                            </div>
-                        }
-                    </NotAuthorized>
-                    <Authorizing>
-                        <div class="d-flex justify-content-center">
-                            <div class="spinner-border" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    </Authorizing>
-                </AuthorizeRouteView>
-            }
-            <FocusOnNavigate RouteData="routeData" Selector="h1" />
-        </Found>
-        <NotFound>
-            <PageTitle>Not found</PageTitle>
-            <LayoutView Layout="typeof(Layout.MainLayout)">
-                <div class="alert alert-warning">
-                    <h4>Page Not Found</h4>
-                    <p>Sorry, there's nothing at this address.</p>
-                </div>
-            </LayoutView>
-        </NotFound>
-    </Router>
-</CascadingAuthenticationState>
+<LayoutView Layout="typeof(Layout.MainLayout)">
+    <MasterPage />
+</LayoutView>
 
 @code {
     

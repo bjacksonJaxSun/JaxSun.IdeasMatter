@@ -1,10 +1,9 @@
-@page "/profile"
 @using Jackson.Ideas.Core.DTOs.Auth
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject IAuthenticationService AuthService
 @inject AuthenticationStateProvider AuthStateProvider
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 
 <PageTitle>Profile - Ideas Matter</PageTitle>
 
@@ -101,7 +100,7 @@
             }
             else
             {
-                Navigation.NavigateTo("/login");
+                NavigationState.NavigateTo("login");
             }
         }
         catch (Exception ex)
@@ -125,7 +124,7 @@
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/", forceLoad: true);
+        NavigationState.NavigateTo("home");
     }
 }
 

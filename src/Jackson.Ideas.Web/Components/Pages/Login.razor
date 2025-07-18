@@ -1,9 +1,8 @@
-@page "/login"
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Auth
 @using System.ComponentModel.DataAnnotations
 @inject IAuthenticationService AuthService
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 @inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Login - Ideas Matter</PageTitle>
@@ -93,7 +92,7 @@
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated == true)
         {
-            Navigation.NavigateTo("/dashboard");
+            NavigationState.NavigateTo("dashboard");
         }
     }
 
@@ -117,7 +116,7 @@
             if (authResponse.IsSuccess)
             {
                 // Navigate to dashboard
-                Navigation.NavigateTo("/dashboard");
+                NavigationState.NavigateTo("dashboard");
             }
             else
             {

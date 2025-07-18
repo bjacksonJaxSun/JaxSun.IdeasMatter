@@ -1,0 +1,57 @@
+@using Jackson.Ideas.Web.Services
+@using Jackson.Ideas.Web.Components.Pages
+@inject NavigationState NavigationState
+@implements IDisposable
+
+<CascadingAuthenticationState>
+    @if (NavigationState.IsCurrentPage("home"))
+    {
+        <Home />
+    }
+    else if (NavigationState.IsCurrentPage("dashboard"))
+    {
+        <Dashboard />
+    }
+    else if (NavigationState.IsCurrentPage("login"))
+    {
+        <Login />
+    }
+    else if (NavigationState.IsCurrentPage("register"))
+    {
+        <Register />
+    }
+    else if (NavigationState.IsCurrentPage("new-idea"))
+    {
+        <NewIdea />
+    }
+    else if (NavigationState.IsCurrentPage("session-details"))
+    {
+        <SessionDetails />
+    }
+    else if (NavigationState.IsCurrentPage("profile"))
+    {
+        <Profile />
+    }
+    else
+    {
+        <!-- Default to home page -->
+        <Home />
+    }
+</CascadingAuthenticationState>
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationState.OnNavigationChanged += OnNavigationChanged;
+    }
+
+    private void OnNavigationChanged(string page)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationState.OnNavigationChanged -= OnNavigationChanged;
+    }
+}

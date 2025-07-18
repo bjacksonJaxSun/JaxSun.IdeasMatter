@@ -1,6 +1,9 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
+@implements IDisposable
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Ideas Matter</a>
+        <a class="navbar-brand" @onclick="@(() => NavigationState.NavigateTo("home"))" style="cursor: pointer;">Ideas Matter</a>
     </div>
 </div>
 
@@ -10,60 +13,57 @@
     <nav class="flex-column">
         <!-- Public navigation items -->
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+            <a class="nav-link @(NavigationState.IsCurrentPage("home") ? "active" : "")" 
+               @onclick="@(() => NavigationState.NavigateTo("home"))" 
+               style="cursor: pointer;">
                 <span class="fas fa-home" aria-hidden="true"></span> Home
-            </NavLink>
+            </a>
         </div>
 
         <!-- Authenticated user navigation -->
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="dashboard">
+                    <a class="nav-link @(NavigationState.IsCurrentPage("dashboard") ? "active" : "")" 
+                       @onclick="@(() => NavigationState.NavigateTo("dashboard"))" 
+                       style="cursor: pointer;">
                         <span class="fas fa-tachometer-alt" aria-hidden="true"></span> Dashboard
-                    </NavLink>
+                    </a>
                 </div>
 
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="new-idea">
+                    <a class="nav-link @(NavigationState.IsCurrentPage("new-idea") ? "active" : "")" 
+                       @onclick="@(() => NavigationState.NavigateTo("new-idea"))" 
+                       style="cursor: pointer;">
                         <span class="fas fa-plus-square" aria-hidden="true"></span> New Idea
-                    </NavLink>
+                    </a>
                 </div>
 
-                <!-- Admin navigation -->
-                <AuthorizeView Policy="AdminOnly">
-                    <Authorized Context="adminContext">
-                        <div class="nav-section-header">
-                            <span class="nav-section-title">Administration</span>
-                        </div>
-
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="admin/users">
-                                <span class="fas fa-users" aria-hidden="true"></span> User Management
-                            </NavLink>
-                        </div>
-
-                        <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="admin/settings">
-                                <span class="fas fa-cogs" aria-hidden="true"></span> System Settings
-                            </NavLink>
-                        </div>
-                    </Authorized>
-                </AuthorizeView>
+                <div class="nav-item px-3">
+                    <a class="nav-link @(NavigationState.IsCurrentPage("profile") ? "active" : "")" 
+                       @onclick="@(() => NavigationState.NavigateTo("profile"))" 
+                       style="cursor: pointer;">
+                        <span class="fas fa-user" aria-hidden="true"></span> Profile
+                    </a>
+                </div>
             </Authorized>
 
             <!-- Guest navigation -->
             <NotAuthorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="login">
+                    <a class="nav-link @(NavigationState.IsCurrentPage("login") ? "active" : "")" 
+                       @onclick="@(() => NavigationState.NavigateTo("login"))" 
+                       style="cursor: pointer;">
                         <span class="fas fa-sign-in-alt" aria-hidden="true"></span> Login
-                    </NavLink>
+                    </a>
                 </div>
 
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="register">
+                    <a class="nav-link @(NavigationState.IsCurrentPage("register") ? "active" : "")" 
+                       @onclick="@(() => NavigationState.NavigateTo("register"))" 
+                       style="cursor: pointer;">
                         <span class="fas fa-user-plus" aria-hidden="true"></span> Register
-                    </NavLink>
+                    </a>
                 </div>
             </NotAuthorized>
         </AuthorizeView>
@@ -71,6 +71,19 @@
 </div>
 
 @code {
-    // Simplified - logout functionality moved to MainLayout
+    protected override void OnInitialized()
+    {
+        NavigationState.OnNavigationChanged += OnNavigationChanged;
+    }
+
+    private void OnNavigationChanged(string page)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        NavigationState.OnNavigationChanged -= OnNavigationChanged;
+    }
 }
 

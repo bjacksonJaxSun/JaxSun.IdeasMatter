@@ -1,4 +1,3 @@
-@page "/dashboard"
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Research
 @using Jackson.Ideas.Core.DTOs.Auth
@@ -9,7 +8,7 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject HttpClient Http
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 @inject IAuthenticationService AuthService
 @inject IResearchSessionApiService ResearchService
 @inject AuthenticationStateProvider AuthStateProvider
@@ -239,13 +238,13 @@
             }
             else
             {
-                Navigation.NavigateTo("/login");
+                NavigationState.NavigateTo("login");
             }
         }
         catch (Exception ex)
         {
             errorMessage = "Failed to load user data.";
-            Navigation.NavigateTo("/login");
+            NavigationState.NavigateTo("login");
         }
     }
 
@@ -273,23 +272,23 @@
 
     private void StartNewIdea()
     {
-        Navigation.NavigateTo("/new-idea");
+        NavigationState.NavigateTo("new-idea");
     }
 
     private void StartWithMockIdea()
     {
         // Navigate to new idea page with a query parameter to indicate mock data
-        Navigation.NavigateTo("/new-idea?mock=true");
+        NavigationState.NavigateTo("new-idea");
     }
 
     private void ViewSession(Guid sessionId)
     {
-        Navigation.NavigateTo($"/session/{sessionId}");
+        NavigationState.NavigateTo("session-details");
     }
 
     private void EditSession(Guid sessionId)
     {
-        Navigation.NavigateTo($"/session/{sessionId}/edit");
+        NavigationState.NavigateTo("session-details");
     }
 
     private async Task StartSession(Guid sessionId)
@@ -303,7 +302,7 @@
             await LoadResearchSessions();
             
             // Navigate to the session details page
-            Navigation.NavigateTo($"/session/{sessionId}");
+            NavigationState.NavigateTo("session-details");
         }
         catch (Exception ex)
         {
@@ -315,7 +314,7 @@
     private async Task Logout()
     {
         await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/", forceLoad: true);
+        NavigationState.NavigateTo("home");
     }
 
     private string TruncateDescription(string? description, int maxLength)

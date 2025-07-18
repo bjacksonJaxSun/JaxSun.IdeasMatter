@@ -28,4 +28,4 @@ services:
         value: https://jaxsun-ideasmatter.onrender.com
       - key: Jwt__Audience
         value: https://jaxsun-ideasmatter.onrender.com
-    healthCheckPath: /app
+    healthCheckPath: /health

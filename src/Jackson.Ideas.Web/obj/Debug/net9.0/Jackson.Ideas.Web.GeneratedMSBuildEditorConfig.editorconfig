@@ -28,6 +28,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BdXRoL1JlZGlyZWN0VG9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/MasterPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9NYXN0ZXJQYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Components/Pages/Admin/SystemSettings.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BZG1pbi9TeXN0ZW1TZXR0aW5ncy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
