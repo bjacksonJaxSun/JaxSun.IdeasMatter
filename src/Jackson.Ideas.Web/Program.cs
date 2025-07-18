@@ -46,8 +46,7 @@ app.MapBlazorHub("/_blazor");
 app.MapGet("/health", () => Results.Json(new { status = "healthy", timestamp = DateTime.UtcNow }));
 app.MapGet("/healthz", () => Results.Json(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
-// Map Blazor application to root route - MUST be last to avoid conflicts
+// Map Blazor application to root route
 app.MapRazorPages();
-app.MapFallbackToPage("/", "/_Host");
 
 app.Run();
