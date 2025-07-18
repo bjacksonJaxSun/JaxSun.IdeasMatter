@@ -5,14 +5,12 @@
     Layout = null;
     
     // Handle health check requests vs browser requests
-    var acceptHeader = Context.Request.Headers.Accept.ToString();
-    var userAgent = Context.Request.Headers.UserAgent.ToString();
+    var userAgent = Context.Request.Headers.UserAgent.ToString().ToLower();
     
-    if (acceptHeader.Contains("application/json") || 
-        userAgent.Contains("monitor") || 
-        userAgent.Contains("health") ||
-        userAgent.Contains("check") ||
-        Context.Request.Query.ContainsKey("json"))
+    // Only return JSON for explicit health check requests
+    if (Context.Request.Query.ContainsKey("json") ||
+        Context.Request.Headers.Accept.ToString().Contains("application/json") && 
+        !Context.Request.Headers.Accept.ToString().Contains("text/html"))
     {
         // Return health check JSON for monitoring services
         Context.Response.ContentType = "application/json";
