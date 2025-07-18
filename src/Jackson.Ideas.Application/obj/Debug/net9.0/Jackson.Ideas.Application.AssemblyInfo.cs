@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6950e5b206977ef16f53bfc273d79f46e04f4e64")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+708714cc10be385624c073912672742ff44f0ee3")]
 [assembly: System.Reflection.AssemblyProductAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
