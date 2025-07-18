@@ -1,8 +1,27 @@
-@page "/app"
+@page "/health"
 @namespace Jackson.Ideas.Web.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
+    
+    // Handle health check requests vs browser requests
+    var acceptHeader = Context.Request.Headers.Accept.ToString();
+    var userAgent = Context.Request.Headers.UserAgent.ToString();
+    
+    if (acceptHeader.Contains("application/json") || 
+        userAgent.Contains("monitor") || 
+        userAgent.Contains("health") ||
+        userAgent.Contains("check") ||
+        Context.Request.Query.ContainsKey("json"))
+    {
+        // Return health check JSON for monitoring services
+        Context.Response.ContentType = "application/json";
+        await Context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new { 
+            status = "healthy", 
+            timestamp = DateTime.UtcNow 
+        }));
+        return;
+    }
 }
 
 <!DOCTYPE html>
@@ -11,7 +30,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="~/app/" />
+    <base href="~/health/" />
     <link rel="stylesheet" href="bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="app.css" />
     <link rel="stylesheet" href="Jackson.Ideas.Web.styles.css" />
