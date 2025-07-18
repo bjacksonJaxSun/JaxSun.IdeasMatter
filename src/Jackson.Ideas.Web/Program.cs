@@ -11,9 +11,9 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/health";
-        options.LogoutPath = "/health";
-        options.AccessDeniedPath = "/health";
+        options.LoginPath = "/app";
+        options.LogoutPath = "/app";
+        options.AccessDeniedPath = "/app";
     });
 
 builder.Services.AddAuthorizationBuilder()
@@ -39,14 +39,17 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Configure routing - Map everything to /health endpoint for Render compatibility
+// Configure routing - Map everything to /app endpoint for Render compatibility
 app.MapRazorPages();
-app.MapBlazorHub("/health/blazorhub");
+app.MapBlazorHub("/app/blazorhub");
 
-// Map Blazor application to /health route (only working route on Render)
-app.MapFallbackToPage("/health", "/_Host");
+// Map Blazor application to /app route to avoid Render health check conflict
+app.MapFallbackToPage("/app", "/_Host");
 
-// Root redirect to /health for user convenience  
-app.MapGet("/", () => Results.Redirect("/health"));
+// Root redirect to /app for user convenience  
+app.MapGet("/", () => Results.Redirect("/app"));
+
+// Health check endpoint for Render
+app.MapGet("/health", () => Results.Json(new { status = "healthy", timestamp = DateTime.UtcNow }));
 
 app.Run();
