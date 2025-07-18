@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {}
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {}
   },
   "projects": {
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj",
         "projectName": "Jackson.Ideas.Core",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -65,7 +72,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

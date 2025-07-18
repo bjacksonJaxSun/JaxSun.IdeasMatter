@@ -1,39 +1,46 @@
 {
   "format": 1,
   "restore": {
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj": {}
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Web\\Jackson.Ideas.Web.csproj": {}
   },
   "projects": {
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj",
         "projectName": "Jackson.Ideas.Application",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj"
               },
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj"
               },
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj"
               }
             }
           }
@@ -94,26 +101,33 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj",
         "projectName": "Jackson.Ideas.Core",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -159,34 +173,41 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj",
         "projectName": "Jackson.Ideas.Infrastructure",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj"
               }
             }
           }
@@ -256,26 +277,33 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj",
         "projectName": "Jackson.Ideas.Shared",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -315,43 +343,50 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj": {
+    "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Web\\Jackson.Ideas.Web.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj",
+        "projectUniqueName": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Web\\Jackson.Ideas.Web.csproj",
         "projectName": "Jackson.Ideas.Web",
-        "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/Jackson.Ideas.Web.csproj",
-        "packagesPath": "/home/owner/.nuget/packages/",
-        "outputPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Web/obj/",
+        "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Web\\Jackson.Ideas.Web.csproj",
+        "packagesPath": "C:\\Users\\Owner\\.nuget\\packages\\",
+        "outputPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Web\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "/home/owner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Owner\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Application/Jackson.Ideas.Application.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Application\\Jackson.Ideas.Application.csproj"
               },
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Core/Jackson.Ideas.Core.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Core\\Jackson.Ideas.Core.csproj"
               },
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Infrastructure/Jackson.Ideas.Infrastructure.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Infrastructure\\Jackson.Ideas.Infrastructure.csproj"
               },
-              "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj": {
-                "projectPath": "/mnt/c/Development/Jackson.Ideas/src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj"
+              "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj": {
+                "projectPath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj"
               }
             }
           }
@@ -412,7 +447,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/home/owner/.dotnet/sdk/9.0.303/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
