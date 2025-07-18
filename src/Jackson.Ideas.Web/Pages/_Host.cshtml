@@ -3,23 +3,6 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = null;
-    
-    // Handle health check requests vs browser requests
-    var userAgent = Context.Request.Headers.UserAgent.ToString().ToLower();
-    
-    // Only return JSON for explicit health check requests
-    if (Context.Request.Query.ContainsKey("json") ||
-        Context.Request.Headers.Accept.ToString().Contains("application/json") && 
-        !Context.Request.Headers.Accept.ToString().Contains("text/html"))
-    {
-        // Return health check JSON for monitoring services
-        Context.Response.ContentType = "application/json";
-        await Context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(new { 
-            status = "healthy", 
-            timestamp = DateTime.UtcNow 
-        }));
-        return;
-    }
 }
 
 <!DOCTYPE html>
