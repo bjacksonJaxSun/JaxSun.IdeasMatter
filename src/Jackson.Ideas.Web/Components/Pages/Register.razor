@@ -1,9 +1,8 @@
-@page "/register"
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Auth
 @using System.ComponentModel.DataAnnotations
 @inject IAuthenticationService AuthService
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 @inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Register - Ideas Matter</PageTitle>
@@ -114,7 +113,7 @@
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated == true)
         {
-            Navigation.NavigateTo("/dashboard");
+            NavigationState.NavigateTo("dashboard");
         }
     }
 
@@ -149,7 +148,7 @@
                 successMessage = "Registration successful! Redirecting to dashboard...";
                 StateHasChanged();
                 await Task.Delay(1000); // Brief delay to show success message
-                Navigation.NavigateTo("/dashboard");
+                NavigationState.NavigateTo("dashboard");
             }
             else
             {

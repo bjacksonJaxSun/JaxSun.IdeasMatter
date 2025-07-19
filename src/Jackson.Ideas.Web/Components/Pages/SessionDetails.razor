@@ -1,4 +1,3 @@
-@page "/session/{sessionId:guid}"
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Research
 @using Jackson.Ideas.Core.Entities
@@ -6,7 +5,7 @@
 @using Jackson.Ideas.Web.Services
 @using Microsoft.AspNetCore.Authorization
 @inject IResearchSessionApiService ResearchService
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 
 <PageTitle>Research Session - Ideas Matter</PageTitle>
 
@@ -284,7 +283,7 @@
 
     private void GoBackToDashboard()
     {
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 }
 

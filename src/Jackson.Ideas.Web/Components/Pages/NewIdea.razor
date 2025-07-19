@@ -1,4 +1,3 @@
-@page "/new-idea"
 @rendermode InteractiveServer
 @using Jackson.Ideas.Core.DTOs.Research
 @using Jackson.Ideas.Core.Entities
@@ -10,7 +9,7 @@
 @using System.Text.Json
 @using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
-@inject NavigationManager Navigation
+@inject Jackson.Ideas.Web.Services.NavigationState NavigationState
 @inject ILogger<NewIdea> Logger
 @inject IResearchSessionApiService ResearchService
 
@@ -206,11 +205,8 @@
     protected override async Task OnInitializedAsync()
     {
         // Check if we should load mock data
-        var uri = new Uri(Navigation.Uri);
-        if (uri.Query.Contains("mock=true", StringComparison.OrdinalIgnoreCase))
-        {
-            FillMockData();
-        }
+        // Always load mock data in demo mode
+        FillMockData();
 
         // Auto-save mechanism
         _ = Task.Run(async () =>
@@ -440,7 +436,7 @@
         
         // For now, navigate to dashboard since results page doesn't exist yet
         await Task.Delay(2000);
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 
     private async Task HandleAnalysisPaused(string sessionId)
@@ -448,7 +444,7 @@
         successMessage = "Analysis paused. You can resume anytime from your dashboard.";
         StateHasChanged();
         await Task.Delay(3000);
-        Navigation.NavigateTo("/dashboard");
+        NavigationState.NavigateTo("dashboard");
     }
 
     private async Task HandleAnalysisStopped(string sessionId)
@@ -462,7 +458,7 @@
     {
         if (Guid.TryParse(mockSessionId, out var sessionId))
         {
-            Navigation.NavigateTo($"/session/{sessionId}");
+            NavigationState.NavigateTo("session-details");
         }
     }
 }
