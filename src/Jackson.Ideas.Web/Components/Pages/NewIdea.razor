@@ -9,7 +9,6 @@
 @using System.ComponentModel.DataAnnotations
 @using System.Text.Json
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ILogger<NewIdea> Logger
@@ -366,7 +365,7 @@
             
             // Could save to browser local storage or API
             // For now, just update the last saved time
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {

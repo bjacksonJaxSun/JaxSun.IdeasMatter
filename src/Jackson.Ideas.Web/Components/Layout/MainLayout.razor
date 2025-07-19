@@ -1,6 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@using Jackson.Ideas.Web.Services
-@using Microsoft.AspNetCore.Components.Authorization
 
 <div class="page">
     <div class="sidebar">
@@ -9,40 +7,7 @@
 
     <main>
         <div class="top-row px-4">
-            <AuthorizeView>
-                <Authorized>
-                    <div class="user-menu">
-                        <button class="user-menu-button" @onclick="ToggleUserDropdown">
-                            <span class="user-avatar">
-                                <i class="fas fa-user-circle"></i>
-                            </span>
-                            <span class="user-name">@context.User.Identity?.Name</span>
-                            <i class="fas fa-chevron-down dropdown-arrow"></i>
-                        </button>
-                        
-                        @if (showUserDropdown)
-                        {
-                            <div class="user-dropdown">
-                                <a href="profile" class="dropdown-item">
-                                    <i class="fas fa-user"></i>
-                                    <span>Profile</span>
-                                </a>
-                                <div class="dropdown-divider"></div>
-                                <button class="dropdown-item" @onclick="Logout">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    <span>Logout</span>
-                                </button>
-                            </div>
-                        }
-                    </div>
-                </Authorized>
-                <NotAuthorized>
-                    <div class="auth-links">
-                        <a href="login" class="auth-link">Login</a>
-                        <a href="register" class="auth-link register-btn">Register</a>
-                    </div>
-                </NotAuthorized>
-            </AuthorizeView>
+            <!-- Simplified top row without authentication -->
         </div>
 
         <article class="content px-4">
@@ -58,26 +23,5 @@
 </div>
 
 @code {
-    [Inject] private IAuthenticationService AuthService { get; set; } = default!;
-    [Inject] private NavigationManager Navigation { get; set; } = default!;
-    
-    private bool showUserDropdown = false;
-
-    private void ToggleUserDropdown()
-    {
-        showUserDropdown = !showUserDropdown;
-    }
-
-    private async Task Logout()
-    {
-        await AuthService.LogoutAsync();
-        Navigation.NavigateTo("/", forceLoad: true);
-    }
-
-    // Close dropdown when clicking outside
-    protected override void OnInitialized()
-    {
-        // This would ideally use JavaScript interop for better click-outside handling
-        // For now, the dropdown will close when navigating
-    }
+    // No authentication-related code needed
 }

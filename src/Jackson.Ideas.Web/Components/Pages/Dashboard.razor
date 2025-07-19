@@ -7,7 +7,6 @@
 @using Jackson.Ideas.Web.Services
 @using System.Text.Json
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IAuthenticationService AuthService
@@ -226,8 +225,8 @@
         try
         {
             var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            if (authState.User.Identity?.IsAuthenticated == true)
-            {
+           // if (authState.User.Identity?.IsAuthenticated == true)
+            //{
                 currentUser = new UserInfo
                 {
                     Id = authState.User.FindFirst("sub")?.Value ?? authState.User.FindFirst("id")?.Value ?? Guid.NewGuid().ToString(),
@@ -236,11 +235,11 @@
                     Role = authState.User.FindFirst("role")?.Value ?? "User",
                     IsVerified = true
                 };
-            }
-            else
-            {
-                Navigation.NavigateTo("/login");
-            }
+           // }
+            // else
+            // {
+            //     Navigation.NavigateTo("/login");
+            // }
         }
         catch (Exception ex)
         {

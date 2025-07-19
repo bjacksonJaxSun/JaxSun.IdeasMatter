@@ -51,34 +51,35 @@
 
         <!-- Form Navigation -->
         <div class="form-navigation" role="group" aria-label="Form Navigation">
-            <button type="button" 
-                    class="btn btn-outline-secondary"
-                    @onclick="PreviousStep"
-                    disabled="@(CurrentStep == 0)"
-                    aria-label="Go to previous step">
-                <i class="fas fa-arrow-left" aria-hidden="true"></i>
-                Previous
-            </button>
-
-            <button type="button" 
-                    class="btn btn-primary"
-                    @onclick="NextStep"
-                    disabled="@(!CanProceedToNext())"
-                    aria-label="Go to next step">
-                Next
-                <i class="fas fa-arrow-right" aria-hidden="true"></i>
-            </button>
-            
-            @if (CurrentStep == FormSteps.Count - 1)
-            {
-                <button type="submit" 
-                        class="btn btn-success"
-                        disabled="@(!IsFormValid())"
-                        aria-label="Submit idea for research">
-                    <i class="fas fa-rocket" aria-hidden="true"></i>
-                    Start Research
+            <div class="nav-left">
+                <button type="button" 
+                        class="btn btn-outline-secondary"
+                        @onclick="PreviousStep"
+                        disabled="@(CurrentStep == 0)"
+                        aria-label="Go to previous step">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    Previous
                 </button>
-            }
+            </div>
+            
+            <div class="nav-right">
+                <button type="button" 
+                        class="btn btn-primary"
+                        @onclick="NextStep"
+                        disabled="@(!CanProceedToNext())"
+                        aria-label="Go to next step">
+                    @if (CurrentStep == FormSteps.Count - 1)
+                    {
+                        <span>Complete</span>
+                        <i class="fas fa-check" aria-hidden="true"></i>
+                    }
+                    else
+                    {
+                        <span>Next</span>
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    }
+                </button>
+            </div>
         </div>
 
         <!-- Progress Indicator -->
@@ -387,13 +388,18 @@
         }
     }
 
-    private void NextStep()
+    private async Task NextStep()
     {
         if (CurrentStep < FormSteps.Count - 1 && CanProceedToNext())
         {
             MarkCurrentStepCompleted();
             CurrentStep++;
             StateHasChanged();
+        }
+        else if (CurrentStep == FormSteps.Count - 1 && CanProceedToNext())
+        {
+            // On the last step, submit the form to navigate to next page
+            await HandleValidSubmit();
         }
     }
 
@@ -761,7 +767,19 @@
     .form-navigation {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         margin-bottom: 2rem;
+    }
+    
+    .nav-left {
+        display: flex;
+        align-items: center;
+    }
+    
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
     }
 
     .btn {
@@ -1060,6 +1078,16 @@
         .form-navigation {
             flex-direction: column-reverse;
             gap: 1rem;
+        }
+        
+        .nav-left,
+        .nav-right {
+            justify-content: center;
+        }
+        
+        .nav-right {
+            flex-direction: column;
+            gap: 0.5rem;
         }
     }
 

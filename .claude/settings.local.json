@@ -167,7 +167,8 @@
       "Bash(apt list:*)",
       "Bash(snap install:*)",
       "Bash(./dotnet-install.sh:*)",
-      "Bash(/home/claude/.dotnet/dotnet build)"
+      "Bash(/home/claude/.dotnet/dotnet build)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": []
   }

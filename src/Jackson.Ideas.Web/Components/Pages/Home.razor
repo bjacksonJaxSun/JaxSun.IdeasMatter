@@ -1,6 +1,5 @@
 ﻿@page "/"
 @inject NavigationManager Navigation
-@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Ideas Matter - Transform Your Ideas Into Reality</PageTitle>
 
@@ -12,13 +11,9 @@
             and develop winning business strategies for your innovative ideas.
         </p>
         <div class="hero-actions">
-            <button class="btn btn-primary btn-lg" @onclick="GetStarted">
-                <i class="fas fa-rocket"></i>
-                Get Started Free
-            </button>
-            <button class="btn btn-outline-secondary btn-lg" @onclick="LearnMore">
-                <i class="fas fa-play"></i>
-                Watch Demo
+            <button class="btn btn-primary btn-lg" @onclick="EnterSite">
+                <i class="fas fa-arrow-right"></i>
+                Enter Site
             </button>
         </div>
     </div>
@@ -57,32 +52,16 @@
     <div class="container">
         <h2>Ready to Transform Your Ideas?</h2>
         <p>Join thousands of entrepreneurs who have turned their concepts into successful businesses.</p>
-        <button class="btn btn-primary btn-lg" @onclick="SignUp">
-            <i class="fas fa-user-plus"></i>
-            Start Your Free Analysis
+        <button class="btn btn-primary btn-lg" @onclick="EnterSite">
+            <i class="fas fa-arrow-right"></i>
+            Enter Site
         </button>
     </div>
 </div>
 
 @code {
-    // Removed automatic navigation to prevent NavigationException
-    // Users can click buttons to navigate
-
-    private void GetStarted()
+    private void EnterSite()
     {
-        // With mock auth, go directly to dashboard
-        Navigation.NavigateTo("/dashboard");
-    }
-
-    private void LearnMore()
-    {
-        // For now, redirect to dashboard for demo
-        Navigation.NavigateTo("/dashboard");
-    }
-
-    private void SignUp()
-    {
-        // With mock auth, go directly to dashboard
         Navigation.NavigateTo("/dashboard");
     }
 }

@@ -5,7 +5,6 @@
 @using Jackson.Ideas.Core.Enums
 @using Jackson.Ideas.Web.Services
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize]
 @inject IResearchSessionApiService ResearchService
 @inject NavigationManager Navigation
 
@@ -44,11 +43,11 @@
                             </div>
                             <span>Starting Research...</span>
                         }
-                        else
+                       @*  else
                         {
                             <i class="fas fa-play"></i>
                             <span>Start Research</span>
-                        }
+                        } *@
                     </button>
                 }
                 @if (session.Status == ResearchStatus.InProgress)
