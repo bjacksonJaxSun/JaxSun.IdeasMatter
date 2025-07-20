@@ -288,8 +288,8 @@ C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\y
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\b85dd1n4ib-bpk8xqwxhs.gz
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\t3s0ixeju7-8inm30yfxf.gz
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\yu89fifir5-z90t1r7i1b.gz
-C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\0tb6rtbk0y-7na5p4ph7z.gz
-C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\jof4ccjqr8-7na5p4ph7z.gz
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\0tb6rtbk0y-01hgg3r35l.gz
+C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\compressed\jof4ccjqr8-01hgg3r35l.gz
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\staticwebassets.build.json
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\staticwebassets.build.json.cache
 C:\Development\Jackson.Ideas\src\Jackson.Ideas.Web\obj\Debug\net9.0\staticwebassets.development.json
