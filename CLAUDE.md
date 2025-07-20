@@ -251,6 +251,52 @@ dotnet ef database drop --project src/Jackson.Ideas.Infrastructure
 - Use feature flags for experimental functionality
 - Implement proper security practices for all endpoints
 
+## Routing and Layout Protection
+
+To prevent loss of page layouts and routing configurations:
+
+### Validation Commands
+```bash
+# Validate routing and layout integrity
+./scripts/validate-routing.sh
+
+# Run routing tests
+dotnet test tests/Jackson.Ideas.Web.Tests/ --filter "RoutingTests"
+
+# Full validation (build + routing + tests)
+dotnet build && ./scripts/validate-routing.sh && dotnet test
+```
+
+### Documentation References
+- **Routing Guide**: `/docs/ROUTING_AND_LAYOUTS.md` - Complete routing and layout documentation
+- **Route Constants**: `src/Jackson.Ideas.Web/Configuration/RouteConstants.cs` - Centralized route definitions
+
+### Page Requirements Checklist
+When adding/modifying pages:
+- [ ] Add `@page` directive with unique route
+- [ ] Specify layout: `@layout Layout.LandingLayout` or use default `MainLayout`
+- [ ] Register required services in `Program.cs`
+- [ ] Update navigation in `RouteConstants.cs` if user-facing
+- [ ] Update `/docs/ROUTING_AND_LAYOUTS.md` documentation
+- [ ] Run `./scripts/validate-routing.sh` to verify
+- [ ] Apply Golden Rule: `dotnet build` must succeed
+
+### Critical Files to Protect
+Never modify these without updating documentation:
+- `Components/Layout/MainLayout.razor` - Application layout
+- `Components/Layout/LandingLayout.razor` - Landing page layout  
+- `Components/Layout/NavMenu.razor` - Navigation menu
+- `Components/Routes.razor` - Route configuration
+- `Program.cs` - Service registrations
+
+### Recovery Process
+If routing is broken:
+1. Check `/docs/ROUTING_AND_LAYOUTS.md` for correct configuration
+2. Run `./scripts/validate-routing.sh` to identify issues
+3. Verify `@page` directives match documented routes
+4. Ensure services are registered in `Program.cs`
+5. Test with `dotnet build` and manual navigation
+
 ## Task Management Golden Rule
 
 **MANDATORY BEFORE COMPLETING TASK SETS:**

@@ -20,13 +20,13 @@ public interface IAuthenticationService
 public class AuthenticationService : IAuthenticationService
 {
     private readonly HttpClient _httpClient;
-    private readonly AuthenticationStateProvider _authStateProvider;
+    private readonly JwtAuthenticationStateProvider _authStateProvider;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly IConfiguration _configuration;
 
     public AuthenticationService(
         HttpClient httpClient,
-        AuthenticationStateProvider authStateProvider,
+        JwtAuthenticationStateProvider authStateProvider,
         ILogger<AuthenticationService> logger,
         IConfiguration configuration)
     {

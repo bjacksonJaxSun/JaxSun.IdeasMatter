@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "version": 2,
   "dgSpecHash": "6khRHIsBIAU=",
@@ -6,13 +5,4 @@
   "projectFilePath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj",
   "expectedPackageFiles": [],
   "logs": []
-=======
-{
-  "version": 2,
-  "dgSpecHash": "6khRHIsBIAU=",
-  "success": true,
-  "projectFilePath": "C:\\Development\\Jackson.Ideas\\src\\Jackson.Ideas.Shared\\Jackson.Ideas.Shared.csproj",
-  "expectedPackageFiles": [],
-  "logs": []
->>>>>>> b745a1421b1d96b1f09a733dd4d826175c2d5dbb
 }

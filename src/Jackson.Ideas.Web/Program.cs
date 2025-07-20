@@ -19,6 +19,9 @@ builder.Services.AddHttpClient();
 // Add Authentication Services
 builder.Services.AddScoped<AuthenticationStateProvider, JwtAuthenticationStateProvider>();
 
+// Register NavigationState service
+builder.Services.AddScoped<Jackson.Ideas.Web.Services.NavigationState>();
+
 // Conditional service registration based on configuration
 if (builder.Configuration.GetValue<bool>("UseMockAuthentication", true))
 {
