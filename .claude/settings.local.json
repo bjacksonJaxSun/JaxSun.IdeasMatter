@@ -182,7 +182,8 @@
       "Bash(./scripts/enhanced-golden-rule.sh:*)",
       "Bash(/home/owner/.dotnet/dotnet build src/Jackson.Ideas.Mock)",
       "Bash(/home/owner/.dotnet/dotnet clean src/Jackson.Ideas.Mock)",
-      "Bash(./scripts/simple-golden-rule.sh:*)"
+      "Bash(./scripts/simple-golden-rule.sh:*)",
+      "Bash(./deploy-mock-to-render.sh:*)"
     ],
     "deny": []
   }

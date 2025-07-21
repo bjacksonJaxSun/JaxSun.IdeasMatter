@@ -51,14 +51,19 @@ fi
 
 print_success "GitHub CLI authentication verified"
 
-# Test local build first
-print_status "Testing local build of Mock project..."
-if ! dotnet build src/Jackson.Ideas.Mock/Jackson.Ideas.Mock.csproj -c Release; then
-    print_error "Local build failed. Please fix build errors before deploying."
+# Validate project files instead of building (Docker will handle compilation)
+print_status "Validating Mock project files..."
+if [ ! -f "src/Jackson.Ideas.Mock/Jackson.Ideas.Mock.csproj" ]; then
+    print_error "Mock project file not found. Please ensure the Mock project exists."
     exit 1
 fi
 
-print_success "Local build successful"
+if [ ! -f "src/Jackson.Ideas.Mock/Program.cs" ]; then
+    print_error "Mock Program.cs not found. Please ensure the Mock project is complete."
+    exit 1
+fi
+
+print_success "Mock project files validated (Docker will handle compilation)"
 
 # Check for uncommitted changes
 print_status "Checking for uncommitted changes..."
