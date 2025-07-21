@@ -171,7 +171,18 @@
       "WebFetch(domain:localhost)",
       "Bash(git checkout:*)",
       "Bash(dotnet clean:*)",
-      "Bash(/home/claude/.dotnet/dotnet build --verbosity normal)"
+      "Bash(/home/claude/.dotnet/dotnet build --verbosity normal)",
+      "Bash(dotnet sln:*)",
+      "Bash(./golden-rule-simulation.sh:*)",
+      "Bash(dotnet:*)",
+      "Bash(./build-error-check.sh:*)",
+      "Bash(./scripts/golden-rule.sh:*)",
+      "Bash(./validate-rendering.sh:*)",
+      "Bash(./scripts/claude-golden-rule.sh:*)",
+      "Bash(./scripts/enhanced-golden-rule.sh:*)",
+      "Bash(/home/owner/.dotnet/dotnet build src/Jackson.Ideas.Mock)",
+      "Bash(/home/owner/.dotnet/dotnet clean src/Jackson.Ideas.Mock)",
+      "Bash(./scripts/simple-golden-rule.sh:*)"
     ],
     "deny": []
   }

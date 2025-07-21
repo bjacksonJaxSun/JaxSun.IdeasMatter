@@ -1,0 +1,86 @@
+@page "/"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IMockDataService MockDataService
+@inject NavigationManager Navigation
+
+<PageTitle>Ideas Matter - Mock Environment</PageTitle>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="hero-section text-center py-5">
+                <h1 class="display-4 mb-4">
+                    Welcome to Ideas Matter
+                    <span class="badge bg-warning text-dark">DEMO</span>
+                </h1>
+                <p class="lead mb-4">
+                    This is a fully functional mock environment demonstrating Ideas Matter capabilities.
+                </p>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="/dashboard" class="btn btn-primary btn-lg">
+                        View Dashboard
+                    </a>
+                    <a href="/login" class="btn btn-outline-primary btn-lg">
+                        Login to Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">💡 Business Ideas</h5>
+                    <p class="card-text">Explore pre-configured business scenarios with realistic market data.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📊 Market Analysis</h5>
+                    <p class="card-text">See how AI analyzes market opportunities and competitive landscapes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">📈 Business Plans</h5>
+                    <p class="card-text">Experience professional business plan generation and financial modeling.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 1rem;
+        margin: 2rem 0;
+    }
+
+    .card {
+        transition: transform 0.2s ease;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+</style>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Mock initialization
+        await Task.CompletedTask;
+    }
+}

@@ -103,6 +103,8 @@
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.AspNetCore.WebSockets.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.AspNetCore.WebUtilities.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.CSharp.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Caching.Abstractions.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Caching.Memory.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.Abstractions.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.Binder.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.CommandLine.dll
@@ -114,6 +116,8 @@
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.KeyPerFile.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.UserSecrets.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Configuration.Xml.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.DependencyInjection.Abstractions.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.DependencyInjection.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Diagnostics.Abstractions.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Diagnostics.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions.dll
@@ -131,15 +135,19 @@
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Identity.Stores.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Localization.Abstractions.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Localization.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.Abstractions.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.Configuration.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.Console.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.Debug.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.EventLog.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.EventSource.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Logging.TraceSource.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.ObjectPool.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Options.ConfigurationExtensions.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Options.DataAnnotations.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Options.dll
+/mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.Primitives.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Extensions.WebEncoders.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.JSInterop.dll
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/bin/Debug/net9.0/refs/Microsoft.Net.Http.Headers.dll
@@ -619,9 +627,6 @@
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Api.Tests/obj/Debug/net9.0/ref/Jackson.Ideas.Api.Tests.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\CoverletSourceRootsMapping_Jackson.Ideas.Api.Tests
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\testhost.dll
-C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
-C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.reporters.netcoreapp10.dll
-C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.utility.netcoreapp10.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.deps.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.runtimeconfig.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\appsettings.CloudRun.json
@@ -632,6 +637,9 @@ C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jack
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.exe
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\testhost.exe
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\MvcTestingAppManifest.json
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.reporters.netcoreapp10.dll
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\xunit.runner.utility.netcoreapp10.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.Tests.deps.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.Tests.runtimeconfig.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Api.Tests\bin\Debug\net9.0\Jackson.Ideas.Api.Tests.dll

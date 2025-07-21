@@ -1,0 +1,398 @@
+@page "/financial-projections"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IFinancialProjectionService FinancialProjectionService
+@inject IMockDataService MockDataService
+@inject NavigationManager Navigation
+
+<PageTitle>Financial Projections - Ideas Matter Demo</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Financial Projections 💰</h1>
+                    <p class="text-muted">Comprehensive financial analysis and business metrics</p>
+                </div>
+                <button class="btn btn-primary" @onclick="NavigateToDashboard">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenario Selector -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Select Business Scenario</h5>
+                    <div class="row">
+                        @foreach (var scenario in scenarios.Take(6))
+                        {
+                            <div class="col-md-2 mb-2">
+                                <button class="btn @(selectedScenarioId == scenario.Id ? "btn-primary" : "btn-outline-primary") btn-sm w-100" 
+                                        @onclick="() => SelectScenario(scenario.Id)">
+                                    @scenario.Name
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (financialData != null)
+    {
+        <!-- Revenue Projections & Key Metrics -->
+        <div class="row mb-4">
+            <div class="col-lg-8">
+                <div class="card h-100">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">📈 Revenue Projections</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-success">$@(financialData.Revenue.Year1Total.ToString("N0"))</h3>
+                                <p class="mb-0">Year 1 Revenue</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-success">$@(financialData.Revenue.Year3Total.ToString("N0"))</h3>
+                                <p class="mb-0">Year 3 Revenue</p>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <h3 class="text-success">$@(financialData.Revenue.Year5Total.ToString("N0"))</h3>
+                                <p class="mb-0">Year 5 Revenue</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Revenue Model:</h6>
+                            <p class="text-muted">@financialData.Revenue.RevenueModel</p>
+                        </div>
+
+                        <h6>Revenue Streams:</h6>
+                        @foreach (var stream in financialData.Revenue.Streams)
+                        {
+                            <div class="card mb-3">
+                                <div class="card-body p-3">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">@stream.Name</h6>
+                                        <span class="badge bg-success">$@(stream.Year1Amount.ToString("N0"))</span>
+                                    </div>
+                                    <p class="small text-muted mb-2">@stream.Description</p>
+                                    <div class="row small">
+                                        <div class="col-6">
+                                            <strong>Pricing:</strong> @stream.PricingModel
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Customers:</strong> @stream.CustomerCount.ToString("N0")
+                                        </div>
+                                    </div>
+                                    <div class="row small">
+                                        <div class="col-6">
+                                            <strong>Year 3:</strong> $@(stream.Year3Amount.ToString("N0"))
+                                        </div>
+                                        <div class="col-6">
+                                            <strong>Year 5:</strong> $@(stream.Year5Amount.ToString("N0"))
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">📊 Key Metrics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Gross Margin</span>
+                                <span class="fw-bold text-success">@financialData.Metrics.GrossMarginPercent%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Operating Margin</span>
+                                <span class="fw-bold text-success">@financialData.Metrics.OperatingMarginPercent%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Net Margin</span>
+                                <span class="fw-bold text-success">@financialData.Metrics.NetMarginPercent%</span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Customer LTV</span>
+                                <span class="fw-bold">$@(financialData.Metrics.CustomerLifetimeValue.ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Customer CAC</span>
+                                <span class="fw-bold">$@(financialData.Metrics.CustomerAcquisitionCost.ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>LTV/CAC Ratio</span>
+                                <span class="fw-bold text-success">@((financialData.Metrics.CustomerLifetimeValue / financialData.Metrics.CustomerAcquisitionCost).ToString("F1"))</span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>ROI</span>
+                                <span class="fw-bold text-success">@financialData.Metrics.ReturnOnInvestment%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Payback Period</span>
+                                <span class="fw-bold">@financialData.Metrics.PaybackPeriodMonths months</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Monthly Burn Rate</span>
+                                <span class="fw-bold text-warning">$@(financialData.Metrics.BurnRate.ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Runway</span>
+                                <span class="fw-bold">@financialData.Metrics.RunwayMonths months</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Yearly Breakdown & Cash Flow -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">📅 Yearly Financial Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var year in financialData.YearlyBreakdown)
+                        {
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Year @year.Year</h6>
+                                </div>
+                                <div class="card-body p-3">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Revenue:</span>
+                                                <span class="small fw-bold text-success">$@(year.Revenue.ToString("N0"))</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Expenses:</span>
+                                                <span class="small fw-bold text-danger">$@(year.Expenses.ToString("N0"))</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Net Income:</span>
+                                                <span class="small fw-bold">$@(year.NetIncome.ToString("N0"))</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Customers:</span>
+                                                <span class="small fw-bold">@(year.CustomerCount.ToString("N0"))</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Rev/Customer:</span>
+                                                <span class="small fw-bold">$@(year.RevenuePerCustomer.ToString("N0"))</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="small">Net Margin:</span>
+                                                <span class="small fw-bold">@((year.NetMargin * 100).ToString("F1"))%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">💸 Cash Flow Analysis</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Break Even Month</span>
+                                <span class="fw-bold text-success">Month @financialData.CashFlow.BreakEvenMonth</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Cash Flow Positive</span>
+                                <span class="fw-bold text-success">Month @financialData.CashFlow.CashFlowPositiveMonth</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Max Cash Deficit</span>
+                                <span class="fw-bold text-danger">$@(financialData.CashFlow.MaxCashDeficit.ToString("N0"))</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Seasonality Factors:</h6>
+                            <p class="small text-muted">@financialData.CashFlow.SeasonalityFactors</p>
+                        </div>
+
+                        <h6>Monthly Cash Flow (First 12 Months):</h6>
+                        @foreach (var month in financialData.CashFlow.Monthly.Take(12))
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="small">Month @month.Month</span>
+                                <div class="d-flex gap-2">
+                                    <span class="small badge @(month.NetCashFlow >= 0 ? "bg-success" : "bg-danger")">
+                                        $@(month.NetCashFlow.ToString("N0"))
+                                    </span>
+                                    <span class="small text-muted">
+                                        Cum: $@(month.CumulativeCashFlow.ToString("N0"))
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Funding Requirements -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0">💼 Funding Requirements & Strategy</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <div class="text-center mb-3">
+                                    <h3 class="text-primary">$@(financialData.Funding.TotalFundingNeeded.ToString("N0"))</h3>
+                                    <p class="mb-0">Total Funding Needed</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>Funding Strategy:</h6>
+                                    <p class="small">@financialData.Funding.FundingStrategy</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <h6>Use of Funds:</h6>
+                                    <p class="small">@financialData.Funding.UseOfFunds</p>
+                                </div>
+
+                                <div>
+                                    <h6>Exit Strategy:</h6>
+                                    <p class="small">@financialData.Funding.ExitStrategy</p>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4">
+                                <h6>Funding Rounds:</h6>
+                                @foreach (var round in financialData.Funding.Rounds)
+                                {
+                                    <div class="card mb-3">
+                                        <div class="card-body p-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <h6 class="mb-0">@round.Name</h6>
+                                                <span class="badge bg-primary">$@(round.Amount.ToString("N0"))</span>
+                                            </div>
+                                            <div class="small">
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Stage:</span>
+                                                    <span class="fw-bold">@round.Stage</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Timing:</span>
+                                                    <span>@round.Timing</span>
+                                                </div>
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Valuation:</span>
+                                                    <span class="text-success">$@(round.ValuationEstimate.ToString("N0"))</span>
+                                                </div>
+                                                <p class="mb-0 mt-2"><strong>Purpose:</strong> @round.Purpose</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="col-lg-4">
+                                <h6>Potential Investors:</h6>
+                                <ul class="small">
+                                    @foreach (var investor in financialData.Funding.PotentialInvestors)
+                                    {
+                                        <li>@investor</li>
+                                    }
+                                </ul>
+
+                                <div class="mt-4 p-3 bg-light rounded">
+                                    <h6>Key Investment Highlights:</h6>
+                                    <ul class="small mb-0">
+                                        <li>Strong ROI: @financialData.Metrics.ReturnOnInvestment%</li>
+                                        <li>Healthy margins: @financialData.Metrics.GrossMarginPercent% gross</li>
+                                        <li>Quick payback: @financialData.Metrics.PaybackPeriodMonths months</li>
+                                        <li>Efficient CAC: $@(financialData.Metrics.CustomerAcquisitionCost.ToString("N0"))</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading financial projections...</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BusinessIdeaScenario> scenarios = new();
+    private Models.FinancialProjections? financialData;
+    private string selectedScenarioId = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        scenarios = await MockDataService.GetAllScenariosAsync();
+        if (scenarios.Any())
+        {
+            selectedScenarioId = scenarios.First().Id;
+            await SelectScenario(selectedScenarioId);
+        }
+    }
+
+    private async Task SelectScenario(string scenarioId)
+    {
+        selectedScenarioId = scenarioId;
+        financialData = await FinancialProjectionService.GetFinancialProjectionsAsync(scenarioId);
+        StateHasChanged();
+    }
+
+    private void NavigateToDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+}

@@ -1,0 +1,119 @@
+@inject NavigationManager Navigation
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center" href="">
+            <span class="me-2">💡</span>
+            Ideas Matter
+            <span class="badge bg-warning text-dark ms-2 small">DEMO</span>
+        </a>
+    </div>
+</div>
+
+<nav class="flex-column">
+    <!-- Main Navigation -->
+    <div class="nav-section">
+        <div class="nav-section-header px-3 py-2">
+            <small class="text-light opacity-75 fw-bold">MAIN</small>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="me-2">🏠</span> Home
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="dashboard">
+                <span class="me-2">📊</span> Dashboard
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="scenarios">
+                <span class="me-2">💡</span> Business Ideas
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="me-2">🔑</span> Login
+            </NavLink>
+        </div>
+    </div>
+
+    <!-- Mock Features -->
+    <div class="nav-section">
+        <div class="nav-section-header px-3 py-2">
+            <small class="text-light opacity-75 fw-bold">MOCK FEATURES</small>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="market-research">
+                <span class="me-2">📈</span> Market Research
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="financial-projections">
+                <span class="me-2">💰</span> Financial Projections
+            </NavLink>
+        </div>
+        
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="user-profile">
+                <span class="me-2">👤</span> User Profile
+            </NavLink>
+        </div>
+    </div>
+
+    <!-- Demo Environment Notice -->
+    <div class="nav-section">
+        <hr class="my-3 opacity-25" />
+        <div class="nav-item px-3">
+            <div class="demo-notice p-3 rounded">
+                <div class="d-flex align-items-center mb-2">
+                    <span class="me-2">ℹ️</span>
+                    <strong class="text-warning">Demo Environment</strong>
+                </div>
+                <small class="text-light opacity-75">
+                    This is a demonstration version. All data is simulated for testing purposes.
+                </small>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    .nav-section {
+        margin-bottom: 1rem;
+    }
+
+    .nav-section-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link {
+        color: #adb5bd;
+        padding: 0.5rem 0;
+        text-decoration: none;
+        display: block;
+        border-radius: 0.25rem;
+        margin: 0.25rem 0;
+    }
+
+    .nav-link:hover {
+        color: #fff;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link.active {
+        color: #fff;
+        background-color: #0d6efd;
+    }
+
+    .demo-notice {
+        background-color: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+</style>

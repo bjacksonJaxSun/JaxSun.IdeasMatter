@@ -1,0 +1,450 @@
+@page "/user-profile"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IUserProfileService UserProfileService
+@inject IMockAuthenticationService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>User Profile - Ideas Matter Demo</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">User Profile Management 👤</h1>
+                    <p class="text-muted">Comprehensive user analytics and profile insights</p>
+                </div>
+                <button class="btn btn-primary" @onclick="NavigateToDashboard">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (userProfile != null)
+    {
+        <!-- User Information & Quick Stats -->
+        <div class="row mb-4">
+            <div class="col-lg-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 80px; height: 80px;">
+                                <span class="h3 text-white mb-0">@userProfile.User.FirstName.Substring(0,1)@userProfile.User.LastName.Substring(0,1)</span>
+                            </div>
+                        </div>
+                        <h5 class="mb-1">@userProfile.User.FirstName @userProfile.User.LastName</h5>
+                        <p class="text-muted mb-2">@userProfile.User.JobTitle</p>
+                        <p class="small text-muted mb-3">@userProfile.User.Company • @userProfile.User.Location</p>
+                        
+                        <div class="row text-center mb-3">
+                            <div class="col-4">
+                                <div class="h5 text-primary mb-0">@userProfile.User.TotalIdeasSubmitted</div>
+                                <small class="text-muted">Ideas</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-success mb-0">@userProfile.User.AchievementBadges.Count</div>
+                                <small class="text-muted">Badges</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="h5 text-info mb-0">@((int)userProfile.Analytics.EngagementScore)</div>
+                                <small class="text-muted">Engagement</small>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <span class="badge bg-@(userProfile.User.Role == "Admin" ? "danger" : "primary") me-1">@userProfile.User.Role</span>
+                            <span class="badge bg-@(userProfile.User.EmailVerified ? "success" : "warning")">
+                                @(userProfile.User.EmailVerified ? "Verified" : "Pending")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">📊 User Analytics</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-3 text-center">
+                                <div class="h4 text-primary">@userProfile.Analytics.TotalSessions</div>
+                                <small class="text-muted">Total Sessions</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 text-success">@userProfile.Analytics.IdeasViewed</div>
+                                <small class="text-muted">Ideas Viewed</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 text-info">@((int)userProfile.Analytics.TotalTimeSpent.TotalHours)h</div>
+                                <small class="text-muted">Time Spent</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="h4 text-warning">@userProfile.Analytics.NetworkConnections</div>
+                                <small class="text-muted">Connections</small>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Top Interaction Types:</h6>
+                                @foreach (var interaction in userProfile.Analytics.TopInteractionTypes)
+                                {
+                                    <span class="badge bg-primary me-1 mb-1">@interaction</span>
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Last Active:</h6>
+                                <p class="text-muted">@userProfile.Analytics.LastActiveDate.ToString("MMM dd, yyyy 'at' HH:mm")</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details & Preferences -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">ℹ️ Profile Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>Bio:</h6>
+                            <p class="text-muted">@(string.IsNullOrEmpty(userProfile.User.Bio) ? "No bio provided" : userProfile.User.Bio)</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Skills:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var skill in userProfile.User.Skills)
+                                {
+                                    <span class="badge bg-success">@skill</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Interests:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var interest in userProfile.User.Interests)
+                                {
+                                    <span class="badge bg-info">@interest</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-6">
+                                <h6>Available Funding:</h6>
+                                <p class="text-success fw-bold">$@(userProfile.User.AvailableFunding.ToString("N0"))</p>
+                            </div>
+                            <div class="col-6">
+                                <h6>Time Commitment:</h6>
+                                <p class="text-info fw-bold">@userProfile.User.TimeCommitmentHours hrs/week</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Social Profiles:</h6>
+                            @if (!string.IsNullOrEmpty(userProfile.User.LinkedInProfile))
+                            {
+                                <p class="small"><strong>LinkedIn:</strong> @userProfile.User.LinkedInProfile</p>
+                            }
+                            @if (!string.IsNullOrEmpty(userProfile.User.GitHubProfile))
+                            {
+                                <p class="small"><strong>GitHub:</strong> @userProfile.User.GitHubProfile</p>
+                            }
+                            @if (string.IsNullOrEmpty(userProfile.User.LinkedInProfile) && string.IsNullOrEmpty(userProfile.User.GitHubProfile))
+                            {
+                                <p class="small text-muted">No social profiles added</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">⚙️ User Preferences</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h6>Communication Style:</h6>
+                            <span class="badge bg-primary">@userProfile.User.Preferences.PreferredCommunicationStyle</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Risk Tolerance:</h6>
+                            <span class="badge bg-@(userProfile.User.Preferences.RiskTolerance == "High" ? "danger" : userProfile.User.Preferences.RiskTolerance == "Medium" ? "warning" : "success")">
+                                @userProfile.User.Preferences.RiskTolerance
+                            </span>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Dashboard Layout:</h6>
+                            <span class="badge bg-info">@userProfile.User.Preferences.DashboardLayout</span>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Industry Preferences:</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                @foreach (var industry in userProfile.User.Preferences.IndustryPreferences)
+                                {
+                                    <span class="badge bg-warning text-dark">@industry</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Notification Settings:</h6>
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" checked="@userProfile.User.Preferences.EmailNotifications" disabled>
+                                <label class="form-check-label small">Email Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" checked="@userProfile.User.Preferences.PushNotifications" disabled>
+                                <label class="form-check-label small">Push Notifications</label>
+                            </div>
+                            <div class="form-check form-switch mb-1">
+                                <input class="form-check-input" type="checkbox" checked="@userProfile.User.Preferences.MarketingEmails" disabled>
+                                <label class="form-check-label small">Marketing Emails</label>
+                            </div>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked="@userProfile.User.Preferences.ShareProgressPublicly" disabled>
+                                <label class="form-check-label small">Share Progress Publicly</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Insights & Recommendations -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">🎯 User Insights</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6>Profile Completion</h6>
+                                <span class="badge bg-success">@userProfile.Insights.ProfileCompletionPercentage%</span>
+                            </div>
+                            <div class="progress mb-3">
+                                <div class="progress-bar bg-success" style="width: @userProfile.Insights.ProfileCompletionPercentage%"></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Strength Areas:</h6>
+                            @foreach (var strength in userProfile.Insights.StrengthAreas)
+                            {
+                                <span class="badge bg-success me-1 mb-1">✓ @strength</span>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Growth Opportunities:</h6>
+                            @foreach (var opportunity in userProfile.Insights.GrowthOpportunities)
+                            {
+                                <span class="badge bg-warning text-dark me-1 mb-1">📈 @opportunity</span>
+                            }
+                        </div>
+
+                        <div class="mb-3">
+                            <h6>Missing Profile Elements:</h6>
+                            @if (userProfile.Insights.MissingProfileElements.Any())
+                            {
+                                @foreach (var missing in userProfile.Insights.MissingProfileElements)
+                                {
+                                    <span class="badge bg-danger me-1 mb-1">⚠️ @missing</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">✅ Profile Complete</span>
+                            }
+                        </div>
+
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">Next Recommended Action:</h6>
+                            <p class="mb-0">@userProfile.Insights.NextRecommendedAction</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">💡 Personalized Tips</h5>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var tip in userProfile.Insights.PersonalizedTips)
+                        {
+                            <div class="alert alert-warning">
+                                <strong>💡 Tip:</strong> @tip
+                            </div>
+                        }
+
+                        <div class="mt-4">
+                            <h6>Suggested Scenarios:</h6>
+                            @foreach (var scenarioId in userProfile.SuggestedScenarios)
+                            {
+                                <button class="btn btn-outline-primary btn-sm me-1 mb-1" 
+                                        @onclick="NavigateToScenarios">
+                                    Scenario @scenarioId.Substring(0, Math.Min(10, scenarioId.Length))...
+                                </button>
+                            }
+                        </div>
+
+                        <div class="mt-4">
+                            <h6>Recommended Connections:</h6>
+                            @foreach (var connection in userProfile.RecommendedConnections)
+                            {
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center me-2" 
+                                         style="width: 32px; height: 32px;">
+                                        <span class="small text-white">@connection.Substring(0,1)</span>
+                                    </div>
+                                    <span class="small">@connection</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Badges & Recent Activity -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">🏆 Achievement Badges</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (userProfile.User.AchievementBadges.Any())
+                        {
+                            <div class="row">
+                                @foreach (var badge in userProfile.User.AchievementBadges)
+                                {
+                                    <div class="col-md-6 mb-3">
+                                        <div class="card border-warning">
+                                            <div class="card-body text-center p-3">
+                                                <div class="h3">🏆</div>
+                                                <h6 class="card-title small mb-0">@badge</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <div class="h1">🎯</div>
+                                <p>Complete actions to earn your first badges!</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">📈 Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (userProfile.RecentActivity.Any())
+                        {
+                            @foreach (var activity in userProfile.RecentActivity)
+                            {
+                                <div class="d-flex align-items-start mb-3">
+                                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center me-3" 
+                                         style="width: 32px; height: 32px; min-width: 32px;">
+                                        <span class="small text-white">@GetActivityIcon(activity.Type)</span>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="small fw-bold">@activity.Description</div>
+                                        <div class="small text-muted">@activity.Timestamp.ToString("MMM dd, HH:mm")</div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center text-muted">
+                                <div class="h3">📝</div>
+                                <p>No recent activity to display.</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3">Loading user profile...</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private Models.UserProfile? userProfile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load demo user profile
+        var demoUser = await AuthService.GetUserByEmailAsync("demo@ideasmatter.com");
+        if (demoUser != null)
+        {
+            userProfile = await UserProfileService.GetCompleteUserProfileAsync(demoUser.Id);
+        }
+    }
+
+    private string GetActivityIcon(string activityType)
+    {
+        return activityType switch
+        {
+            "ProfileUpdated" => "👤",
+            "ScenarioViewed" => "👁️",
+            "BadgeEarned" => "🏆",
+            "OnboardingProgress" => "✅",
+            "PreferencesUpdated" => "⚙️",
+            "SkillsUpdated" => "🎯",
+            "InterestsUpdated" => "❤️",
+            _ => "📝"
+        };
+    }
+
+    private void NavigateToDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private void NavigateToScenarios()
+    {
+        Navigation.NavigateTo("/scenarios");
+    }
+}

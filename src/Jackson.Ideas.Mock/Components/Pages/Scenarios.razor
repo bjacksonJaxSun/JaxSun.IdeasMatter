@@ -1,0 +1,176 @@
+@page "/scenarios"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IMockDataService MockDataService
+@inject IMarketResearchService MarketResearchService
+@inject NavigationManager Navigation
+
+<PageTitle>Business Scenarios - Ideas Matter Demo</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">Business Idea Scenarios 💡</h1>
+                    <p class="text-muted">Explore @scenarios.Count realistic business ideas across various industries</p>
+                </div>
+                <button class="btn btn-primary" @onclick="NavigateToDashboard">
+                    ← Back to Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Industry Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">Filter by Industry</h5>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn @(selectedIndustry == "All" ? "btn-primary" : "btn-outline-primary") btn-sm" 
+                                @onclick="FilterAllIndustries">
+                            All (@scenarios.Count)
+                        </button>
+                        @foreach (var industry in industries)
+                        {
+                            var count = scenarios.Count(s => s.Industry == industry);
+                            <button class="btn @(selectedIndustry == industry ? "btn-primary" : "btn-outline-primary") btn-sm" 
+                                    @onclick="() => FilterByIndustry(industry)">
+                                @industry (@count)
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scenarios Grid -->
+    <div class="row">
+        @foreach (var scenario in filteredScenarios)
+        {
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary">@scenario.Industry</span>
+                        <span class="badge bg-@GetViabilityColor(scenario.ViabilityScore)">@scenario.ViabilityScore% Viable</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">@scenario.Name</h5>
+                        <p class="card-text text-muted small mb-3">
+                            @(scenario.Description.Length > 150 ? scenario.Description.Substring(0, 150) + "..." : scenario.Description)
+                        </p>
+                        
+                        <div class="mb-3">
+                            <strong>Target Market:</strong>
+                            <p class="small mb-2">@scenario.TargetMarket</p>
+                            
+                            <strong>Market Size:</strong>
+                            <p class="small mb-2 text-success">@scenario.MarketSize</p>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small">Startup Cost:</span>
+                                <span class="small fw-bold">$@(scenario.EstimatedStartupCost.ToString("N0"))</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="small">Projected Revenue:</span>
+                                <span class="small fw-bold text-success">$@(scenario.ProjectedRevenue.ToString("N0"))</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold">Key Challenges:</h6>
+                            <ul class="small mb-2">
+                                @foreach (var challenge in scenario.KeyChallenges.Take(2))
+                                {
+                                    <li>@challenge</li>
+                                }
+                            </ul>
+                        </div>
+
+                        <div class="mb-3">
+                            <h6 class="small fw-bold">Success Factors:</h6>
+                            <ul class="small">
+                                @foreach (var factor in scenario.SuccessFactors.Take(2))
+                                {
+                                    <li>@factor</li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer bg-light">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Added @scenario.CreatedAt.ToString("MMM dd, yyyy")</small>
+                            <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewScenarioDetails(scenario.Id)">
+                                View Details
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!filteredScenarios.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center text-muted">
+                    <h4>No scenarios found</h4>
+                    <p>Try selecting a different industry filter.</p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BusinessIdeaScenario> scenarios = new();
+    private List<BusinessIdeaScenario> filteredScenarios = new();
+    private List<string> industries = new();
+    private string selectedIndustry = "All";
+
+    protected override async Task OnInitializedAsync()
+    {
+        scenarios = await MockDataService.GetAllScenariosAsync();
+        industries = scenarios.Select(s => s.Industry).Distinct().OrderBy(i => i).ToList();
+        filteredScenarios = scenarios;
+    }
+
+    private void FilterByIndustry(string industry)
+    {
+        selectedIndustry = industry;
+        filteredScenarios = industry == "All" 
+            ? scenarios 
+            : scenarios.Where(s => s.Industry == industry).ToList();
+    }
+
+    private void NavigateToDashboard()
+    {
+        Navigation.NavigateTo("/dashboard");
+    }
+
+    private void FilterAllIndustries()
+    {
+        FilterByIndustry("All");
+    }
+
+    private string GetViabilityColor(int score)
+    {
+        return score switch
+        {
+            >= 80 => "success",
+            >= 60 => "warning",
+            _ => "danger"
+        };
+    }
+
+    private void ViewScenarioDetails(string scenarioId)
+    {
+        Navigation.NavigateTo($"/scenario/{scenarioId}");
+    }
+}

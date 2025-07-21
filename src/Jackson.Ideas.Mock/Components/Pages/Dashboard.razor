@@ -1,0 +1,113 @@
+@page "/dashboard"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IMockDataService MockDataService
+@inject NavigationManager Navigation
+
+<PageTitle>Dashboard - Ideas Matter Demo</PageTitle>
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">Dashboard 📊</h1>
+            <p class="text-muted">Welcome to your Ideas Matter demo dashboard.</p>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Business Scenarios</h5>
+                </div>
+                <div class="card-body">
+                    <p>Total scenarios available: @scenarios.Count</p>
+                    <button class="btn btn-primary" @onclick="NavigateToScenarios">View All Scenarios</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" @onclick="NavigateToMarketResearch">Market Research</button>
+                        <button class="btn btn-outline-success" @onclick="NavigateToFinancialProjections">Financial Projections</button>
+                        <button class="btn btn-outline-info" @onclick="NavigateToUserProfile">User Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (scenarios.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Featured Scenarios</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var scenario in scenarios.Take(3))
+                            {
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@scenario.Name</h6>
+                                            <p class="card-text">@GetShortDescription(scenario.Description)</p>
+                                            <small class="text-muted">Industry: @scenario.Industry</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<BusinessIdeaScenario> scenarios = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        scenarios = await MockDataService.GetAllScenariosAsync();
+    }
+
+    private void NavigateToScenarios()
+    {
+        Navigation.NavigateTo("/scenarios");
+    }
+
+    private void NavigateToMarketResearch()
+    {
+        Navigation.NavigateTo("/market-research");
+    }
+
+    private void NavigateToFinancialProjections()
+    {
+        Navigation.NavigateTo("/financial-projections");
+    }
+
+    private void NavigateToUserProfile()
+    {
+        Navigation.NavigateTo("/user-profile");
+    }
+
+    private string GetShortDescription(string description)
+    {
+        if (string.IsNullOrEmpty(description))
+            return "No description available";
+        
+        return description.Length > 80 ? 
+            description.Substring(0, 80) + "..." : 
+            description;
+    }
+}

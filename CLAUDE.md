@@ -7,8 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Ideas Matter is an AI-powered idea development platform that transforms concepts into deployable code. The system conducts market research, creates business plans, generates technical architecture, and produces production-ready applications.
 
 **Tech Stack:**
-- Frontend: Blazor Server (.NET 8)
-- Backend: ASP.NET Core Web API (.NET 8) 
+- Frontend: Blazor Server (.NET 9)
+- Backend: ASP.NET Core Web API (.NET 9) 
 - Database: Entity Framework Core with SQL Server/SQLite
 - AI Integration: Multi-provider architecture with OpenAI, Claude, Azure OpenAI support
 

@@ -1,0 +1,37 @@
+{
+  "scenarios": [
+    {
+      "id": "eco-eats",
+      "name": "EcoEats Delivery",
+      "description": "Sustainable food delivery service focusing on eco-friendly packaging and local restaurants.",
+      "industry": "Food & Beverage",
+      "targetMarket": "Environmentally conscious millennials and Gen Z",
+      "estimatedStartupCost": 150000,
+      "projectedRevenue": 500000,
+      "viabilityScore": 85,
+      "marketSize": "$2.4B"
+    },
+    {
+      "id": "ai-study-buddy",
+      "name": "AI Study Buddy",
+      "description": "AI-powered personalized tutoring platform for students of all ages.",
+      "industry": "Education Technology",
+      "targetMarket": "Students, parents, educational institutions",
+      "estimatedStartupCost": 200000,
+      "projectedRevenue": 800000,
+      "viabilityScore": 78,
+      "marketSize": "$850M"
+    },
+    {
+      "id": "localcraft-marketplace",
+      "name": "LocalCraft Marketplace",
+      "description": "Online marketplace connecting local artisans with customers seeking handmade goods.",
+      "industry": "E-commerce",
+      "targetMarket": "Craft enthusiasts, gift buyers, local communities",
+      "estimatedStartupCost": 75000,
+      "projectedRevenue": 300000,
+      "viabilityScore": 72,
+      "marketSize": "$1.2B"
+    }
+  ]
+}

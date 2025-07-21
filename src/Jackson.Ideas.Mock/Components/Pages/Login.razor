@@ -1,0 +1,118 @@
+@page "/login"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject IMockAuthenticationService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Login - Ideas Matter Demo</PageTitle>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <h2 class="h4 text-primary mb-2">Welcome Back!</h2>
+                        <p class="text-muted">Login to your Ideas Matter demo account</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger">
+                            @errorMessage
+                        </div>
+                    }
+
+                    <form @onsubmit="HandleLogin" @onsubmit:preventDefault="true">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input @bind="email" type="email" class="form-control" id="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input @bind="password" type="password" class="form-control" id="password" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                                @if (isLoading)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <span>Logging in...</span>
+                                }
+                                else
+                                {
+                                    <span>Login</span>
+                                }
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 p-3 bg-light rounded">
+                        <h6 class="text-primary mb-2">Demo Accounts</h6>
+                        <p class="small text-muted mb-2">Try these pre-configured accounts:</p>
+                        <div class="row g-2">
+                            <div class="col-12">
+                                <button @onclick="@(() => FillDemoAccount("demo@ideasmatter.com"))" 
+                                        class="btn btn-sm btn-outline-secondary w-100 text-start">
+                                    <strong>Demo User:</strong> demo@ideasmatter.com
+                                </button>
+                            </div>
+                        </div>
+                        <p class="small text-muted mt-2 mb-0">
+                            ℹ️ Any password works in demo mode
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorMessage = "";
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Please enter both email and password.";
+            return;
+        }
+
+        isLoading = true;
+        errorMessage = "";
+
+        try
+        {
+            var user = await AuthService.LoginAsync(email, password);
+            if (user != null)
+            {
+                Navigation.NavigateTo("/dashboard");
+            }
+            else
+            {
+                errorMessage = "Invalid email or password. Try one of the demo accounts below.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Login failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void FillDemoAccount(string demoEmail)
+    {
+        email = demoEmail;
+        password = "demo123";
+        errorMessage = "";
+    }
+}

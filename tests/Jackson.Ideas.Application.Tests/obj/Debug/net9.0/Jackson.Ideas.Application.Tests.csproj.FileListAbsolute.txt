@@ -203,10 +203,10 @@
 /mnt/c/Development/Jackson.Ideas/tests/Jackson.Ideas.Application.Tests/obj/Debug/net9.0/ref/Jackson.Ideas.Application.Tests.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\CoverletSourceRootsMapping_Jackson.Ideas.Application.Tests
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\testhost.dll
+C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\testhost.exe
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\xunit.runner.visualstudio.dotnetcore.testadapter.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\xunit.runner.reporters.netcoreapp10.dll
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\xunit.runner.utility.netcoreapp10.dll
-C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\testhost.exe
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\Jackson.Ideas.Application.Tests.deps.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\Jackson.Ideas.Application.Tests.runtimeconfig.json
 C:\Development\Jackson.Ideas\tests\Jackson.Ideas.Application.Tests\bin\Debug\net9.0\Jackson.Ideas.Application.Tests.dll

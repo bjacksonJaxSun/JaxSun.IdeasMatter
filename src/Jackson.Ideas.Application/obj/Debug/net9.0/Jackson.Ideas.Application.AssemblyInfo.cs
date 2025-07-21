@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+63efad1ec06f9db77c5c3989adbc57211bb7b3c6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e3d22151a471f3f9f8069646ddcc2a470ffd1d9")]
 [assembly: System.Reflection.AssemblyProductAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Jackson.Ideas.Application")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
