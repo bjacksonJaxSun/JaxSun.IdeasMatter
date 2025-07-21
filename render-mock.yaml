@@ -1,0 +1,33 @@
+services:
+  # Jackson Ideas Mock/Demo Application
+  - type: web
+    name: jackson-ideas-mock
+    runtime: docker
+    dockerfilePath: Dockerfile.mock
+    dockerContext: .
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:10000
+      - key: PORT
+        value: 10000
+      - key: MockConfiguration__EnableDemoMode
+        value: true
+      - key: MockConfiguration__SimulateProcessingDelays
+        value: true
+      - key: MockConfiguration__UseStaticData
+        value: true
+      - key: MockConfiguration__AllowedOrigins
+        value: "*"
+      - key: Logging__LogLevel__Default
+        value: Information
+      - key: Logging__LogLevel__Microsoft.AspNetCore
+        value: Warning
+    healthCheckPath: /
+    buildCommand: echo "Building Mock Application"
+    startCommand: dotnet Jackson.Ideas.Mock.dll
+    plan: free
+    region: oregon
+    branch: main
+    autoDeploy: true

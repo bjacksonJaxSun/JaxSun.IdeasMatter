@@ -1,0 +1,46 @@
+# Render-specific Dockerfile for Jackson Ideas Mock Application
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Copy project files for Mock application and its dependencies
+COPY ["src/Jackson.Ideas.Mock/Jackson.Ideas.Mock.csproj", "Jackson.Ideas.Mock/"]
+COPY ["src/Jackson.Ideas.Shared/Jackson.Ideas.Shared.csproj", "Jackson.Ideas.Shared/"]
+
+# Restore dependencies
+RUN dotnet restore "Jackson.Ideas.Mock/Jackson.Ideas.Mock.csproj"
+
+# Copy source code
+COPY src/ .
+
+# Build Mock application
+WORKDIR "/src/Jackson.Ideas.Mock"
+RUN dotnet publish "Jackson.Ideas.Mock.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+
+# Copy static files explicitly
+COPY --from=build /src/Jackson.Ideas.Mock/wwwroot ./wwwroot
+COPY --from=build /src/Jackson.Ideas.Mock/MockData ./MockData
+
+# Create directory for any runtime data
+RUN mkdir -p /app/data && chmod 777 /app/data
+
+# Set environment variables for Mock app
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:10000
+ENV PORT=10000
+ENV MockConfiguration__EnableDemoMode=true
+ENV MockConfiguration__SimulateProcessingDelays=true
+ENV MockConfiguration__UseStaticData=true
+
+EXPOSE 10000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:10000/ || exit 1
+
+# Start Mock application
+ENTRYPOINT ["dotnet", "Jackson.Ideas.Mock.dll"]

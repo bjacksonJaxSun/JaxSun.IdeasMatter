@@ -9,34 +9,87 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="h3 mb-1">Dashboard 📊</h1>
+            <h1 class="dashboard-title">
+                <span class="stat-icon me-3">📊</span>
+                Dashboard
+            </h1>
             <p class="text-muted">Welcome to your Ideas Matter demo dashboard.</p>
         </div>
     </div>
 
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon">💡</div>
+                <div class="stat-content">
+                    <h3 class="stat-number">@scenarios.Count</h3>
+                    <p class="stat-label">Business Ideas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon">📈</div>
+                <div class="stat-content">
+                    <h3 class="stat-number">15</h3>
+                    <p class="stat-label">Market Reports</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3 class="stat-number">8</h3>
+                    <p class="stat-label">Financial Models</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-content">
+                    <h3 class="stat-number">1</h3>
+                    <p class="stat-label">Active Users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Cards -->
     <div class="row mb-4">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Business Scenarios</h5>
+            <div class="action-card">
+                <div class="card-header-gradient">
+                    <h5 class="mb-0 text-white">Business Scenarios</h5>
                 </div>
                 <div class="card-body">
                     <p>Total scenarios available: @scenarios.Count</p>
-                    <button class="btn btn-primary" @onclick="NavigateToScenarios">View All Scenarios</button>
+                    <button class="btn-new-idea" @onclick="NavigateToScenarios">
+                        <span class="me-2">💡</span>
+                        View All Scenarios
+                    </button>
                 </div>
             </div>
         </div>
         
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Quick Actions</h5>
+            <div class="action-card">
+                <div class="card-header-gradient">
+                    <h5 class="mb-0 text-white">Quick Actions</h5>
                 </div>
                 <div class="card-body">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-primary" @onclick="NavigateToMarketResearch">Market Research</button>
-                        <button class="btn btn-outline-success" @onclick="NavigateToFinancialProjections">Financial Projections</button>
-                        <button class="btn btn-outline-info" @onclick="NavigateToUserProfile">User Profile</button>
+                        <button class="btn-action primary-action" @onclick="NavigateToMarketResearch">
+                            <span class="me-2">📈</span>Market Research
+                        </button>
+                        <button class="btn-action success-action" @onclick="NavigateToFinancialProjections">
+                            <span class="me-2">💰</span>Financial Projections
+                        </button>
+                        <button class="btn-action info-action" @onclick="NavigateToUserProfile">
+                            <span class="me-2">👤</span>User Profile
+                        </button>
                     </div>
                 </div>
             </div>
@@ -47,20 +100,20 @@
     {
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Featured Scenarios</h5>
+                <div class="featured-card">
+                    <div class="card-header-gradient">
+                        <h5 class="mb-0 text-white">Featured Scenarios</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             @foreach (var scenario in scenarios.Take(3))
                             {
                                 <div class="col-md-4 mb-3">
-                                    <div class="card">
+                                    <div class="scenario-card">
                                         <div class="card-body">
                                             <h6 class="card-title">@scenario.Name</h6>
                                             <p class="card-text">@GetShortDescription(scenario.Description)</p>
-                                            <small class="text-muted">Industry: @scenario.Industry</small>
+                                            <small class="industry-badge">@scenario.Industry</small>
                                         </div>
                                     </div>
                                 </div>
@@ -111,3 +164,212 @@
             description;
     }
 }
+
+<style>
+.dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #333;
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-title .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.stat-label {
+    color: #666;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.action-card, .featured-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.action-card:hover, .featured-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-header-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1rem 1.5rem;
+    border-bottom: none;
+}
+
+.btn-new-idea {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.btn-new-idea:hover {
+    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-action {
+    background: white;
+    border: 1px solid #e2e8f0;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    color: #4a5568;
+}
+
+.btn-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.primary-action:hover {
+    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
+    border-color: #3182ce;
+}
+
+.success-action:hover {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+    border-color: #38a169;
+}
+
+.info-action:hover {
+    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+    border-color: #3182ce;
+}
+
+.scenario-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.scenario-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.scenario-card .card-title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.75rem;
+}
+
+.scenario-card .card-text {
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.industry-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@@media (max-width: 768px) {
+    .dashboard-title {
+        font-size: 2rem;
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .dashboard-title .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+}
+</style>

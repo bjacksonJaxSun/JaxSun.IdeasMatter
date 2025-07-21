@@ -10,7 +10,10 @@
     </div>
 </div>
 
-<nav class="flex-column">
+<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+    <nav class="flex-column">
     <!-- Main Navigation -->
     <div class="nav-section">
         <div class="nav-section-header px-3 py-2">
@@ -82,38 +85,5 @@
             </div>
         </div>
     </div>
-</nav>
-
-<style>
-    .nav-section {
-        margin-bottom: 1rem;
-    }
-
-    .nav-section-header {
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-link {
-        color: #adb5bd;
-        padding: 0.5rem 0;
-        text-decoration: none;
-        display: block;
-        border-radius: 0.25rem;
-        margin: 0.25rem 0;
-    }
-
-    .nav-link:hover {
-        color: #fff;
-        background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .nav-link.active {
-        color: #fff;
-        background-color: #0d6efd;
-    }
-
-    .demo-notice {
-        background-color: rgba(255, 193, 7, 0.1);
-        border: 1px solid rgba(255, 193, 7, 0.3);
-    }
-</style>
+    </nav>
+</div>
