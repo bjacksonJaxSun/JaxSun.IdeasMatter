@@ -1,0 +1,968 @@
+@page "/action-plan"
+@using Jackson.Ideas.Mock.Services
+@using Jackson.Ideas.Mock.Models
+@inject NavigationManager Navigation
+
+<PageTitle>Your Action Plan - Ideas Matter</PageTitle>
+
+<div class="action-plan-container">
+    <!-- Header with Motivational Message -->
+    <div class="action-header">
+        <div class="header-content">
+            <div class="motivation-section">
+                <div class="motivation-icon">🚀</div>
+                <h1 class="motivation-title">Ready to Turn Your Idea Into Reality?</h1>
+                <p class="motivation-subtitle">
+                    We've broken everything down into simple, bite-sized steps. 
+                    No overwhelm - just clear actions you can take to move forward!
+                </p>
+            </div>
+            
+            <div class="progress-overview">
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <h2 class="progress-title">Your Business Readiness</h2>
+                    </div>
+                    <div class="progress-visual">
+                        <div class="readiness-circle">
+                            <span class="readiness-percent">@businessReadiness%</span>
+                            <span class="readiness-label">Ready</span>
+                        </div>
+                        <div class="progress-details">
+                            <p class="progress-message">@GetReadinessMessage()</p>
+                            <div class="next-milestone">
+                                <span class="milestone-icon">🎯</span>
+                                <span class="milestone-text">Next: @GetNextMilestone()</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Action Plan Content -->
+    <div class="action-content">
+        <div class="content-wrapper">
+            
+            <!-- Priority Actions Section -->
+            <div class="priority-section">
+                <div class="section-header">
+                    <h2 class="section-title">🔥 Do These First</h2>
+                    <p class="section-subtitle">These actions will have the biggest impact on your success</p>
+                </div>
+                
+                <div class="action-list">
+                    @foreach (var action in GetPriorityActions())
+                    {
+                        <div class="action-item priority" @onclick="() => ToggleComplete(action)">
+                            <div class="action-check @(action.IsCompleted ? "completed" : "")">
+                                @if (action.IsCompleted)
+                                {
+                                    <span class="check-icon">✓</span>
+                                }
+                                else
+                                {
+                                    <span class="check-circle"></span>
+                                }
+                            </div>
+                            
+                            <div class="action-content">
+                                <div class="action-main">
+                                    <h3 class="action-title @(action.IsCompleted ? "completed" : "")">@action.Title</h3>
+                                    <p class="action-description">@action.Description</p>
+                                </div>
+                                
+                                <div class="action-meta">
+                                    <div class="time-estimate">
+                                        <span class="meta-icon">⏱️</span>
+                                        <span class="meta-text">@action.TimeEstimate</span>
+                                    </div>
+                                    <div class="difficulty-badge @GetDifficultyClass(action.Difficulty)">
+                                        @action.Difficulty
+                                    </div>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(action.HelpText))
+                                {
+                                    <div class="action-help">
+                                        <span class="help-icon">💡</span>
+                                        <span class="help-text">@action.HelpText</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Next Steps Section -->
+            <div class="next-steps-section">
+                <div class="section-header">
+                    <h2 class="section-title">📋 Next Steps</h2>
+                    <p class="section-subtitle">Once you've tackled the priority items, continue with these</p>
+                </div>
+                
+                <div class="action-list">
+                    @foreach (var action in GetNextSteps())
+                    {
+                        <div class="action-item" @onclick="() => ToggleComplete(action)">
+                            <div class="action-check @(action.IsCompleted ? "completed" : "")">
+                                @if (action.IsCompleted)
+                                {
+                                    <span class="check-icon">✓</span>
+                                }
+                                else
+                                {
+                                    <span class="check-circle"></span>
+                                }
+                            </div>
+                            
+                            <div class="action-content">
+                                <div class="action-main">
+                                    <h3 class="action-title @(action.IsCompleted ? "completed" : "")">@action.Title</h3>
+                                    <p class="action-description">@action.Description</p>
+                                </div>
+                                
+                                <div class="action-meta">
+                                    <div class="time-estimate">
+                                        <span class="meta-icon">⏱️</span>
+                                        <span class="meta-text">@action.TimeEstimate</span>
+                                    </div>
+                                    <div class="difficulty-badge @GetDifficultyClass(action.Difficulty)">
+                                        @action.Difficulty
+                                    </div>
+                                </div>
+                                
+                                @if (!string.IsNullOrEmpty(action.HelpText))
+                                {
+                                    <div class="action-help">
+                                        <span class="help-icon">💡</span>
+                                        <span class="help-text">@action.HelpText</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Progress Celebration -->
+            @if (GetCompletedActions().Count > 0)
+            {
+                <div class="celebration-section">
+                    <div class="celebration-card">
+                        <div class="celebration-content">
+                            <div class="celebration-icon">🎉</div>
+                            <div class="celebration-text">
+                                <h3 class="celebration-title">Great Progress!</h3>
+                                <p class="celebration-message">
+                                    You've completed @GetCompletedActions().Count out of @allActions.Count action items! 
+                                    Every step forward is bringing you closer to launching your business.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="achievement-badges">
+                            @foreach (var achievement in GetEarnedAchievements())
+                            {
+                                <div class="achievement-badge">
+                                    <span class="achievement-icon">@achievement.Icon</span>
+                                    <span class="achievement-name">@achievement.Name</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="primary-button" @onclick="NavigateToBusinessPlan">
+                    <span class="button-icon">📄</span>
+                    Get Your Business Plan
+                </button>
+                
+                <button class="secondary-button" @onclick="NavigateToDashboard">
+                    <span class="button-icon">📊</span>
+                    View Analysis Results
+                </button>
+                
+                <button class="tertiary-button" @onclick="NavigateHome">
+                    <span class="button-icon">🔄</span>
+                    Analyze Another Idea
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<ActionItem> allActions = new();
+    private int businessReadiness = 35;
+
+    protected override void OnInitialized()
+    {
+        LoadMockActionPlan();
+        CalculateBusinessReadiness();
+    }
+
+    private void LoadMockActionPlan()
+    {
+        allActions = new List<ActionItem>
+        {
+            // Priority Actions
+            new ActionItem
+            {
+                Id = "1",
+                Title = "Talk to 10 potential customers",
+                Description = "Have casual conversations with people who might use your product. Ask what frustrates them and how they currently solve this problem.",
+                TimeEstimate = "1-2 weeks",
+                Difficulty = "Easy",
+                IsPriority = true,
+                HelpText = "Start with friends, family, or colleagues who fit your target audience. Keep it conversational!",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "2",
+                Title = "Create a simple prototype",
+                Description = "Build the most basic version of your idea - even if it's just sketches, wireframes, or a simple webpage describing your service.",
+                TimeEstimate = "1 week",
+                Difficulty = "Medium",
+                IsPriority = true,
+                HelpText = "Don't aim for perfection! You just need something to show people and get feedback.",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "3",
+                Title = "Research 5 similar businesses",
+                Description = "Look up businesses that solve similar problems. Study their websites, pricing, and customer reviews to understand what works.",
+                TimeEstimate = "3-4 days",
+                Difficulty = "Easy",
+                IsPriority = true,
+                HelpText = "This isn't about copying - it's about learning what customers like and don't like.",
+                IsCompleted = true
+            },
+
+            // Next Steps
+            new ActionItem
+            {
+                Id = "4",
+                Title = "Set up basic business accounts",
+                Description = "Open a separate bank account and consider setting up a simple business structure (LLC, etc.). Don't overthink this step.",
+                TimeEstimate = "1 day",
+                Difficulty = "Easy",
+                IsPriority = false,
+                HelpText = "Many banks offer free business checking accounts. You can always change your setup later.",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "5",
+                Title = "Build a simple website or landing page",
+                Description = "Create a basic web presence where people can learn about your idea and contact you. Use tools like Wix, Squarespace, or WordPress.",
+                TimeEstimate = "2-3 days",
+                Difficulty = "Medium",
+                IsPriority = false,
+                HelpText = "Keep it simple - one page with what you do, who it's for, and how to contact you.",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "6",
+                Title = "Price your product or service",
+                Description = "Based on your research and customer conversations, decide on initial pricing. Remember - you can always adjust later!",
+                TimeEstimate = "2-3 days",
+                Difficulty = "Medium",
+                IsPriority = false,
+                HelpText = "Look at what similar businesses charge, then consider starting slightly lower to attract initial customers.",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "7",
+                Title = "Find your first paying customer",
+                Description = "Use your prototype and customer research to find someone willing to pay for your solution, even if it's not perfect yet.",
+                TimeEstimate = "2-4 weeks",
+                Difficulty = "Hard",
+                IsPriority = false,
+                HelpText = "This validates that people will actually pay for what you're offering. Offer excellent service to this first customer!",
+                IsCompleted = false
+            },
+            new ActionItem
+            {
+                Id = "8",
+                Title = "Plan your marketing approach",
+                Description = "Based on where you found potential customers, create a simple plan for how you'll reach more people like them.",
+                TimeEstimate = "3-5 days",
+                Difficulty = "Medium",
+                IsPriority = false,
+                HelpText = "Social media, word of mouth, local networking - start with methods that feel natural to you.",
+                IsCompleted = false
+            }
+        };
+    }
+
+    private void CalculateBusinessReadiness()
+    {
+        var totalActions = allActions.Count;
+        var completedActions = allActions.Count(a => a.IsCompleted);
+        var completedPriority = allActions.Where(a => a.IsPriority && a.IsCompleted).Count();
+        
+        // Priority actions count for more
+        var priorityWeight = 0.6;
+        var regularWeight = 0.4;
+        
+        var priorityScore = (completedPriority / (double)allActions.Count(a => a.IsPriority)) * priorityWeight;
+        var regularScore = (completedActions / (double)totalActions) * regularWeight;
+        
+        businessReadiness = (int)Math.Round((priorityScore + regularScore) * 100);
+    }
+
+    private List<ActionItem> GetPriorityActions() => allActions.Where(a => a.IsPriority).ToList();
+    private List<ActionItem> GetNextSteps() => allActions.Where(a => !a.IsPriority).ToList();
+    private List<ActionItem> GetCompletedActions() => allActions.Where(a => a.IsCompleted).ToList();
+
+    private string GetReadinessMessage()
+    {
+        return businessReadiness switch
+        {
+            >= 80 => "You're almost ready to launch! Just a few more steps to go.",
+            >= 60 => "Great progress! You're well on your way to launching your business.",
+            >= 40 => "Good start! You're building solid foundations for your business.",
+            >= 20 => "You're taking the right first steps. Keep building momentum!",
+            _ => "Every business journey starts with a single step. You're doing great!"
+        };
+    }
+
+    private string GetNextMilestone()
+    {
+        var nextIncomplete = allActions.FirstOrDefault(a => !a.IsCompleted);
+        return nextIncomplete?.Title ?? "Launch your business!";
+    }
+
+    private string GetDifficultyClass(string difficulty)
+    {
+        return difficulty.ToLower() switch
+        {
+            "easy" => "easy",
+            "medium" => "medium",
+            "hard" => "hard",
+            _ => "medium"
+        };
+    }
+
+    private void ToggleComplete(ActionItem action)
+    {
+        action.IsCompleted = !action.IsCompleted;
+        CalculateBusinessReadiness();
+        StateHasChanged();
+    }
+
+    private List<Achievement> GetEarnedAchievements()
+    {
+        var achievements = new List<Achievement>();
+        var completedCount = GetCompletedActions().Count;
+        var completedPriority = allActions.Count(a => a.IsPriority && a.IsCompleted);
+
+        if (completedCount >= 1)
+            achievements.Add(new Achievement { Icon = "🌱", Name = "First Step" });
+        if (completedCount >= 3)
+            achievements.Add(new Achievement { Icon = "🔥", Name = "Building Momentum" });
+        if (completedPriority >= 2)
+            achievements.Add(new Achievement { Icon = "🎯", Name = "Priority Focused" });
+        if (businessReadiness >= 50)
+            achievements.Add(new Achievement { Icon = "⭐", Name = "Halfway There" });
+
+        return achievements;
+    }
+
+    private void NavigateToBusinessPlan() => Navigation.NavigateTo("/business-plan");
+    private void NavigateToDashboard() => Navigation.NavigateTo("/dashboard");
+    private void NavigateHome() => Navigation.NavigateTo("/");
+
+    public class ActionItem
+    {
+        public string Id { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+        public string TimeEstimate { get; set; } = "";
+        public string Difficulty { get; set; } = "";
+        public bool IsPriority { get; set; }
+        public bool IsCompleted { get; set; }
+        public string HelpText { get; set; } = "";
+    }
+
+    public class Achievement
+    {
+        public string Icon { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
+}
+
+<style>
+/* Action Plan Styling */
+.action-plan-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Header Section */
+.action-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 32px;
+    text-align: center;
+}
+
+.header-content {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.motivation-section {
+    margin-bottom: 40px;
+}
+
+.motivation-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+}
+
+.motivation-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.motivation-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+.progress-overview {
+    display: flex;
+    justify-content: center;
+}
+
+.progress-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 32px;
+    min-width: 400px;
+}
+
+.progress-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 24px 0;
+    text-align: center;
+}
+
+.progress-visual {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.readiness-circle {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid #48bb78;
+    background: rgba(72, 187, 120, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.readiness-percent {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.readiness-label {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.progress-details {
+    flex: 1;
+}
+
+.progress-message {
+    font-size: 16px;
+    margin: 0 0 16px 0;
+    line-height: 1.5;
+}
+
+.next-milestone {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px 16px;
+    border-radius: 12px;
+}
+
+.milestone-icon {
+    font-size: 16px;
+}
+
+.milestone-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Main Content */
+.action-content {
+    padding: 40px 32px;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Section Styling */
+.priority-section,
+.next-steps-section {
+    margin-bottom: 48px;
+}
+
+.section-header {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.section-subtitle {
+    font-size: 16px;
+    color: #718096;
+    margin: 0;
+}
+
+/* Action Items */
+.action-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.action-item {
+    background: white;
+    border-radius: 16px;
+    border: 2px solid #e2e8f0;
+    padding: 24px;
+    display: flex;
+    gap: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.action-item:hover {
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.action-item.priority {
+    border-color: #4299e1;
+    background: linear-gradient(135deg, rgba(66, 153, 225, 0.05) 0%, rgba(49, 130, 206, 0.05) 100%);
+}
+
+.action-item.priority:hover {
+    border-color: #3182ce;
+    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.15);
+}
+
+.action-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+    transition: all 0.3s ease;
+}
+
+.action-check.completed {
+    background: #48bb78;
+    border-color: #48bb78;
+}
+
+.check-icon {
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.check-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #e2e8f0;
+}
+
+.action-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.action-main {
+    flex: 1;
+}
+
+.action-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+    transition: all 0.3s ease;
+}
+
+.action-title.completed {
+    text-decoration: line-through;
+    opacity: 0.6;
+}
+
+.action-description {
+    font-size: 14px;
+    color: #4a5568;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.action-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.time-estimate {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #718096;
+}
+
+.meta-icon {
+    font-size: 16px;
+}
+
+.difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.difficulty-badge.easy {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.difficulty-badge.medium {
+    background: #fed7c3;
+    color: #7b341e;
+}
+
+.difficulty-badge.hard {
+    background: #fbb6ce;
+    color: #702459;
+}
+
+.action-help {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: #f7fafc;
+    padding: 12px 16px;
+    border-radius: 12px;
+    border-left: 4px solid #4299e1;
+}
+
+.help-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.help-text {
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+/* Celebration Section */
+.celebration-section {
+    margin-bottom: 48px;
+}
+
+.celebration-card {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+}
+
+.celebration-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.celebration-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+}
+
+.celebration-text {
+    flex: 1;
+    text-align: left;
+}
+
+.celebration-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+}
+
+.celebration-message {
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    opacity: 0.95;
+}
+
+.achievement-badges {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.achievement-badge {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.achievement-icon {
+    font-size: 16px;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 48px;
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+}
+
+.primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.4);
+}
+
+.secondary-button {
+    background: white;
+    color: #4299e1;
+    border: 2px solid #4299e1;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.secondary-button:hover {
+    background: #4299e1;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(66, 153, 225, 0.2);
+}
+
+.tertiary-button {
+    background: #f7fafc;
+    color: #4a5568;
+    border: 2px solid #e2e8f0;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tertiary-button:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
+}
+
+.button-icon {
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .action-header {
+        padding: 40px 20px;
+    }
+    
+    .action-content {
+        padding: 32px 20px;
+    }
+    
+    .motivation-title {
+        font-size: 32px;
+    }
+    
+    .motivation-subtitle {
+        font-size: 18px;
+    }
+    
+    .progress-card {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    .progress-visual {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+    
+    .action-item {
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 24px;
+    }
+    
+    .celebration-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .achievement-badges {
+        justify-content: center;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@@media (max-width: 480px) {
+    .action-header {
+        padding: 30px 16px;
+    }
+    
+    .action-content {
+        padding: 24px 16px;
+    }
+    
+    .motivation-title {
+        font-size: 28px;
+    }
+    
+    .progress-card {
+        padding: 24px;
+    }
+    
+    .readiness-circle {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .readiness-percent {
+        font-size: 24px;
+    }
+    
+    .action-item {
+        padding: 16px;
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .action-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .section-title {
+        font-size: 20px;
+    }
+    
+    .celebration-icon {
+        font-size: 32px;
+    }
+    
+    .celebration-title {
+        font-size: 20px;
+    }
+}
+</style>
