@@ -6,91 +6,94 @@
 
 <PageTitle>Dashboard - Ideas Matter Demo</PageTitle>
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="dashboard-title">
-                <span class="stat-icon me-3">📊</span>
-                Dashboard
-            </h1>
-            <p class="text-muted">Welcome to your Ideas Matter demo dashboard.</p>
+<div class="professional-dashboard">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <div class="header-icon">📊</div>
+            <div class="header-text">
+                <h1 class="dashboard-title">Dashboard</h1>
+                <p class="dashboard-subtitle">Welcome to your Ideas Matter demo dashboard.</p>
+            </div>
         </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="stat-card">
+    <!-- Professional Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card business-ideas">
+            <div class="stat-icon-wrapper">
                 <div class="stat-icon">💡</div>
-                <div class="stat-content">
-                    <h3 class="stat-number">@scenarios.Count</h3>
-                    <p class="stat-label">Business Ideas</p>
-                </div>
             </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon">📈</div>
-                <div class="stat-content">
-                    <h3 class="stat-number">15</h3>
-                    <p class="stat-label">Market Reports</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon">💰</div>
-                <div class="stat-content">
-                    <h3 class="stat-number">8</h3>
-                    <p class="stat-label">Financial Models</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3 mb-3">
-            <div class="stat-card">
-                <div class="stat-icon">👤</div>
-                <div class="stat-content">
-                    <h3 class="stat-number">1</h3>
-                    <p class="stat-label">Active Users</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Action Cards -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="action-card">
-                <div class="card-header-gradient">
-                    <h5 class="mb-0 text-white">Business Scenarios</h5>
-                </div>
-                <div class="card-body">
-                    <p>Total scenarios available: @scenarios.Count</p>
-                    <button class="btn-new-idea" @onclick="NavigateToScenarios">
-                        <span class="me-2">💡</span>
-                        View All Scenarios
-                    </button>
-                </div>
+            <div class="stat-content">
+                <div class="stat-number">@scenarios.Count</div>
+                <div class="stat-label">Business Ideas</div>
             </div>
         </div>
         
-        <div class="col-md-6">
-            <div class="action-card">
-                <div class="card-header-gradient">
-                    <h5 class="mb-0 text-white">Quick Actions</h5>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button class="btn-action primary-action" @onclick="NavigateToMarketResearch">
-                            <span class="me-2">📈</span>Market Research
-                        </button>
-                        <button class="btn-action success-action" @onclick="NavigateToFinancialProjections">
-                            <span class="me-2">💰</span>Financial Projections
-                        </button>
-                        <button class="btn-action info-action" @onclick="NavigateToUserProfile">
-                            <span class="me-2">👤</span>User Profile
-                        </button>
-                    </div>
+        <div class="stat-card market-reports">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon">📈</div>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Market Reports</div>
+            </div>
+        </div>
+        
+        <div class="stat-card financial-models">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon">💰</div>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Financial Models</div>
+            </div>
+        </div>
+        
+        <div class="stat-card active-users">
+            <div class="stat-icon-wrapper">
+                <div class="stat-icon">👤</div>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Active Users</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Action Cards -->
+    <div class="action-cards-grid">
+        <div class="action-card scenarios-card">
+            <div class="card-header">
+                <h3 class="card-title">Business Scenarios</h3>
+            </div>
+            <div class="card-content">
+                <p class="card-description">Total scenarios available: <strong>@scenarios.Count</strong></p>
+                <button class="primary-button" @onclick="NavigateToScenarios">
+                    <span class="button-icon">💡</span>
+                    <span class="button-text">View All Scenarios</span>
+                </button>
+            </div>
+        </div>
+        
+        <div class="action-card quick-actions-card">
+            <div class="card-header">
+                <h3 class="card-title">Quick Actions</h3>
+            </div>
+            <div class="card-content">
+                <div class="action-buttons">
+                    <button class="action-button market-research" @onclick="NavigateToMarketResearch">
+                        <span class="action-icon">📈</span>
+                        <span class="action-text">Market Research</span>
+                    </button>
+                    <button class="action-button financial-projections" @onclick="NavigateToFinancialProjections">
+                        <span class="action-icon">💰</span>
+                        <span class="action-text">Financial Projections</span>
+                    </button>
+                    <button class="action-button user-profile" @onclick="NavigateToUserProfile">
+                        <span class="action-icon">👤</span>
+                        <span class="action-text">User Profile</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -98,29 +101,22 @@
 
     @if (scenarios.Any())
     {
-        <div class="row">
-            <div class="col-12">
-                <div class="featured-card">
-                    <div class="card-header-gradient">
-                        <h5 class="mb-0 text-white">Featured Scenarios</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            @foreach (var scenario in scenarios.Take(3))
-                            {
-                                <div class="col-md-4 mb-3">
-                                    <div class="scenario-card">
-                                        <div class="card-body">
-                                            <h6 class="card-title">@scenario.Name</h6>
-                                            <p class="card-text">@GetShortDescription(scenario.Description)</p>
-                                            <small class="industry-badge">@scenario.Industry</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            }
+        <!-- Professional Featured Scenarios -->
+        <div class="featured-scenarios-section">
+            <div class="section-header">
+                <h3 class="section-title">Featured Scenarios</h3>
+            </div>
+            <div class="scenarios-grid">
+                @foreach (var scenario in scenarios.Take(3))
+                {
+                    <div class="scenario-card">
+                        <div class="scenario-content">
+                            <h4 class="scenario-title">@scenario.Name</h4>
+                            <p class="scenario-description">@GetShortDescription(scenario.Description)</p>
+                            <div class="scenario-industry">@scenario.Industry</div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
         </div>
     }
@@ -166,57 +162,142 @@
 }
 
 <style>
-.dashboard-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #333;
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
+/* Professional Dashboard Styles */
+
+.professional-dashboard {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    color: #1a202c;
+    background: transparent;
+    min-height: 100%;
+    padding: 32px;
 }
 
-.dashboard-title .stat-icon {
+/* Dashboard Header */
+.dashboard-header {
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-icon {
+    width: 64px;
+    height: 64px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.8rem;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    font-size: 24px;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.25);
+}
+
+.header-text {
+    flex: 1;
+}
+
+.dashboard-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.dashboard-subtitle {
+    color: #718096;
+    margin: 4px 0 0 0;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/* Professional Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
 }
 
 .stat-card {
     background: white;
     border-radius: 16px;
-    padding: 1.5rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    height: 100%;
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4299e1, #3182ce);
+}
+
+.stat-card.business-ideas::before {
+    background: linear-gradient(90deg, #7c3aed, #5b21b6);
+}
+
+.stat-card.market-reports::before {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.stat-card.financial-models::before {
+    background: linear-gradient(90deg, #f59e0b, #d97706);
+}
+
+.stat-card.active-users::before {
+    background: linear-gradient(90deg, #3b82f6, #1d4ed8);
 }
 
 .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.stat-card .stat-icon {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    width: 50px;
-    height: 50px;
-    border-radius: 10px;
+.stat-icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
     flex-shrink: 0;
+}
+
+.business-ideas .stat-icon-wrapper {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+}
+
+.market-reports .stat-icon-wrapper {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.financial-models .stat-icon-wrapper {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.active-users .stat-icon-wrapper {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.stat-icon {
+    font-size: 24px;
+    color: white;
 }
 
 .stat-content {
@@ -224,152 +305,257 @@
 }
 
 .stat-number {
-    font-size: 2rem;
+    font-size: 36px;
     font-weight: 700;
-    color: #333;
+    color: #1a202c;
     margin: 0;
+    line-height: 1;
 }
 
 .stat-label {
-    color: #666;
-    margin: 0;
-    font-size: 0.9rem;
+    color: #718096;
+    margin: 4px 0 0 0;
+    font-size: 14px;
     font-weight: 500;
 }
 
-.action-card, .featured-card {
+/* Action Cards Grid */
+.action-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 32px;
+    margin-bottom: 40px;
+}
+
+.action-card {
     background: white;
     border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: all 0.3s ease;
-    height: 100%;
 }
 
-.action-card:hover, .featured-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+.action-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.card-header-gradient {
+.card-header {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 1rem 1.5rem;
-    border-bottom: none;
+    padding: 20px 24px;
 }
 
-.btn-new-idea {
+.card-title {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.card-content {
+    padding: 24px;
+}
+
+.card-description {
+    color: #4a5568;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.primary-button {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     border: none;
     padding: 12px 24px;
-    border-radius: 8px;
+    border-radius: 12px;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    font-size: 14px;
     display: flex;
     align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
     justify-content: center;
-    width: 100%;
 }
 
-.btn-new-idea:hover {
-    background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+.primary-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
-.btn-action {
-    background: white;
+.button-icon {
+    font-size: 16px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-button {
+    background: #f7fafc;
     border: 1px solid #e2e8f0;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+    padding: 16px 20px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    width: 100%;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
     color: #4a5568;
+    font-weight: 500;
+    font-size: 14px;
 }
 
-.btn-action:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    color: white;
+.action-button:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+    transform: translateY(-2px);
 }
 
-.primary-action:hover {
-    background: linear-gradient(135deg, #3182ce 0%, #2c5aa0 100%);
-    border-color: #3182ce;
+.action-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
 }
 
-.success-action:hover {
-    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
-    border-color: #38a169;
+/* Featured Scenarios Section */
+.featured-scenarios-section {
+    margin-top: 40px;
 }
 
-.info-action:hover {
-    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
-    border-color: #3182ce;
+.section-header {
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a202c;
+    margin: 0;
+}
+
+.scenarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
 }
 
 .scenario-card {
     background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
     transition: all 0.3s ease;
-    height: 100%;
 }
 
 .scenario-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
 }
 
-.scenario-card .card-title {
+.scenario-content {
+    padding: 24px;
+}
+
+.scenario-title {
+    font-size: 18px;
     font-weight: 600;
-    color: #333;
-    margin-bottom: 0.75rem;
+    color: #1a202c;
+    margin: 0 0 12px 0;
+    line-height: 1.3;
 }
 
-.scenario-card .card-text {
-    color: #666;
-    font-size: 0.9rem;
+.scenario-description {
+    color: #718096;
+    font-size: 14px;
     line-height: 1.5;
-    margin-bottom: 1rem;
+    margin: 0 0 16px 0;
 }
 
-.industry-badge {
+.scenario-industry {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-block;
 }
 
+/* Responsive Design */
 @@media (max-width: 768px) {
-    .dashboard-title {
-        font-size: 2rem;
-        flex-direction: column;
-        text-align: center;
-        gap: 0.5rem;
+    .professional-dashboard {
+        padding: 20px;
     }
     
-    .dashboard-title .stat-icon {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .action-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .scenarios-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .dashboard-title {
+        font-size: 28px;
+    }
+    
+    .stat-number {
+        font-size: 32px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .professional-dashboard {
+        padding: 16px;
+    }
+    
+    .dashboard-header {
+        margin-bottom: 24px;
+    }
+    
+    .header-icon {
+        width: 56px;
+        height: 56px;
+        font-size: 20px;
+    }
+    
+    .dashboard-title {
+        font-size: 24px;
     }
     
     .stat-card {
-        margin-bottom: 1rem;
+        padding: 20px;
+        gap: 16px;
+    }
+    
+    .stat-icon-wrapper {
+        width: 56px;
+        height: 56px;
+    }
+    
+    .stat-number {
+        font-size: 28px;
     }
 }
 </style>
