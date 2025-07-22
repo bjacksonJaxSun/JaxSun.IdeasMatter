@@ -166,10 +166,16 @@
                     </div>
                     
                     <div class="submit-actions">
-                        <button type="button" class="help-button" @onclick="ToggleExamples">
-                            <span class="button-icon">💡</span>
-                            @(showExamples ? "Hide Examples" : "Need Examples?")
-                        </button>
+                        <div class="action-left">
+                            <button type="button" class="demo-button" @onclick="LoadDemoData">
+                                <span class="button-icon">🚀</span>
+                                Load Demo Data
+                            </button>
+                            <button type="button" class="help-button" @onclick="ToggleExamples">
+                                <span class="button-icon">💡</span>
+                                @(showExamples ? "Hide Examples" : "Need Examples?")
+                            </button>
+                        </div>
                         <button type="submit" class="submit-button" disabled="@(!IsFormValid())">
                             <span class="button-icon">✨</span>
                             Let's Explore My Idea!
@@ -232,6 +238,18 @@
     {
         ideaInput.Description = example.Description;
         showExamples = false;
+    }
+
+    private void LoadDemoData()
+    {
+        // Load comprehensive demo data for quick testing
+        ideaInput.Description = "I want to create an app that helps busy parents find healthy meal ideas their kids will actually eat. Every night is a struggle to figure out what to make for dinner that's nutritious but also appealing to picky eaters. The app would suggest recipes based on the kids' preferences, dietary restrictions, and what ingredients you already have at home. It could also generate weekly meal plans and shopping lists to make meal planning effortless for stressed parents.";
+        ideaInput.ProblemSolved = "Parents waste 30+ minutes daily deciding what to cook and often resort to unhealthy options because they don't know what their kids will eat";
+        ideaInput.TargetAudience = "Working parents with children ages 3-12 who want to provide healthy meals but struggle with meal planning and picky eaters";
+        ideaInput.RevenueModel = "Monthly subscription ($9.99/month) for unlimited access to personalized meal plans, recipes, and shopping lists";
+        
+        // Auto-select Deep Dive strategy for comprehensive analysis
+        selectedStrategy = deepStrategy;
     }
 
     private bool IsFormValid()
@@ -626,6 +644,34 @@
     align-items: center;
 }
 
+.action-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.demo-button {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 4px rgba(72, 187, 120, 0.2);
+}
+
+.demo-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(72, 187, 120, 0.3);
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+}
+
 .help-button {
     background: #f7fafc;
     border: 2px solid #e2e8f0;
@@ -707,6 +753,12 @@
     .submit-actions {
         flex-direction: column;
         align-items: stretch;
+        gap: 20px;
+    }
+    
+    .action-left {
+        justify-content: center;
+        flex-wrap: wrap;
     }
     
     .strategy-description {
@@ -731,6 +783,18 @@
     .prompts-title,
     .strategy-title {
         font-size: 20px;
+    }
+    
+    .action-left {
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .demo-button,
+    .help-button {
+        font-size: 14px;
+        padding: 12px 16px;
     }
 }
 </style>

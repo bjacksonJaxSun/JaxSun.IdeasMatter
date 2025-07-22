@@ -1,5 +1,6 @@
 using Jackson.Ideas.Mock.Services.Interfaces;
 using Jackson.Ideas.Mock.Services.Mock;
+using Jackson.Ideas.Mock.Services;
 using Jackson.Ideas.Mock.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +19,9 @@ builder.Services.AddScoped<IMockAuthenticationService, MockAuthenticationService
 builder.Services.AddScoped<IMarketResearchService, MockMarketResearchService>();
 builder.Services.AddScoped<IFinancialProjectionService, MockFinancialProjectionService>();
 builder.Services.AddScoped<IUserProfileService, MockUserProfileService>();
+
+// Register Business Translation Service
+builder.Services.AddScoped<BusinessTranslationService>();
 
 var app = builder.Build();
 

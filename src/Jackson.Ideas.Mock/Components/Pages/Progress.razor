@@ -9,11 +9,39 @@
     <!-- Progress Header -->
     <div class="progress-header">
         <div class="header-content">
-            <div class="header-icon">🤖</div>
-            <h1 class="header-title">Your AI Team is Working!</h1>
+            <div class="team-animation">
+                <div class="team-member active">🤖<span class="member-label">AI Analyst</span></div>
+                <div class="team-member active">📊<span class="member-label">Market Expert</span></div>
+                <div class="team-member active">💡<span class="member-label">Strategy Coach</span></div>
+                <div class="team-member active">🔍<span class="member-label">Research Pro</span></div>
+            </div>
+            <h1 class="header-title">Your AI Business Team is Hard at Work!</h1>
             <p class="header-subtitle">
-                Sit back and relax - we're analyzing your idea with the same care you'd give it.
+                Meet your personal business team! These AI experts have helped thousands of people like you turn great ideas into successful businesses. They're genuinely excited to work on your project!
             </p>
+            <div class="team-status">
+                <div class="status-card">
+                    <span class="status-icon">⚡</span>
+                    <div class="status-content">
+                        <div class="status-title">Real-time Analysis</div>
+                        <div class="status-desc">Your team is analyzing data as we speak</div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <span class="status-icon">🎯</span>
+                    <div class="status-content">
+                        <div class="status-title">Personalized Insights</div>
+                        <div class="status-desc">Every finding is customized for your idea</div>
+                    </div>
+                </div>
+                <div class="status-card">
+                    <span class="status-icon">🚀</span>
+                    <div class="status-content">
+                        <div class="status-title">Success Roadmap</div>
+                        <div class="status-desc">Building your step-by-step action plan</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -35,7 +63,10 @@
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: @(progressPercentage)%"></div>
                 </div>
-                <div class="progress-text">@progressPercentage% Complete</div>
+                <div class="progress-text">
+                    <div class="progress-percentage">@progressPercentage% Complete</div>
+                    <div class="progress-milestone">@GetProgressMilestone()</div>
+                </div>
             </div>
 
             <!-- Steps List -->
@@ -111,30 +142,30 @@
         {
             "quick" => new List<AnalysisStep>
             {
-                new("🔍", "Getting to Know Your Idea", "Reading through your description and understanding what you want to build"),
-                new("👥", "Finding People Like Your Customers", "Researching who might want to buy or use what you're creating"),
-                new("💰", "Checking the Money Potential", "Looking at how much money similar ideas make and what you could earn"),
-                new("⚡", "Quick Reality Check", "Giving you an honest, friendly assessment of your idea's potential")
+                new("🔍", "Understanding Your Amazing Idea", "Your AI analyst is reading through every detail of your idea, getting genuinely excited about what you're building! They're noting all the clever aspects that make it special."),
+                new("👥", "Finding People Who Will Love This", "Your market expert is out there right now, discovering all the people who have been waiting for exactly what you're creating. This is the most exciting part!"),
+                new("💰", "Calculating Your Money Potential", "Your strategy coach is looking at similar success stories and crunching numbers to see how much you could earn. The early signs look really promising!"),
+                new("⚡", "Creating Your Personal Report", "Your research pro is putting together everything we discovered into a report that's just for you. You're going to love what we found - this is going to be good!")
             },
             "deep" => new List<AnalysisStep>
             {
-                new("🔍", "Deep Diving Into Your Idea", "Thoroughly analyzing every aspect of your concept and vision"),
-                new("🏪", "Checking Out Similar Businesses", "Researching your competition and finding your unique advantages"),
-                new("📊", "Crunching the Numbers", "Creating detailed financial projections and market size analysis"),
-                new("🎯", "Finding Your Perfect Customers", "Identifying exactly who will love and pay for your solution"),
-                new("⚖️", "Weighing the Risks and Rewards", "Honest assessment of challenges and opportunities ahead"),
-                new("💡", "Strategic Recommendations", "Giving you clear, actionable advice on your next steps")
+                new("🔍", "Deep-Diving Into Your Vision", "Your AI analyst is exploring every angle of your brilliant concept, uncovering potential you might not even know existed. They're finding some really interesting insights!"),
+                new("🏪", "Checking Out the Competition", "Your market expert is researching similar businesses to find exactly what makes you different and better. You have more unique advantages than you realize!"),
+                new("📊", "Crunching All the Exciting Numbers", "Your strategy coach is analyzing market data and financial possibilities. The numbers are looking really encouraging - you're going to be excited about this!"),
+                new("🎯", "Finding Your Dream Customers", "Your research pro is identifying exactly who will become your biggest fans. These people are going to absolutely love what you're building!"),
+                new("⚖️", "Mapping Your Opportunities", "Your team is discovering all the chances for your business to grow and thrive. There are more opportunities here than we first thought!"),
+                new("💡", "Crafting Your Success Roadmap", "Your entire AI team is working together to create your personalized action plan. This roadmap is going to make everything feel possible!")
             },
             "launch" => new List<AnalysisStep>
             {
-                new("📋", "Creating Your Business Foundation", "Building the complete structure for your business idea"),
-                new("🏢", "Market & Competitor Deep Dive", "Comprehensive analysis of your market landscape"),
-                new("💰", "Financial Planning & Projections", "Detailed money roadmap including startup costs and revenue projections"),
-                new("🎯", "Customer Research & Targeting", "Finding and understanding your ideal customers in detail"),
-                new("🛠️", "Product Development Strategy", "Planning how to build and improve your product or service"),
-                new("📈", "Marketing & Sales Strategy", "Creating your plan to reach customers and make sales"),
-                new("🚀", "Step-by-Step Launch Plan", "Your complete roadmap from idea to running business"),
-                new("📊", "Success Metrics & Tracking", "How to measure and improve your business performance")
+                new("📋", "Building Your Business Foundation", "Your AI analyst is creating the complete structure for your business, making sure every important piece is in place for your success."),
+                new("🏢", "Deep Market & Competition Analysis", "Your market expert is conducting a comprehensive study of your industry, finding every opportunity and advantage you can use."),
+                new("💰", "Creating Your Money Roadmap", "Your strategy coach is building detailed financial projections, startup cost estimates, and revenue forecasts that show exactly how profitable this can be."),
+                new("🎯", "Researching Your Ideal Customers", "Your research pro is finding and profiling your perfect customers - the people who will become your biggest supporters and best clients."),
+                new("🛠️", "Planning Your Product Strategy", "Your team is mapping out exactly how to build, improve, and perfect your product or service to delight customers."),
+                new("📈", "Designing Your Marketing Plan", "Your experts are creating a complete strategy for reaching customers, making sales, and growing your business steadily."),
+                new("🚀", "Building Your Launch Checklist", "Your AI team is putting together your complete step-by-step roadmap from where you are now to having a thriving business."),
+                new("📊", "Setting Up Success Tracking", "Your team is creating systems to measure your progress and help you continuously improve and grow your business.")
             },
             _ => new List<AnalysisStep>()
         };
@@ -147,7 +178,8 @@
         {
             "quick" => 3000, // 15 minutes / 4 steps ≈ 3.75 minutes per step
             "deep" => 7000,  // 45 minutes / 6 steps ≈ 7.5 minutes per step  
-            "launch" => 11000 // 90 minutes / 8 steps ≈ 11.25 minutes per step
+            "launch" => 11000, // 90 minutes / 8 steps ≈ 11.25 minutes per step
+            _ => 3000 // Default to quick analysis
         };
 
         progressTimer = new Timer(async (_) =>
@@ -194,12 +226,54 @@
     private string GetCurrentStepTitle() => currentStepIndex < analysisSteps.Count ? analysisSteps[currentStepIndex].Title : "Almost Done!";
     private string GetCurrentStepDescription() => currentStepIndex < analysisSteps.Count ? analysisSteps[currentStepIndex].Description : "Putting the finishing touches on your analysis...";
     
-    private string GetCurrentStepTime() => strategy switch
+    private string GetCurrentStepTime()
     {
-        "quick" => $"About {4 - currentStepIndex} minutes left",
-        "deep" => $"About {(6 - currentStepIndex) * 7} minutes left", 
-        "launch" => $"About {(8 - currentStepIndex) * 11} minutes left",
-        _ => "Almost done!"
+        var totalSteps = analysisSteps.Count;
+        var remainingSteps = totalSteps - currentStepIndex - 1;
+        
+        return strategy switch
+        {
+            "quick" => remainingSteps switch
+            {
+                0 => "✨ Final touches - 30 seconds left!",
+                1 => "🎯 Almost there - just 2 minutes left!",
+                2 => "⚡ Getting exciting - about 4 minutes left!",
+                3 => "🚀 Just getting started - about 7 minutes left!",
+                _ => "🔥 Your results are almost ready!"
+            },
+            "deep" => remainingSteps switch
+            {
+                0 => "✨ Polishing your insights - 1 minute left!",
+                1 => "🎯 Almost finished - about 5 minutes left!",
+                2 => "⚡ Great progress - about 12 minutes left!",
+                3 => "🚀 Halfway there - about 20 minutes left!",
+                4 => "💪 Building momentum - about 28 minutes left!",
+                5 => "🔥 Just warming up - about 35 minutes left!",
+                _ => "✨ Your comprehensive analysis is almost ready!"
+            },
+            "launch" => remainingSteps switch
+            {
+                0 => "✨ Adding final details - 2 minutes left!",
+                1 => "🎯 Almost complete - about 8 minutes left!",
+                2 => "⚡ Excellent progress - about 18 minutes left!",
+                3 => "🚀 Over halfway - about 30 minutes left!",
+                4 => "💪 Strong progress - about 42 minutes left!",
+                5 => "🔥 Building your plan - about 55 minutes left!",
+                6 => "⭐ Great start - about 68 minutes left!",
+                7 => "🌟 Getting started - about 80 minutes left!",
+                _ => "✨ Your complete business blueprint is almost ready!"
+            },
+            _ => "🎉 Your personalized analysis is almost complete!"
+        };
+    }
+
+    private string GetProgressMilestone() => progressPercentage switch
+    {
+        >= 90 => "🏁 Almost done! Your results are being finalized...",
+        >= 75 => "🎯 Three-quarters complete! The finish line is in sight!",
+        >= 50 => "⭐ Halfway there! You're making excellent progress!",
+        >= 25 => "🚀 Great start! Your AI team is hitting their stride!",
+        _ => "💪 Just getting started! Your team is excited to work on this!"
     };
 
     private string GetEncouragementIcon() => currentStepIndex switch
@@ -261,8 +335,108 @@
 }
 
 .header-content {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
+}
+
+/* Team Animation */
+.team-animation {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.team-member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-width: 120px;
+    font-size: 24px;
+    animation: teamPulse 2s infinite;
+}
+
+.team-member.active {
+    animation: teamWorking 1.5s infinite;
+}
+
+@@keyframes teamPulse {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+}
+
+@@keyframes teamWorking {
+    0%, 100% { transform: translateY(0) scale(1); }
+    25% { transform: translateY(-2px) scale(1.02); }
+    75% { transform: translateY(1px) scale(0.98); }
+}
+
+.team-member .member-label {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.9;
+    text-align: center;
+}
+
+/* Team Status Cards */
+.team-status {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.status-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px 20px;
+    min-width: 200px;
+    animation: statusPulse 2s infinite;
+}
+
+.status-icon {
+    font-size: 24px;
+    animation: statusBounce 2s infinite;
+}
+
+.status-content {
+    flex: 1;
+}
+
+.status-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.status-desc {
+    font-size: 12px;
+    opacity: 0.9;
+    line-height: 1.3;
+}
+
+@@keyframes statusPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+@@keyframes statusBounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-4px); }
+    60% { transform: translateY(-2px); }
 }
 
 .header-icon {
@@ -380,8 +554,19 @@
 .progress-text {
     text-align: center;
     color: #4a5568;
+}
+
+.progress-percentage {
     font-size: 16px;
     font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.progress-milestone {
+    font-size: 14px;
+    color: #667eea;
+    font-weight: 500;
+    font-style: italic;
 }
 
 /* Steps List */

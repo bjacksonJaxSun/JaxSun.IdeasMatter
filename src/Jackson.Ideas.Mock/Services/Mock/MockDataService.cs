@@ -44,7 +44,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 150000,
                 ProjectedRevenue = 500000,
                 ViabilityScore = 85,
-                MarketSize = "$2.4B",
+                MarketSize = 2147483647, // $2.4B (capped at max int)
                 KeyChallenges = new List<string> { "High competition from established players", "Logistics complexity for sustainable packaging", "Higher operational costs for eco-friendly practices" },
                 SuccessFactors = new List<string> { "Strong environmental brand identity", "Strategic local restaurant partnerships", "Robust technology platform with Green Score system" }
             },
@@ -58,7 +58,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 200000,
                 ProjectedRevenue = 800000,
                 ViabilityScore = 78,
-                MarketSize = "$850M",
+                MarketSize = 850000000,
                 KeyChallenges = new List<string> { "High AI development and maintenance costs", "Extensive content creation across subjects", "Competitive user acquisition in crowded market" },
                 SuccessFactors = new List<string> { "Adaptive learning technology that truly personalizes", "High-quality educational content", "Strong user engagement and retention metrics" }
             },
@@ -72,7 +72,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 75000,
                 ProjectedRevenue = 300000,
                 ViabilityScore = 72,
-                MarketSize = "$1.2B",
+                MarketSize = 1200000000,
                 KeyChallenges = new List<string> { "Building critical mass of both artisans and customers", "Maintaining quality standards across diverse products", "Complex shipping logistics for fragile handmade items" },
                 SuccessFactors = new List<string> { "Strong community building and engagement", "Comprehensive artisan support and training", "Effective digital marketing and SEO strategy" }
             },
@@ -86,7 +86,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 300000,
                 ProjectedRevenue = 1200000,
                 ViabilityScore = 73,
-                MarketSize = "$4.5B",
+                MarketSize = 2147483647, // $4.5B (capped at max int)
                 KeyChallenges = new List<string> { "High VR hardware requirements for users", "Substantial content development costs", "Motion sickness and safety concerns" },
                 SuccessFactors = new List<string> { "Compelling and diverse VR fitness content", "Strategic partnerships with VR hardware manufacturers", "Strong community features and social integration" }
             },
@@ -100,7 +100,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 80000,
                 ProjectedRevenue = 400000,
                 ViabilityScore = 82,
-                MarketSize = "$650M",
+                MarketSize = 650000000,
                 KeyChallenges = new List<string> { "Building trust with technology-wary demographic", "Scaling personalized in-home service model", "Keeping pace with rapidly changing technology" },
                 SuccessFactors = new List<string> { "Highly trained, patient, empathetic staff", "Simple, age-appropriate training materials", "Strong word-of-mouth referral system" }
             },
@@ -114,7 +114,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 250000,
                 ProjectedRevenue = 900000,
                 ViabilityScore = 76,
-                MarketSize = "$1.8B",
+                MarketSize = 1800000000,
                 KeyChallenges = new List<string> { "High initial equipment and setup costs", "Technical expertise required for system maintenance", "Competition from traditional produce suppliers" },
                 SuccessFactors = new List<string> { "Proven ROI through reduced food costs", "Comprehensive training and support programs", "Strategic partnerships with restaurant chains" }
             },
@@ -128,7 +128,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 180000,
                 ProjectedRevenue = 750000,
                 ViabilityScore = 79,
-                MarketSize = "$3.2B",
+                MarketSize = 2147483647, // $3.2B (capped at max int)
                 KeyChallenges = new List<string> { "Strict healthcare regulations and privacy requirements", "Building trust for sensitive mental health data", "Balancing AI automation with human therapeutic care" },
                 SuccessFactors = new List<string> { "Clinical validation and evidence-based approaches", "Strong data privacy and security measures", "Integration with existing healthcare systems" }
             },
@@ -142,7 +142,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 120000,
                 ProjectedRevenue = 600000,
                 ViabilityScore = 84,
-                MarketSize = "$2.1B",
+                MarketSize = 2100000000,
                 KeyChallenges = new List<string> { "Building trust with pet owners for animal care", "Managing scheduling and logistics for multiple pets", "Insurance and liability considerations" },
                 SuccessFactors = new List<string> { "Highly trained and bonded pet care staff", "Transparent communication and photo updates", "Strong local reputation and referral network" }
             },
@@ -156,7 +156,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 220000,
                 ProjectedRevenue = 850000,
                 ViabilityScore = 77,
-                MarketSize = "$1.5B",
+                MarketSize = 1500000000,
                 KeyChallenges = new List<string> { "Complex installation and setup requirements", "Privacy concerns with home monitoring", "Integration with existing emergency response systems" },
                 SuccessFactors = new List<string> { "Reliable and accurate health monitoring", "Easy-to-use family communication portal", "Fast and effective emergency response protocols" }
             },
@@ -170,7 +170,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 100000,
                 ProjectedRevenue = 450000,
                 ViabilityScore = 71,
-                MarketSize = "$890M",
+                MarketSize = 890000000,
                 KeyChallenges = new List<string> { "Inventory management for rental business", "Quality control for repairs and alterations", "Changing consumer mindset about clothing ownership" },
                 SuccessFactors = new List<string> { "High-quality garment curation and care", "Skilled repair and upcycling artisans", "Strong brand identity around sustainability" }
             },
@@ -184,7 +184,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 140000,
                 ProjectedRevenue = 550000,
                 ViabilityScore = 80,
-                MarketSize = "$1.3B",
+                MarketSize = 1300000000,
                 KeyChallenges = new List<string> { "Complex logistics and seasonal supply management", "Building trust between farmers and restaurants", "Competing with established food distributors" },
                 SuccessFactors = new List<string> { "Reliable logistics and delivery systems", "Strong relationships with both farms and restaurants", "Transparent pricing and quality standards" }
             },
@@ -198,7 +198,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 280000,
                 ProjectedRevenue = 950000,
                 ViabilityScore = 74,
-                MarketSize = "$2.1B",
+                MarketSize = 2100000000,
                 KeyChallenges = new List<string> { "High VR content development costs", "Need for VR headset adoption", "Competition from established language learning platforms" },
                 SuccessFactors = new List<string> { "Immersive and culturally authentic content", "Advanced AI conversation partners", "Integration with existing language curricula" }
             },
@@ -212,7 +212,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 160000,
                 ProjectedRevenue = 400000,
                 ViabilityScore = 75,
-                MarketSize = "$720M",
+                MarketSize = 720000000,
                 KeyChallenges = new List<string> { "Overcoming technology adoption barriers", "Building critical mass of engaged users", "Monetization without alienating user base" },
                 SuccessFactors = new List<string> { "Intuitive, age-friendly interface design", "Strong community moderation and safety features", "Valuable content and meaningful connections" }
             },
@@ -226,7 +226,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 190000,
                 ProjectedRevenue = 700000,
                 ViabilityScore = 76,
-                MarketSize = "$1.4B",
+                MarketSize = 1400000000,
                 KeyChallenges = new List<string> { "Complex data integration from multiple sources", "Maintaining user engagement beyond initial enthusiasm", "Verifying accuracy of carbon offset projects" },
                 SuccessFactors = new List<string> { "Accurate and comprehensive tracking capabilities", "Actionable and achievable reduction recommendations", "Transparent and verified offset marketplace" }
             },
@@ -240,7 +240,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 90000,
                 ProjectedRevenue = 350000,
                 ViabilityScore = 78,
-                MarketSize = "$650M",
+                MarketSize = 650000000,
                 KeyChallenges = new List<string> { "Building trust between strangers for in-person meetings", "Ensuring quality and safety of skill instruction", "Creating sustainable monetization model" },
                 SuccessFactors = new List<string> { "Strong vetting and review system for instructors", "Local community partnerships and promotion", "Diverse range of valuable skills offered" }
             },
@@ -254,7 +254,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 130000,
                 ProjectedRevenue = 520000,
                 ViabilityScore = 81,
-                MarketSize = "$1.1B",
+                MarketSize = 1100000000,
                 KeyChallenges = new List<string> { "Engaging employees in voluntary wellness programs", "Measuring and demonstrating ROI to employers", "Integrating with existing corporate health benefits" },
                 SuccessFactors = new List<string> { "Evidence-based wellness interventions", "Easy integration with existing work tools", "Clear metrics showing productivity and health improvements" }
             },
@@ -268,7 +268,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 110000,
                 ProjectedRevenue = 480000,
                 ViabilityScore = 79,
-                MarketSize = "$950M",
+                MarketSize = 950000000,
                 KeyChallenges = new List<string> { "Managing complex supply chain with multiple small producers", "Maintaining consistent quality across diverse products", "Customer acquisition in competitive subscription market" },
                 SuccessFactors = new List<string> { "Strong curation and storytelling around products", "Reliable logistics and packaging for food items", "Building community around artisan food appreciation" }
             },
@@ -282,7 +282,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 400000,
                 ProjectedRevenue = 1100000,
                 ViabilityScore = 70,
-                MarketSize = "$2.3B",
+                MarketSize = 2147483647, // $2.3B (capped at max int)
                 KeyChallenges = new List<string> { "High development and manufacturing costs", "User acceptance of robotic companions", "Complex healthcare regulations and certifications" },
                 SuccessFactors = new List<string> { "Advanced AI that creates genuine companionship", "Reliable health monitoring and emergency response", "Intuitive interface that seniors can easily use" }
             },
@@ -296,7 +296,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 170000,
                 ProjectedRevenue = 650000,
                 ViabilityScore = 83,
-                MarketSize = "$1.6B",
+                MarketSize = 1600000000,
                 KeyChallenges = new List<string> { "Creating engaging content in very short formats", "Measuring learning effectiveness in micro-sessions", "Competing with established corporate training providers" },
                 SuccessFactors = new List<string> { "High-quality, immediately applicable content", "Seamless integration into daily work routines", "Clear skill progression and achievement tracking" }
             },
@@ -310,7 +310,7 @@ public class MockDataService : IMockDataService
                 EstimatedStartupCost = 350000,
                 ProjectedRevenue = 1300000,
                 ViabilityScore = 75,
-                MarketSize = "$3.8B",
+                MarketSize = 2147483647, // $3.8B (capped at max int)
                 KeyChallenges = new List<string> { "Complex regulatory approval processes", "High upfront capital requirements for solar installations", "Navigating utility company partnerships and grid integration" },
                 SuccessFactors = new List<string> { "Strong relationships with utilities and regulators", "Transparent financial modeling and bill savings", "Community engagement and education programs" }
             }

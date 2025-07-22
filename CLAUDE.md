@@ -25,8 +25,14 @@ dotnet run --project src/Jackson.Ideas.Api
 # Run Blazor Web (when created)
 dotnet run --project src/Jackson.Ideas.Web
 
+# Run Mock Application  
+dotnet run --project src/Jackson.Ideas.Mock
+
 # Run tests
 dotnet test
+
+# Run Golden Rules validation script
+./scripts/golden-rule.sh
 ```
 
 ### Build Error Resolution Protocol - GOLDEN RULE
@@ -54,6 +60,30 @@ dotnet build  # Must show "Build succeeded" with 0 errors
 ```
 
 **The Golden Rule applies before completing task sets, not after every individual change.**
+
+### Golden Rules Automated Script
+The repository includes an automated Golden Rules validation script that performs the complete build → fix → launch → validate cycle:
+
+```bash
+# Run the automated Golden Rules script
+./scripts/golden-rule.sh
+
+# The script will:
+# 1. Build the solution (up to 5 attempts with auto-fix)
+# 2. Launch the application on http://localhost:5000
+# 3. Validate the application responds correctly
+# 4. Report success/failure with detailed logs
+# 5. Clean up processes automatically
+```
+
+**Golden Rules Script Features:**
+- **Automated Build Validation**: Attempts to build and auto-fix common errors
+- **Application Launch Testing**: Starts the app and verifies it's accessible
+- **Response Validation**: Checks for error-free HTML output
+- **Comprehensive Logging**: Saves build outputs and validation results to `/logs/`
+- **Process Management**: Automatically cleans up running processes
+
+**Important**: Always use the Golden Rules script before marking task sets complete. This ensures the build succeeds AND the application runs without errors.
 
 ### Testing Commands
 ```bash
