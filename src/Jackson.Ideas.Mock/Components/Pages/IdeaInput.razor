@@ -1,0 +1,736 @@
+@page "/idea-input"
+@using Jackson.Ideas.Mock.Services.Interfaces
+@using Jackson.Ideas.Mock.Models
+@inject NavigationManager Navigation
+
+<PageTitle>Share Your Idea - Ideas Matter</PageTitle>
+
+<div class="idea-input-container">
+    <!-- Friendly Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-content">
+            <div class="welcome-icon">💡</div>
+            <h1 class="welcome-title">Tell Us About Your Idea!</h1>
+            <p class="welcome-subtitle">
+                Just like you're talking to a friend - no pressure, no judgment. 
+                We're here to help you explore what's possible.
+            </p>
+        </div>
+    </div>
+
+    <!-- Conversational Form -->
+    <div class="conversation-form">
+        <div class="form-container">
+            <EditForm Model="@ideaInput" OnSubmit="@SubmitIdea">
+                <!-- Main Idea Input -->
+                <div class="input-group">
+                    <label class="friendly-label">
+                        <span class="label-icon">💭</span>
+                        <span class="label-text">What's your idea? Tell us like you're telling a friend!</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <textarea @bind="ideaInput.Description" 
+                                  class="friendly-textarea" 
+                                  placeholder="For example: I want to create an app that helps busy parents find healthy meal ideas their kids will actually eat. I'm tired of the dinner struggle every night!"
+                                  rows="4"></textarea>
+                        <div class="input-help">
+                            <span class="help-icon">✨</span>
+                            <span class="help-text">Don't worry about making it perfect - we'll help you refine it!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Smart Prompts Section -->
+                <div class="smart-prompts">
+                    <h3 class="prompts-title">
+                        <span class="title-icon">🤔</span>
+                        Help us understand better:
+                    </h3>
+                    
+                    <div class="prompt-group">
+                        <label class="prompt-label">
+                            <span class="prompt-icon">❓</span>
+                            What problem does this solve?
+                        </label>
+                        <input @bind="ideaInput.ProblemSolved" 
+                               class="prompt-input" 
+                               placeholder="e.g., Parents waste time and stress about meal planning" />
+                    </div>
+
+                    <div class="prompt-group">
+                        <label class="prompt-label">
+                            <span class="prompt-icon">👥</span>
+                            Who would buy this or use it?
+                        </label>
+                        <input @bind="ideaInput.TargetAudience" 
+                               class="prompt-input" 
+                               placeholder="e.g., Working parents with kids ages 3-12" />
+                    </div>
+
+                    <div class="prompt-group">
+                        <label class="prompt-label">
+                            <span class="prompt-icon">💰</span>
+                            How might this make money? (It's okay if you're not sure!)
+                        </label>
+                        <input @bind="ideaInput.RevenueModel" 
+                               class="prompt-input" 
+                               placeholder="e.g., Monthly subscription for meal plans or I'm not sure yet!" />
+                    </div>
+                </div>
+
+                <!-- Examples Section -->
+                @if (showExamples)
+                {
+                    <div class="examples-section">
+                        <h3 class="examples-title">
+                            <span class="title-icon">💡</span>
+                            Need inspiration? Here are some example ideas:
+                        </h3>
+                        <div class="examples-grid">
+                            @foreach (var example in ideaExamples)
+                            {
+                                <div class="example-card" @onclick="() => UseExample(example)">
+                                    <div class="example-icon">@example.Icon</div>
+                                    <div class="example-content">
+                                        <h4 class="example-title">@example.Title</h4>
+                                        <p class="example-description">@example.Description</p>
+                                    </div>
+                                    <div class="example-action">Use This Example</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- Strategy Selection -->
+                <div class="strategy-selection">
+                    <h3 class="strategy-title">
+                        <span class="title-icon">🎯</span>
+                        How deep do you want to go?
+                    </h3>
+                    <p class="strategy-subtitle">Choose what feels right for you today:</p>
+                    
+                    <div class="strategy-options">
+                        <div class="strategy-option @(selectedStrategy == "quick" ? "selected" : "")" 
+                             @onclick="() => SelectStrategy(quickStrategy)">
+                            <div class="strategy-header">
+                                <div class="strategy-icon">⚡</div>
+                                <div class="strategy-info">
+                                    <h4 class="strategy-name">Quick Check</h4>
+                                    <p class="strategy-time">About 15 minutes</p>
+                                </div>
+                            </div>
+                            <p class="strategy-description">
+                                "Is this idea worth pursuing?" - Get a quick gut-check on your idea's potential
+                            </p>
+                        </div>
+
+                        <div class="strategy-option @(selectedStrategy == "deep" ? "selected" : "")" 
+                             @onclick="() => SelectStrategy(deepStrategy)">
+                            <div class="strategy-header">
+                                <div class="strategy-icon">🔍</div>
+                                <div class="strategy-info">
+                                    <h4 class="strategy-name">Deep Dive</h4>
+                                    <p class="strategy-time">About 45 minutes</p>
+                                </div>
+                            </div>
+                            <p class="strategy-description">
+                                "Should I quit my job for this?" - Thorough analysis of market, competition, and viability
+                            </p>
+                        </div>
+
+                        <div class="strategy-option @(selectedStrategy == "launch" ? "selected" : "")" 
+                             @onclick="() => SelectStrategy(launchStrategy)">
+                            <div class="strategy-header">
+                                <div class="strategy-icon">🚀</div>
+                                <div class="strategy-info">
+                                    <h4 class="strategy-name">Launch Plan</h4>
+                                    <p class="strategy-time">About 90 minutes</p>
+                                </div>
+                            </div>
+                            <p class="strategy-description">
+                                "How do I turn this into a business?" - Complete business plan with step-by-step launch guide
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Encouragement and Submit -->
+                <div class="submit-section">
+                    <div class="encouragement">
+                        <div class="encouragement-icon">🌟</div>
+                        <div class="encouragement-text">
+                            <p><strong>You're doing great!</strong></p>
+                            <p>Every successful business started with someone sharing their idea. You're taking the first step!</p>
+                        </div>
+                    </div>
+                    
+                    <div class="submit-actions">
+                        <button type="button" class="help-button" @onclick="ToggleExamples">
+                            <span class="button-icon">💡</span>
+                            @(showExamples ? "Hide Examples" : "Need Examples?")
+                        </button>
+                        <button type="submit" class="submit-button" disabled="@(!IsFormValid())">
+                            <span class="button-icon">✨</span>
+                            Let's Explore My Idea!
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+@code {
+    private IdeaInputModel ideaInput = new();
+    private string selectedStrategy = "";
+    private bool showExamples = false;
+    
+    private const string quickStrategy = "quick";
+    private const string deepStrategy = "deep"; 
+    private const string launchStrategy = "launch";
+
+    private List<ExampleIdea> ideaExamples = new()
+    {
+        new ExampleIdea 
+        { 
+            Icon = "🍽️", 
+            Title = "Meal Planning App", 
+            Description = "An app that creates weekly meal plans based on your family's dietary needs and preferences, with automatic grocery lists." 
+        },
+        new ExampleIdea 
+        { 
+            Icon = "🏠", 
+            Title = "Local Service Marketplace", 
+            Description = "A platform connecting neighbors with local service providers like handymen, cleaners, and pet sitters." 
+        },
+        new ExampleIdea 
+        { 
+            Icon = "📚", 
+            Title = "Online Learning Platform", 
+            Description = "Interactive courses that teach practical life skills like budgeting, cooking, or home maintenance." 
+        },
+        new ExampleIdea 
+        { 
+            Icon = "🌱", 
+            Title = "Sustainable Living Guide", 
+            Description = "A subscription service that sends monthly eco-friendly products with instructions for sustainable living." 
+        }
+    };
+
+    private void SelectStrategy(string strategy)
+    {
+        selectedStrategy = strategy;
+    }
+
+    private void ToggleExamples()
+    {
+        showExamples = !showExamples;
+    }
+
+    private void UseExample(ExampleIdea example)
+    {
+        ideaInput.Description = example.Description;
+        showExamples = false;
+    }
+
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(ideaInput.Description) && !string.IsNullOrEmpty(selectedStrategy);
+    }
+
+    private void SubmitIdea()
+    {
+        if (IsFormValid())
+        {
+            // Navigate to progress page
+            Navigation.NavigateTo($"/progress?strategy={selectedStrategy}");
+        }
+    }
+
+    public class IdeaInputModel
+    {
+        public string Description { get; set; } = "";
+        public string ProblemSolved { get; set; } = "";
+        public string TargetAudience { get; set; } = "";
+        public string RevenueModel { get; set; } = "";
+    }
+
+    public class ExampleIdea
+    {
+        public string Icon { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Description { get; set; } = "";
+    }
+}
+
+<style>
+/* Idea Input Styling */
+.idea-input-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: #f8fafc;
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Welcome Section */
+.welcome-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 32px 40px 32px;
+    text-align: center;
+}
+
+.welcome-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.welcome-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+}
+
+.welcome-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.welcome-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+/* Form Container */
+.conversation-form {
+    padding: 40px 32px;
+}
+
+.form-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Input Groups */
+.input-group {
+    margin-bottom: 48px;
+}
+
+.friendly-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 16px;
+}
+
+.label-icon {
+    font-size: 24px;
+}
+
+.input-wrapper {
+    position: relative;
+}
+
+.friendly-textarea {
+    width: 100%;
+    padding: 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: 16px;
+    line-height: 1.6;
+    background: white;
+    transition: all 0.3s ease;
+    resize: vertical;
+    min-height: 120px;
+}
+
+.friendly-textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-help {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: #718096;
+    font-size: 14px;
+}
+
+.help-icon {
+    font-size: 16px;
+}
+
+/* Smart Prompts */
+.smart-prompts {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.prompts-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 32px 0;
+}
+
+.title-icon {
+    font-size: 28px;
+}
+
+.prompt-group {
+    margin-bottom: 32px;
+}
+
+.prompt-group:last-child {
+    margin-bottom: 0;
+}
+
+.prompt-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 12px;
+}
+
+.prompt-icon {
+    font-size: 18px;
+}
+
+.prompt-input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 16px;
+    background: white;
+    transition: all 0.3s ease;
+}
+
+.prompt-input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Examples Section */
+.examples-section {
+    background: #f7fafc;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 48px;
+    border: 2px dashed #cbd5e0;
+}
+
+.examples-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 24px 0;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.example-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.example-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.example-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.example-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.example-description {
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+}
+
+.example-action {
+    color: #667eea;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Strategy Selection */
+.strategy-selection {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 48px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.strategy-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 24px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.strategy-subtitle {
+    color: #718096;
+    font-size: 16px;
+    margin: 0 0 32px 0;
+}
+
+.strategy-options {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.strategy-option {
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.strategy-option:hover {
+    border-color: #cbd5e0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.strategy-option.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.2);
+}
+
+.strategy-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.strategy-icon {
+    font-size: 32px;
+}
+
+.strategy-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0;
+}
+
+.strategy-time {
+    color: #667eea;
+    font-size: 14px;
+    font-weight: 500;
+    margin: 4px 0 0 0;
+}
+
+.strategy-description {
+    color: #4a5568;
+    font-size: 16px;
+    line-height: 1.5;
+    margin: 0;
+    padding-left: 48px;
+}
+
+/* Submit Section */
+.submit-section {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.encouragement {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding: 24px;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 16px;
+}
+
+.encouragement-icon {
+    font-size: 32px;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+.encouragement-text p {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+.encouragement-text p:last-child {
+    margin-bottom: 0;
+    color: #718096;
+}
+
+.submit-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.help-button {
+    background: #f7fafc;
+    border: 2px solid #e2e8f0;
+    color: #4a5568;
+    padding: 16px 24px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-button:hover {
+    background: #edf2f7;
+    border-color: #cbd5e0;
+}
+
+.submit-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.submit-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.submit-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.button-icon {
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .welcome-section {
+        padding: 40px 20px 30px 20px;
+    }
+    
+    .welcome-title {
+        font-size: 32px;
+    }
+    
+    .welcome-subtitle {
+        font-size: 18px;
+    }
+    
+    .conversation-form {
+        padding: 32px 20px;
+    }
+    
+    .smart-prompts,
+    .strategy-selection,
+    .submit-section {
+        padding: 24px;
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .submit-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .strategy-description {
+        padding-left: 0;
+        margin-top: 12px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .welcome-icon {
+        font-size: 48px;
+    }
+    
+    .welcome-title {
+        font-size: 28px;
+    }
+    
+    .friendly-label {
+        font-size: 18px;
+    }
+    
+    .prompts-title,
+    .strategy-title {
+        font-size: 20px;
+    }
+}
+</style>

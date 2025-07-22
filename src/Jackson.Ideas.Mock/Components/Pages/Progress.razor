@@ -1,0 +1,559 @@
+@page "/progress"
+@using Microsoft.AspNetCore.Components
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Analyzing Your Idea - Ideas Matter</PageTitle>
+
+<div class="progress-container">
+    <!-- Progress Header -->
+    <div class="progress-header">
+        <div class="header-content">
+            <div class="header-icon">🤖</div>
+            <h1 class="header-title">Your AI Team is Working!</h1>
+            <p class="header-subtitle">
+                Sit back and relax - we're analyzing your idea with the same care you'd give it.
+            </p>
+        </div>
+    </div>
+
+    <!-- Progress Steps -->
+    <div class="progress-content">
+        <div class="progress-wrapper">
+            <!-- Current Progress -->
+            <div class="current-step">
+                <div class="step-icon">@GetCurrentStepIcon()</div>
+                <div class="step-content">
+                    <h2 class="step-title">@GetCurrentStepTitle()</h2>
+                    <p class="step-description">@GetCurrentStepDescription()</p>
+                    <div class="step-time">@GetCurrentStepTime()</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: @(progressPercentage)%"></div>
+                </div>
+                <div class="progress-text">@progressPercentage% Complete</div>
+            </div>
+
+            <!-- Steps List -->
+            <div class="steps-list">
+                @for (int i = 0; i < analysisSteps.Count; i++)
+                {
+                    var step = analysisSteps[i];
+                    var isCompleted = i < currentStepIndex;
+                    var isCurrent = i == currentStepIndex;
+                    
+                    <div class="step-item @(isCompleted ? "completed" : "") @(isCurrent ? "current" : "")">
+                        <div class="step-indicator">
+                            @if (isCompleted)
+                            {
+                                <span class="check-icon">✅</span>
+                            }
+                            else if (isCurrent)
+                            {
+                                <div class="loading-spinner"></div>
+                            }
+                            else
+                            {
+                                <span class="pending-icon">⏳</span>
+                            }
+                        </div>
+                        <div class="step-details">
+                            <h3 class="step-name">@step.Title</h3>
+                            <p class="step-desc">@step.Description</p>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Encouragement Messages -->
+            <div class="encouragement-section">
+                <div class="encouragement-card">
+                    <div class="encouragement-icon">@GetEncouragementIcon()</div>
+                    <div class="encouragement-content">
+                        <h3 class="encouragement-title">@GetEncouragementTitle()</h3>
+                        <p class="encouragement-message">@GetEncouragementMessage()</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int currentStepIndex = 0;
+    private int progressPercentage = 0;
+    private Timer? progressTimer;
+    private string strategy = "quick";
+
+    private List<AnalysisStep> analysisSteps = new();
+
+    protected override void OnInitialized()
+    {
+        // Get strategy from query parameters
+        var uri = new Uri(Navigation.Uri);
+        var queryParams = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        strategy = queryParams["strategy"] ?? "quick";
+
+        // Initialize steps based on strategy
+        InitializeSteps();
+        
+        // Start progress simulation
+        StartProgressSimulation();
+    }
+
+    private void InitializeSteps()
+    {
+        analysisSteps = strategy switch
+        {
+            "quick" => new List<AnalysisStep>
+            {
+                new("🔍", "Getting to Know Your Idea", "Reading through your description and understanding what you want to build"),
+                new("👥", "Finding People Like Your Customers", "Researching who might want to buy or use what you're creating"),
+                new("💰", "Checking the Money Potential", "Looking at how much money similar ideas make and what you could earn"),
+                new("⚡", "Quick Reality Check", "Giving you an honest, friendly assessment of your idea's potential")
+            },
+            "deep" => new List<AnalysisStep>
+            {
+                new("🔍", "Deep Diving Into Your Idea", "Thoroughly analyzing every aspect of your concept and vision"),
+                new("🏪", "Checking Out Similar Businesses", "Researching your competition and finding your unique advantages"),
+                new("📊", "Crunching the Numbers", "Creating detailed financial projections and market size analysis"),
+                new("🎯", "Finding Your Perfect Customers", "Identifying exactly who will love and pay for your solution"),
+                new("⚖️", "Weighing the Risks and Rewards", "Honest assessment of challenges and opportunities ahead"),
+                new("💡", "Strategic Recommendations", "Giving you clear, actionable advice on your next steps")
+            },
+            "launch" => new List<AnalysisStep>
+            {
+                new("📋", "Creating Your Business Foundation", "Building the complete structure for your business idea"),
+                new("🏢", "Market & Competitor Deep Dive", "Comprehensive analysis of your market landscape"),
+                new("💰", "Financial Planning & Projections", "Detailed money roadmap including startup costs and revenue projections"),
+                new("🎯", "Customer Research & Targeting", "Finding and understanding your ideal customers in detail"),
+                new("🛠️", "Product Development Strategy", "Planning how to build and improve your product or service"),
+                new("📈", "Marketing & Sales Strategy", "Creating your plan to reach customers and make sales"),
+                new("🚀", "Step-by-Step Launch Plan", "Your complete roadmap from idea to running business"),
+                new("📊", "Success Metrics & Tracking", "How to measure and improve your business performance")
+            },
+            _ => new List<AnalysisStep>()
+        };
+    }
+
+    private void StartProgressSimulation()
+    {
+        var totalSteps = analysisSteps.Count;
+        var stepDuration = strategy switch
+        {
+            "quick" => 3000, // 15 minutes / 4 steps ≈ 3.75 minutes per step
+            "deep" => 7000,  // 45 minutes / 6 steps ≈ 7.5 minutes per step  
+            "launch" => 11000 // 90 minutes / 8 steps ≈ 11.25 minutes per step
+        };
+
+        progressTimer = new Timer(async (_) =>
+        {
+            await InvokeAsync(() =>
+            {
+                if (currentStepIndex < totalSteps)
+                {
+                    progressPercentage = (int)((double)(currentStepIndex + 1) / totalSteps * 100);
+                    StateHasChanged();
+                    
+                    if (progressPercentage >= 100)
+                    {
+                        progressTimer?.Dispose();
+                        NavigateToResults();
+                    }
+                }
+            });
+        }, null, TimeSpan.FromMilliseconds(500), TimeSpan.FromMilliseconds(stepDuration / 10));
+
+        // Advance steps
+        var stepTimer = new Timer((_) =>
+        {
+            InvokeAsync(() =>
+            {
+                if (currentStepIndex < totalSteps - 1)
+                {
+                    currentStepIndex++;
+                    StateHasChanged();
+                }
+            });
+        }, null, TimeSpan.FromMilliseconds(stepDuration), TimeSpan.FromMilliseconds(stepDuration));
+    }
+
+    private void NavigateToResults()
+    {
+        Task.Delay(2000).ContinueWith(_ =>
+        {
+            InvokeAsync(() => Navigation.NavigateTo("/dashboard"));
+        });
+    }
+
+    private string GetCurrentStepIcon() => currentStepIndex < analysisSteps.Count ? analysisSteps[currentStepIndex].Icon : "✨";
+    private string GetCurrentStepTitle() => currentStepIndex < analysisSteps.Count ? analysisSteps[currentStepIndex].Title : "Almost Done!";
+    private string GetCurrentStepDescription() => currentStepIndex < analysisSteps.Count ? analysisSteps[currentStepIndex].Description : "Putting the finishing touches on your analysis...";
+    
+    private string GetCurrentStepTime() => strategy switch
+    {
+        "quick" => $"About {4 - currentStepIndex} minutes left",
+        "deep" => $"About {(6 - currentStepIndex) * 7} minutes left", 
+        "launch" => $"About {(8 - currentStepIndex) * 11} minutes left",
+        _ => "Almost done!"
+    };
+
+    private string GetEncouragementIcon() => currentStepIndex switch
+    {
+        0 => "🌟",
+        1 => "🎉", 
+        2 => "💪",
+        3 => "🔥",
+        4 => "⭐",
+        5 => "🎯",
+        _ => "✨"
+    };
+
+    private string GetEncouragementTitle() => currentStepIndex switch
+    {
+        0 => "Great start!",
+        1 => "You're doing amazing!",
+        2 => "Halfway there!",
+        3 => "Almost finished!",
+        4 => "Excellent progress!",
+        5 => "Final stretch!",
+        _ => "You did it!"
+    };
+
+    private string GetEncouragementMessage() => currentStepIndex switch
+    {
+        0 => "We're just getting started with your idea. Every great business began exactly like this!",
+        1 => "Your idea is looking more promising as we dig deeper. Keep going!",
+        2 => "We're finding some really interesting insights about your market. This is exciting!",
+        3 => "The pieces are coming together beautifully. Your analysis is almost ready!",
+        4 => "We're putting together all the insights we've discovered about your idea.",
+        5 => "Just adding the final details to make sure everything is perfect for you.",
+        _ => "Your complete analysis is ready! We can't wait to share what we found."
+    };
+
+    public void Dispose()
+    {
+        progressTimer?.Dispose();
+    }
+
+    private record AnalysisStep(string Icon, string Title, string Description);
+}
+
+<style>
+/* Progress Page Styling */
+.progress-container {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    padding: 0;
+}
+
+/* Header Section */
+.progress-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 60px 32px 40px 32px;
+    text-align: center;
+}
+
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.header-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    animation: pulse 2s infinite;
+}
+
+@@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.header-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+    line-height: 1.2;
+}
+
+.header-subtitle {
+    font-size: 20px;
+    font-weight: 400;
+    margin: 0;
+    opacity: 0.95;
+    line-height: 1.5;
+}
+
+/* Progress Content */
+.progress-content {
+    padding: 40px 32px;
+}
+
+.progress-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Current Step */
+.current-step {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.current-step .step-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+    animation: bounce 1s infinite;
+}
+
+@@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 12px 0;
+    line-height: 1.2;
+}
+
+.step-description {
+    font-size: 18px;
+    color: #4a5568;
+    line-height: 1.5;
+    margin: 0 0 16px 0;
+}
+
+.step-time {
+    color: #667eea;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.progress-bar {
+    background: #e2e8f0;
+    border-radius: 12px;
+    height: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.progress-fill {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    text-align: center;
+    color: #4a5568;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* Steps List */
+.steps-list {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e2e8f0;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid #f7fafc;
+    opacity: 0.6;
+}
+
+.step-item:last-child {
+    border-bottom: none;
+}
+
+.step-item.completed {
+    opacity: 1;
+}
+
+.step-item.current {
+    opacity: 1;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 12px;
+    margin: 0 -16px;
+    padding: 16px;
+}
+
+.step-indicator {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e2e8f0;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.step-details {
+    flex: 1;
+}
+
+.step-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2d3748;
+    margin: 0 0 4px 0;
+}
+
+.step-desc {
+    font-size: 14px;
+    color: #718096;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Encouragement Section */
+.encouragement-section {
+    margin-bottom: 32px;
+}
+
+.encouragement-card {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 20px;
+    padding: 32px;
+    border: 2px solid rgba(102, 126, 234, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.encouragement-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+    animation: pulse 2s infinite;
+}
+
+.encouragement-content {
+    flex: 1;
+}
+
+.encouragement-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 8px 0;
+}
+
+.encouragement-message {
+    font-size: 16px;
+    color: #4a5568;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Responsive Design */
+@@media (max-width: 768px) {
+    .progress-header {
+        padding: 40px 20px 30px 20px;
+    }
+    
+    .header-title {
+        font-size: 32px;
+    }
+    
+    .header-subtitle {
+        font-size: 18px;
+    }
+    
+    .progress-content {
+        padding: 32px 20px;
+    }
+    
+    .current-step {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+    
+    .step-title {
+        font-size: 24px;
+    }
+    
+    .encouragement-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+}
+
+@@media (max-width: 480px) {
+    .header-icon {
+        font-size: 48px;
+    }
+    
+    .current-step .step-icon {
+        font-size: 36px;
+    }
+    
+    .encouragement-icon {
+        font-size: 36px;
+    }
+    
+    .step-title {
+        font-size: 20px;
+    }
+    
+    .encouragement-title {
+        font-size: 20px;
+    }
+}
+</style>
